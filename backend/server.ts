@@ -1,6 +1,8 @@
 import express, { Request, Response } from 'express'
-import connectDB from './config/db'
+import cors from 'cors';
+import connectDB from './config/db.js'
 import dotenv from 'dotenv'
+import userRoutes from './routes/userRoutes.js'
 
 dotenv.config();
 
@@ -10,15 +12,17 @@ const app = express()
 //connect to database
 connectDB()
 
-//middleware for parsing JSON bodies
+
+app.use(cors());
+
 app.use(express.json());
 
-// Middleware for parsing URL-encoded bodies
+
 app.use(express.urlencoded( { extended: true } ))
 
+app.use('/api/users',userRoutes)
 app.get('/', (req: Request, res: Response) => {
   res.send('Server Ready')
 });
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
-

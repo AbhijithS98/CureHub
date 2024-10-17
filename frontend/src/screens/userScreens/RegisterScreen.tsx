@@ -1,16 +1,47 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import FormContainer from "../../components/userComponents/FormContainer";
+import Loader from "../../components/userComponents/Loader";
 import { Form, Button, Row, Col } from "react-bootstrap";
+import { useRegisterMutation } from "../../slices/userSlices/userApiSlice";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-function RegisterScreen() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+const RegisterScreen: React.FC = () => {
+ 
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+
+  
+  const [register, {isLoading}] = useRegisterMutation();
+  const navigate = useNavigate()
+
+  const submitHandler = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    try {
+      await register({name,email,phone,password}).unwrap();
+      toast.success("OTP has sent to your email!");
+      navigate("/otp", { state: { email } })
+
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.data?.message || "Registration failed!");
+    }
+  };
+
   return (
     <FormContainer>
         <h1>Register</h1>
+      <Form onSubmit={submitHandler}>
         <Form.Group className="my-2" controlId="name">
           <Form.Label>Enter Name</Form.Label>
           <Form.Control
@@ -61,6 +92,12 @@ function RegisterScreen() {
           ></Form.Control>
         </Form.Group>
         
+        {isLoading && <Loader />}
+        <Button type="submit" variant="primary">
+          Register
+        </Button>
+        
+      </Form> 
     </FormContainer>
   )
 }

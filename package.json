@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "index.js",
+  "main": "backend/dist/server.js",
   "scripts": {
-    "start": "node backend/server.ts",
-    "server": "nodemon backend/server.ts",
+    "build": "cd backend && tsc",
+    "start": "node backend/dist/server.js",
+    "server": "cd backend && nodemon dist/server.js",
     "client": "npm run dev --prefix frontend",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
@@ -19,13 +20,19 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.6.3"
+    "mongoose": "^8.6.3",
+    "nodemailer": "^6.9.15"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.7.5",
+    "@types/nodemailer": "^6.4.16",
     "concurrently": "^9.0.1",
     "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.6.3"
   }
 }

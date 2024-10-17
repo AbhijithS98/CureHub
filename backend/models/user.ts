@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-// interface for the User document
-interface IUser extends Document {
+
+export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
@@ -11,9 +11,13 @@ interface IUser extends Document {
   isBlocked: boolean;
   address?: string;
   dob?: Date;
+  otp?: {
+    code: number;
+    expiresAt: Date;
+  };
 }
 
-// Create the user schema
+
 const userSchema: Schema<IUser> = new Schema(
   {
     name: {
@@ -52,12 +56,16 @@ const userSchema: Schema<IUser> = new Schema(
     dob: {
       type: Date,
     },
+    otp: {
+      code: { type: Number, default: null },
+      expiresAt: { type: Date, default: null },
+    },
   },
   {
     timestamps: true,
   }
 );
 
-// Create the User model
+
 const User = mongoose.model<IUser>("User", userSchema);
 export default User;
