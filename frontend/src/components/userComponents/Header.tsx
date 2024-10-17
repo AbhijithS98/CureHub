@@ -30,7 +30,7 @@ function Header() {
                   }
                   id="login"
                 >
-                  <LinkContainer to="/user/login">
+                  <LinkContainer to="/login">
                     <NavDropdown.Item>As Patient</NavDropdown.Item>
                   </LinkContainer>
                   <LinkContainer to="/doctor/login">
