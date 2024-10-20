@@ -1,23 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import FormContainer from '../../components/userComponents/FormContainer';
 import Loader from '../../components/userComponents/Loader';
 import { Form,Button } from 'react-bootstrap';
 import { toast } from "react-toastify";
-import { useVerifyOtpMutation } from '../../slices/userSlices/userApiSlice';
+import { useVerifyOtpMutation, useResendOtpMutation } from '../../slices/userSlices/userApiSlice';
+
 
 const OtpScreen: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [otp, setOtp] = useState('');
-  const { email } = location.state || {};
+  const [otpTimer, setOtpTimer] = useState(180);
+  const [resendTimer, setResendTimer] = useState(30);
+  const [canResend, setCanResend] = useState(false);
 
-  const [verifyOtp, {isLoading}] = useVerifyOtpMutation();
-  
+  const { email } = location.state || {};
+  const [verifyOtp, {isLoading:verifyLoading}] = useVerifyOtpMutation();
+  const [resendOtp, {isLoading:resendLoading}] = useResendOtpMutation();
+
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOtp(e.target.value);
   };
-
 
   const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,11 +31,55 @@ const OtpScreen: React.FC = () => {
       } else {
           await verifyOtp({ otp, email }).unwrap(); 
           toast.success('OTP Verified, Please Login');
-          navigate('/login');
+          navigate('/user/login');
       }
     } catch (error:any) {
-      toast.error(error.message || 'OTP Verification failed');
+      toast.error(error.data.message || 'OTP Verification failed');
     }
+  };
+
+  const handleResendOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try{
+      await resendOtp({email}).unwrap();
+      toast.success('OTP Resent Successfully');
+      setCanResend(false); 
+      setOtpTimer(180); 
+      setResendTimer(30);
+
+    }catch (error:any) {
+      toast.error(error.message || 'OTP Resend failed');
+    }
+     
+  };
+
+  useEffect(()=>{
+    if (otpTimer > 0) {
+      const interval = setInterval(() => {
+        setOtpTimer((prevTime) => prevTime - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  },[otpTimer]);
+
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const interval = setInterval(() => {
+        setResendTimer((prevTime) => prevTime - 1);
+      }, 1000);
+
+      return () => clearInterval(interval); 
+    } else {
+      setCanResend(true); 
+    }
+  }, [resendTimer]);
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds
+      .toString()
+      .padStart(2, '0')}`;
   };
 
   return (
@@ -53,11 +101,22 @@ const OtpScreen: React.FC = () => {
                     />
         </Form.Group>
 
-        {isLoading && <Loader />}
-        <Button type="submit" variant="primary" className="mt-3">
+        {verifyLoading || resendLoading && <Loader />}
+        <p>OTP will expire in: {formatTime(otpTimer)}</p>
+
+        <Button type="submit" variant="primary" className="mt-3" disabled={verifyLoading}>
          Verify Otp
         </Button>
       </Form>
+
+      <Button
+        variant="secondary"
+        className="mt-3"
+        onClick={handleResendOtp}
+        disabled={!canResend}
+      >
+        {canResend ? 'Resend OTP' : `Resend OTP in ${resendTimer}s`}
+      </Button>
     </FormContainer> 
   );
 };

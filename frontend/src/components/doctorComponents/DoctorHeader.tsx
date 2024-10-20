@@ -1,0 +1,61 @@
+import { Navbar, Nav, Container, } from "react-bootstrap";
+import { FaSignInAlt, FaUserPlus } from "react-icons/fa";
+import { LinkContainer } from "react-router-bootstrap";
+import { useSelector, useDispatch } from "react-redux";
+import { toast } from 'react-toastify';
+import { RootState } from '../../store.js';
+import { useNavigate } from "react-router-dom";
+
+function DoctorHeader() {
+
+
+  const handleLogout = async(e: React.FormEvent)=>{
+   try{
+
+
+   } catch(err:any){
+      toast.error(err.message || "Logout failed. Please try again.")
+   }
+  }
+
+  return (
+    <header>
+      <Navbar
+        style={{ backgroundColor: "rgb(8, 161, 162)" }}
+        variant="dark"
+        expand="lg"
+        collapseOnSelect
+      >
+        <Container>
+          <LinkContainer to="/">
+            <Navbar.Brand>
+              <h1 >CUREHUB</h1>
+            </Navbar.Brand>
+          </LinkContainer>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="ms-auto">
+             
+                <>  
+                  <LinkContainer to="/doctor/login">
+                   <Nav.Link>
+                    <FaSignInAlt /> Login
+                   </Nav.Link>
+                  </LinkContainer>
+              
+                  <LinkContainer to="/doctor/register">
+                    <Nav.Link>
+                      <FaUserPlus /> Sign Up 
+                    </Nav.Link>
+                  </LinkContainer>
+                </>
+                 
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+    </header>
+  );
+}
+
+export default DoctorHeader;

@@ -6,10 +6,11 @@ dotenv.config();
 interface EmailOptions {
   to: string;
   subject: string;
-  text: string;
+  text?: string;
+  html?: string;
 }
 
-const sendEmail = async ({ to, subject, text }: EmailOptions): Promise<void> => {
+const sendEmail = async ({ to, subject, text, html }: EmailOptions): Promise<void> => {
   try {
     
     const transporter = nodemailer.createTransport({
@@ -23,8 +24,8 @@ const sendEmail = async ({ to, subject, text }: EmailOptions): Promise<void> => 
     const mailOptions = {
       from: 'abhijithSb745@gmail.com',
       to,
-      subject,
-      text,
+      ...(text && { text }), 
+      ...(html && { html }),  
     }
 
     await transporter.sendMail(mailOptions);

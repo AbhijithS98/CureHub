@@ -15,6 +15,8 @@ export interface IUser extends Document {
     code: number;
     expiresAt: Date;
   };
+  pwResetToken?: string;
+  pwTokenExpiresAt?: Date;
 }
 
 
@@ -60,6 +62,14 @@ const userSchema: Schema<IUser> = new Schema(
       code: { type: Number, default: null },
       expiresAt: { type: Date, default: null },
     },
+    pwResetToken: {
+      type: String,
+      default: null
+    },
+    pwTokenExpiresAt: {
+      type: Date,
+      default: null
+    }
   },
   {
     timestamps: true,

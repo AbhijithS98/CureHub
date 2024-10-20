@@ -11,10 +11,9 @@ const Loader: React.FC = () => {
         height: '50px',
         margin: 'auto',
         display: 'block',
-        color: 'red',
+        color: 'blue',
       }}
     >
-      <span className="sr-only">Loading...</span>
     </Spinner>
   );
 };

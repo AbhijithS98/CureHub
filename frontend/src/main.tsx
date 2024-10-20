@@ -10,21 +10,37 @@ import { Provider } from "react-redux";
 import store from './store'
 import App from './App'
 import 'bootstrap/dist/css/bootstrap.min.css';
+{/* User screens imports */}
 import HomeScreen from './screens/userScreens/HomeScreen';
 import RegisterScreen from './screens/userScreens/RegisterScreen';
 import OtpScreen from './screens/userScreens/OtpScreen';
 import LoginScreen from './screens/userScreens/LoginScreen';
+import ForgotPasswordScreen from './screens/userScreens/ForgotPasswordScreen';
+import ResetPasswordScreen from './screens/userScreens/ResetPasswordScreen';
+{/* Doctor screens imports */}
+import DoctorRegisterScreen from './screens/doctorScreens/RegisterScreen';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App />}>
       <Route index element={<HomeScreen />}></Route>
-      <Route path="/register" element={<RegisterScreen />}></Route>
-      <Route path="/otp" element={<OtpScreen />}></Route>
-      <Route path="/login" element={<LoginScreen />}></Route>
+
+      {/* User Routes */}
+      <Route path="user">
+        <Route path="register" element={<RegisterScreen />}></Route>
+        <Route path="otp" element={<OtpScreen />}></Route>
+        <Route path="login" element={<LoginScreen />}></Route>
+        <Route path="forgot-password" element={<ForgotPasswordScreen />}></Route>
+        <Route path="reset-password" element={<ResetPasswordScreen />}></Route>
+      </Route>
+
+      <Route path="doctor">
+      <Route path="register" element={<DoctorRegisterScreen />}></Route>
+      </Route>
+
     </Route>
   )
-)
+) 
 createRoot(document.getElementById('root')!).render(
   <Provider store={store}>
     <StrictMode>
