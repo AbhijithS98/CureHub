@@ -14,6 +14,11 @@ class UserRepository {
             return yield User.findOne({ email });
         });
     }
+    findUserByPwResetToken(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield User.findOne({ pwResetToken: token, pwTokenExpiresAt: { $gt: new Date() } });
+        });
+    }
     findUserByEmailAndOtp(email, otp) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield User.findOne({ email, 'otp.code': otp });
@@ -28,6 +33,24 @@ class UserRepository {
     activateUser(email) {
         return __awaiter(this, void 0, void 0, function* () {
             yield User.updateOne({ email }, { isVerified: true, 'otp.code': null, 'otp.expiresAt': null });
+        });
+    }
+    updateOtp(email, newOtp) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield User.updateOne({ email }, { otp: newOtp });
+        });
+    }
+    updateResettoken(email, token, expiry) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield User.updateOne({ email }, { pwResetToken: token, pwTokenExpiresAt: expiry });
+        });
+    }
+    updatePassword(token, newPassword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield User.updateOne({ pwResetToken: token }, { password: newPassword,
+                pwResetToken: null,
+                pwTokenExpiresAt: null,
+            });
         });
     }
 }

@@ -40,6 +40,14 @@ const userSchema = new Schema({
         code: { type: Number, default: null },
         expiresAt: { type: Date, default: null },
     },
+    pwResetToken: {
+        type: String,
+        default: null
+    },
+    pwTokenExpiresAt: {
+        type: Date,
+        default: null
+    }
 }, {
     timestamps: true,
 });

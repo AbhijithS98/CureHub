@@ -5,6 +5,10 @@ class UserRepository {
     return await User.findOne({ email });
   }
  
+  async findUserByPwResetToken(token: string): Promise<IUser | null> {
+    return await User.findOne({ pwResetToken:token, pwTokenExpiresAt: { $gt: new Date() } });
+  }
+
   async findUserByEmailAndOtp(email: string, otp:number): Promise<IUser | null> {
     return await User.findOne({ email, 'otp.code': otp });
   }
@@ -19,7 +23,30 @@ class UserRepository {
       { email }, 
       { isVerified: true,'otp.code': null, 'otp.expiresAt': null });
   }
+ 
+  async updateOtp(email: string, newOtp:{code:number,expiresAt:Date}): Promise<void> {
+    await User.updateOne(
+      { email },
+      { otp: newOtp}
+    )
+  }
 
+  async updateResettoken(email: string, token:string, expiry:Date): Promise<void> {
+    await User.updateOne(
+      { email },
+      { pwResetToken: token, pwTokenExpiresAt: expiry}
+    )
+  }
+  
+  async updatePassword(token: string, newPassword: string): Promise<void> {
+    await User.updateOne(
+      { pwResetToken:token },
+      { password: newPassword,
+        pwResetToken: null,
+        pwTokenExpiresAt: null,
+      }
+    )
+  }
 }
 
 export default new UserRepository();

@@ -22,6 +22,23 @@ const RegisterScreen: React.FC = () => {
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const nameRegex = /^[a-zA-Z\s]{3,}$/;
+    if (!nameRegex.test(name)) {
+      toast.error("Please enter a valid name");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
       return;
@@ -30,7 +47,7 @@ const RegisterScreen: React.FC = () => {
     try {
       await register({name,email,phone,password}).unwrap();
       toast.success("OTP has sent to your email!");
-      navigate("/otp", { state: { email } })
+      navigate("/user/otp", { state: { email } })
 
     } catch (err: any) {
       console.error(err);
@@ -40,7 +57,7 @@ const RegisterScreen: React.FC = () => {
 
   return (
     <FormContainer>
-        <h1>Register</h1>
+        <h1>Register As Patient</h1>
       <Form onSubmit={submitHandler}>
         <Form.Group className="my-2" controlId="name">
           <Form.Label>Enter Name</Form.Label>
@@ -49,6 +66,7 @@ const RegisterScreen: React.FC = () => {
             placeholder="Enter Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            required
           ></Form.Control>
         </Form.Group>
 
@@ -59,6 +77,7 @@ const RegisterScreen: React.FC = () => {
             placeholder="Enter Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           ></Form.Control>
         </Form.Group>
 
@@ -69,6 +88,7 @@ const RegisterScreen: React.FC = () => {
             placeholder="Enter Mobile"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+            required
           ></Form.Control>
         </Form.Group>
 
@@ -79,6 +99,7 @@ const RegisterScreen: React.FC = () => {
             placeholder="Enter Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           ></Form.Control>
         </Form.Group>
 
@@ -89,6 +110,7 @@ const RegisterScreen: React.FC = () => {
             placeholder="Confirm Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            required
           ></Form.Control>
         </Form.Group>
         
@@ -97,7 +119,7 @@ const RegisterScreen: React.FC = () => {
           Register
         </Button>
         
-      </Form> 
+      </Form>   
     </FormContainer>
   )
 }

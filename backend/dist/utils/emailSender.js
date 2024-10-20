@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 dotenv.config();
-const sendEmail = (_a) => __awaiter(void 0, [_a], void 0, function* ({ to, subject, text }) {
+const sendEmail = (_a) => __awaiter(void 0, [_a], void 0, function* ({ to, subject, text, html }) {
     try {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -19,12 +19,7 @@ const sendEmail = (_a) => __awaiter(void 0, [_a], void 0, function* ({ to, subje
                 pass: process.env.NODEMAILER_PASS,
             },
         });
-        const mailOptions = {
-            from: 'abhijithSb745@gmail.com',
-            to,
-            subject,
-            text,
-        };
+        const mailOptions = Object.assign(Object.assign({ from: 'abhijithSb745@gmail.com', to }, (text && { text })), (html && { html }));
         yield transporter.sendMail(mailOptions);
         console.log('email sent successfully');
     }

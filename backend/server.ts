@@ -3,6 +3,7 @@ import cors from 'cors';
 import connectDB from './config/db.js'
 import dotenv from 'dotenv'
 import userRoutes from './routes/userRoutes.js'
+import errorHandler from './middleware/errorHandler.js';
 
 dotenv.config();
 
@@ -21,6 +22,8 @@ app.use(express.json());
 app.use(express.urlencoded( { extended: true } ))
 
 app.use('/api/users',userRoutes)
+app.use(errorHandler);
+
 app.get('/', (req: Request, res: Response) => {
   res.send('Server Ready')
 });

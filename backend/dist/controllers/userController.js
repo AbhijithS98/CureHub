@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import userService from "../services/userService.js";
 class UserController {
-    register(req, res) {
+    register(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { name, email, phone, password } = req.body;
@@ -20,7 +20,8 @@ class UserController {
                 });
             }
             catch (error) {
-                res.status(400).json({ message: error.message });
+                console.error("Registering user error: ", error.message);
+                next(error);
             }
         });
     }
@@ -28,7 +29,7 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { email, otp } = req.body;
-                const isValid = yield userService.verifyOtp({ email, otp });
+                const isValid = yield userService.verifyOtp(email, otp);
                 if (isValid) {
                     yield userService.activateUser(email);
                     res.status(200).json({ message: "OTP verified successfully, user activated." });
@@ -39,6 +40,77 @@ class UserController {
             }
             catch (error) {
                 res.status(500).json({ message: error.message });
+            }
+        });
+    }
+    login(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { email, password } = req.body;
+            try {
+                const result = yield userService.authenticateUser(email, password, res);
+                res.status(200).json({
+                    _id: result._id,
+                    name: result.name,
+                    email: result.email,
+                    phone: result.phone,
+                    isVerified: result.isVerified,
+                    isBlocked: result.isBlocked,
+                });
+            }
+            catch (error) {
+                console.error('error logging in user:', error.message);
+                next(error);
+            }
+        });
+    }
+    logout(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield userService.clearCookie(req, res);
+                res.status(200).json({ message: 'Logout successful' });
+            }
+            catch (error) {
+                console.error('Logout error:', error);
+                next(error);
+            }
+        });
+    }
+    resendOtp(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { email } = req.body;
+                yield userService.updateOtp(email);
+                res.status(200).json({ message: 'OTP resend successful' });
+            }
+            catch (error) {
+                console.error('resend OTP error:', error);
+                next(error);
+            }
+        });
+    }
+    sendPassResetLink(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { email } = req.body;
+                yield userService.sendResetLink(email);
+                res.status(200).json({ message: 'Reset link send successful' });
+            }
+            catch (error) {
+                console.error('send reset link error:', error.message);
+                next(error);
+            }
+        });
+    }
+    resetPassword(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { token, newPassword } = req.body;
+                yield userService.resetPass(token, newPassword);
+                res.status(200).json({ message: "Password reset successful, please Login!" });
+            }
+            catch (error) {
+                console.error("Reset password error: ", error.message);
+                next(error);
             }
         });
     }
