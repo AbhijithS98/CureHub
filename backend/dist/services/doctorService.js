@@ -10,6 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import doctorRepository from "../repositories/doctorRepository.js";
 import sendEmail from "../utils/emailSender.js";
 import bcrypt from "bcryptjs";
+import crypto from 'crypto';
+import generateDoctorToken from "../utils/generateDoctorJwt.js";
 class DoctorService {
     registerDoctor(req) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -75,6 +77,82 @@ class DoctorService {
                 console.error('Error updating OTP:', error.message || error);
                 throw new Error(error.message || 'Failed to update OTP.');
             }
+        });
+    }
+    authenticateDoctor(email, password, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const doctor = yield doctorRepository.findDoctorByEmail(email);
+            if (!doctor) {
+                const error = Error('Doctor not found');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            const isPasswordMatch = yield bcrypt.compare(password, doctor.password);
+            if (!isPasswordMatch) {
+                const error = Error('Invalid credentials');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            if (!doctor.isVerified) {
+                const error = Error('Please verify your email before logging in.');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            if (doctor.isBlocked) {
+                const error = Error('Your account has been blocked. Please contact support.');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            generateDoctorToken(res, doctor._id);
+            return doctor;
+        });
+    }
+    clearCookie(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                res.cookie('doctorJwt', '', {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV !== 'development',
+                    sameSite: 'strict',
+                    expires: new Date(0),
+                });
+            }
+            catch (error) {
+                throw new Error('Error clearing cookies');
+            }
+        });
+    }
+    sendResetLink(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const doctor = yield doctorRepository.findDoctorByEmail(email);
+            if (!doctor) {
+                const error = Error('doctor not found');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            const resetToken = crypto.randomBytes(32).toString('hex');
+            const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000);
+            yield doctorRepository.updateResettoken(doctor.email, resetToken, tokenExpiry);
+            const resetLink = `${process.env.FRONTEND_URL}/doctor/reset-password?token=${resetToken}`;
+            yield sendEmail({
+                to: doctor.email,
+                subject: 'Password Reset',
+                html: `<p>You requested a password reset. Click the link below to reset your password:</p>
+             <a href="${resetLink}">Reset Password</a>`
+            });
+        });
+    }
+    resetPass(token, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const doctor = yield doctorRepository.findDoctorByPwResetToken(token);
+            if (!doctor) {
+                const error = Error('Invalid or expired token');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            const salt = yield bcrypt.genSalt(10);
+            const hashedPassword = yield bcrypt.hash(password, salt);
+            yield doctorRepository.updatePassword(token, hashedPassword);
         });
     }
 }

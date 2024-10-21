@@ -50,6 +50,76 @@ class DoctorController {
       next(error)
     }
   }
+
+
+  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    const { email, password } = req.body;
+    try {
+
+      const result = await doctorService.authenticateDoctor(email,password,res)
+      res.status(200).json({ 
+        _id:result._id,
+        name: result.name,
+        email: result.email,
+        specialization: result.specialization,
+        medicalLicenseNumber: result.medicalLicenseNumber,
+        experience: result.experience,
+        phone: result.phone,
+        isVerified: result.isVerified,
+        isApproved: result.isApproved,
+        isBlocked: result.isBlocked,
+      });
+      
+
+    } catch (error: any) {
+
+      console.error('error logging in doctor:',error.message);
+      next(error)
+    }
+  }
+
+
+  async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
+   
+    try {
+      await doctorService.clearCookie(req,res);
+      res.status(200).json({ message: 'Logout successful' });
+
+    } catch (error: any) {
+
+      console.error('Logout error:', error);
+      next(error)
+    }
+  }
+
+
+  async sendPassResetLink(req: Request, res: Response, next: NextFunction): Promise<void> {
+   
+    try {
+      const {email} = req.body;
+      await doctorService.sendResetLink(email);
+      res.status(200).json({ message: 'Reset link send successful' });
+
+    } catch (error: any) {
+      console.error('doctor send reset link error:', error.message);
+      next(error)
+    }
+  }
+
+
+  async resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+  
+    try {
+      const {token,newPassword} = req.body;
+      await doctorService.resetPass(token,newPassword)
+      res.status(200).json({ message: "Password reset successful, please Login!" });
+
+    } catch (error: any) {
+      console.error("Doctor Reset password error: ", error.message);
+      next(error)
+    }
+  }
 }
 
 export default new DoctorController();

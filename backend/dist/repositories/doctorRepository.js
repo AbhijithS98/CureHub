@@ -19,6 +19,11 @@ class DoctorRepository {
             return yield Doctor.findOne({ email, 'otp.code': otp });
         });
     }
+    findDoctorByPwResetToken(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Doctor.findOne({ pwResetToken: token, pwTokenExpiresAt: { $gt: new Date() } });
+        });
+    }
     createDoctor(doctorData) {
         return __awaiter(this, void 0, void 0, function* () {
             const doctor = new Doctor(doctorData);
@@ -33,6 +38,19 @@ class DoctorRepository {
     updateOtp(email, newOtp) {
         return __awaiter(this, void 0, void 0, function* () {
             yield Doctor.updateOne({ email }, { otp: newOtp });
+        });
+    }
+    updateResettoken(email, token, expiry) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Doctor.updateOne({ email }, { pwResetToken: token, pwTokenExpiresAt: expiry });
+        });
+    }
+    updatePassword(token, newPassword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Doctor.updateOne({ pwResetToken: token }, { password: newPassword,
+                pwResetToken: null,
+                pwTokenExpiresAt: null,
+            });
         });
     }
 }
