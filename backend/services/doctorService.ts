@@ -2,7 +2,9 @@ import { IDoctor } from "../models/doctor.js";
 import doctorRepository from "../repositories/doctorRepository.js";
 import sendEmail from "../utils/emailSender.js";
 import bcrypt from "bcryptjs";
+import crypto from 'crypto';
 import { Request, Response } from "express";
+import generateDoctorToken from "../utils/generateDoctorJwt.js";
 
 class DoctorService {
 
@@ -87,6 +89,96 @@ class DoctorService {
       throw new Error(error.message ||'Failed to update OTP.');
     }
   }
+
+
+  async authenticateDoctor(email: string, password: string, res: Response): Promise<IDoctor> {
+
+    const doctor = await doctorRepository.findDoctorByEmail(email);
+    if (!doctor) {
+      const error = Error('Doctor not found');
+      error.name = 'ValidationError'
+      throw error
+    }
+
+    const isPasswordMatch = await bcrypt.compare(password, doctor.password);
+    if (!isPasswordMatch) {
+      const error =  Error('Invalid credentials');
+      error.name = 'ValidationError'
+      throw error
+    }
+
+    if (!doctor.isVerified) {
+      const error =  Error('Please verify your email before logging in.');
+      error.name = 'ValidationError'
+      throw error
+    }
+
+    if (doctor.isBlocked) {
+      const error =  Error('Your account has been blocked. Please contact support.');
+      error.name = 'ValidationError'
+      throw error
+    }
+
+    generateDoctorToken(res,doctor._id as string)
+    return doctor;
+  }
+
+
+  async clearCookie(req: Request, res: Response): Promise<void> {
+   
+    try {
+      res.cookie('doctorJwt', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development',
+        sameSite: 'strict',
+        expires: new Date(0),  
+      });
+
+    } catch (error: any) {
+      throw new Error('Error clearing cookies');
+    }
+  }
+
+
+  async sendResetLink(email: string): Promise<void> {
+
+    const doctor = await doctorRepository.findDoctorByEmail(email)
+    if (!doctor) {
+      const error =  Error('doctor not found');
+      error.name = 'ValidationError'
+      throw error;
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000)
+    
+    await doctorRepository.updateResettoken(doctor.email, resetToken, tokenExpiry)
+    const resetLink = `${process.env.FRONTEND_URL}/doctor/reset-password?token=${resetToken}`;
+
+    await sendEmail({
+      to: doctor.email,
+      subject: 'Password Reset',
+      html: `<p>You requested a password reset. Click the link below to reset your password:</p>
+             <a href="${resetLink}">Reset Password</a>`
+    });
+}
+
+
+async resetPass(token:string, password:string): Promise<void> {
+   
+  const doctor = await doctorRepository.findDoctorByPwResetToken(token);
+
+  if(!doctor){
+    const error = Error('Invalid or expired token');
+    error.name = 'ValidationError';  
+    throw error;
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  await doctorRepository.updatePassword(token,hashedPassword);
+}
 }
 
 export default new DoctorService();

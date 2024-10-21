@@ -10,6 +10,11 @@ class DoctorRepository {
     return await Doctor.findOne({ email, 'otp.code': otp });
   }
 
+  async findDoctorByPwResetToken(token: string): Promise<IDoctor | null> {
+    return await Doctor.findOne({ pwResetToken:token, pwTokenExpiresAt: { $gt: new Date() } });
+  }
+
+
   async createDoctor(doctorData: Partial<IDoctor>): Promise<IDoctor> {
     const doctor = new Doctor(doctorData);
     return await doctor.save();
@@ -25,6 +30,25 @@ class DoctorRepository {
     await Doctor.updateOne(
       { email },
       { otp: newOtp}
+    )
+  }
+
+
+  async updateResettoken(email: string, token:string, expiry:Date): Promise<void> {
+    await Doctor.updateOne(
+      { email },
+      { pwResetToken: token, pwTokenExpiresAt: expiry}
+    )
+  }
+
+
+  async updatePassword(token: string, newPassword: string): Promise<void> {
+    await Doctor.updateOne(
+      { pwResetToken:token },
+      { password: newPassword,
+        pwResetToken: null,
+        pwTokenExpiresAt: null,
+      }
     )
   }
 }

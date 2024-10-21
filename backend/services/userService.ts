@@ -116,6 +116,7 @@ class UserService {
     generateUserToken(res,User._id as string)
     return User;
   }
+  
 
 
   async clearCookie(req: Request, res: Response): Promise<void> {
