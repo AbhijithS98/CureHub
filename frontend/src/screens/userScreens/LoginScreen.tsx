@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import FormContainer from '../../components/userComponents/FormContainer';
+import FormContainer from '../../components/FormContainer';
 import Loader from '../../components/userComponents/Loader';
 import { Form, Button, Col, Row } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';

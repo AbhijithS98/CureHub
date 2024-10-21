@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import FormContainer from "../../components/userComponents/FormContainer";
+import FormContainer from "../../components/FormContainer";
 import { Form, Button } from "react-bootstrap";
 import { useResetPasswordMutation } from "../../slices/userSlices/userApiSlice";
 

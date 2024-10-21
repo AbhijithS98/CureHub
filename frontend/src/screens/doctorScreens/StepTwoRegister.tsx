@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { toast } from 'react-toastify';
-import FormContainer from "../../components/userComponents/FormContainer";
+import FormContainer from "../../components/FormContainer";
 import { Form, Button } from "react-bootstrap";
 
 interface StepTwoProps {

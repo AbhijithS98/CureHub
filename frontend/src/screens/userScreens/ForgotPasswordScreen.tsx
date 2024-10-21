@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import FormContainer from '../../components/userComponents/FormContainer';
+import FormContainer from '../../components/FormContainer';
 import { usePassResetLinkMutation } from '../../slices/userSlices/userApiSlice';
 
 const ForgotPasswordScreen: React.FC = () => {

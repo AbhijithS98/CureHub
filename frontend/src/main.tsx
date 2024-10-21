@@ -19,6 +19,8 @@ import ForgotPasswordScreen from './screens/userScreens/ForgotPasswordScreen';
 import ResetPasswordScreen from './screens/userScreens/ResetPasswordScreen';
 {/* Doctor screens imports */}
 import DoctorRegisterScreen from './screens/doctorScreens/RegisterScreen';
+import DoctorOtpScreen from './screens/doctorScreens/OtpScreen';
+import ConfirmationScreen from './screens/doctorScreens/ConfirmationScreen';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -34,8 +36,11 @@ const router = createBrowserRouter(
         <Route path="reset-password" element={<ResetPasswordScreen />}></Route>
       </Route>
 
+      {/* Doctor Routes */}
       <Route path="doctor">
-      <Route path="register" element={<DoctorRegisterScreen />}></Route>
+        <Route path="register" element={<DoctorRegisterScreen />}></Route>
+        <Route path="otp" element={<DoctorOtpScreen />}></Route>
+        <Route path="reg-confirm" element={<ConfirmationScreen />}></Route>
       </Route>
 
     </Route>

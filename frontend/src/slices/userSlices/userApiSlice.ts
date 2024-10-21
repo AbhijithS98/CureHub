@@ -62,5 +62,6 @@ export const {
   useLogoutMutation,
   useResendOtpMutation,
   usePassResetLinkMutation,
-  useResetPasswordMutation
+  useResetPasswordMutation,
+
 } = userApiSlice;
