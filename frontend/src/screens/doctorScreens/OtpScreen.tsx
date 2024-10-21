@@ -4,7 +4,7 @@ import FormContainer from '../../components/FormContainer';
 import Loader from '../../components/userComponents/Loader';
 import { Form,Button } from 'react-bootstrap';
 import { toast } from "react-toastify";
-import { useVerifyOtpMutation, useResendOtpMutation } from '../../slices/userSlices/userApiSlice';
+import { useDoctorVerifyOtpMutation, useDoctorResendOtpMutation } from '../../slices/doctorSlices/doctorApiSlice';
 
 
 const OtpScreen: React.FC = () => {
@@ -16,8 +16,8 @@ const OtpScreen: React.FC = () => {
   const [canResend, setCanResend] = useState(false);
 
   const { email } = location.state || {};
-  const [verifyOtp, {isLoading:verifyLoading}] = useVerifyOtpMutation();
-  const [resendOtp, {isLoading:resendLoading}] = useResendOtpMutation();
+  const [verifyOtp, {isLoading:verifyLoading}] = useDoctorVerifyOtpMutation();
+  const [resendOtp, {isLoading:resendLoading}] = useDoctorResendOtpMutation();
 
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOtp(e.target.value);
@@ -29,9 +29,9 @@ const OtpScreen: React.FC = () => {
       if (!otp) {
           toast.error('Please Enter OTP');
       } else {
-          await verifyOtp({ otp, email }).unwrap(); 
-          toast.success('OTP Verified, Please Login');
-          navigate('/user/login');
+          await verifyOtp({ otp, email }).unwrap();
+          toast.success('OTP Verified');
+          navigate('/doctor/reg-confirm');
       }
     } catch (error:any) {
       toast.error(error.data.message || 'OTP Verification failed');
@@ -39,7 +39,7 @@ const OtpScreen: React.FC = () => {
   };
 
   const handleResendOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault();  
     try{
       await resendOtp({email}).unwrap();
       toast.success('OTP Resent Successfully');

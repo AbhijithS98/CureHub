@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import FormContainer from "../../components/userComponents/FormContainer";
+import FormContainer from "../../components/FormContainer";
 import Loader from "../../components/userComponents/Loader";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import { useRegisterMutation } from "../../slices/userSlices/userApiSlice";
