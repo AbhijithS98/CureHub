@@ -7,6 +7,7 @@ interface UserInfo {
   phone: string;
   isVerified: boolean;
   isBlocked: boolean;
+  token: string;
 }
 
 interface AuthState {

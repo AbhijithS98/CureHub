@@ -26,6 +26,24 @@ class AdminRepository {
             return yield Doctor.findOne({ email });
         });
     }
+    findAdminByPwResetToken(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Admin.findOne({ pwResetToken: token, pwTokenExpiresAt: { $gt: new Date() } });
+        });
+    }
+    updateResettoken(email, token, expiry) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Admin.updateOne({ email }, { pwResetToken: token, pwTokenExpiresAt: expiry });
+        });
+    }
+    updatePassword(token, newPassword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Admin.updateOne({ pwResetToken: token }, { password: newPassword,
+                pwResetToken: null,
+                pwTokenExpiresAt: null,
+            });
+        });
+    }
     approveDoc(email) {
         return __awaiter(this, void 0, void 0, function* () {
             yield Doctor.updateOne({ email }, { isApproved: true });

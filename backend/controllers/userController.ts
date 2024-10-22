@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import userService from "../services/userService.js";
+import generateUserToken from "../utils/generateUserJwt.js";
 
 class UserController {
 
@@ -45,6 +46,9 @@ class UserController {
     try{
 
       const result = await userService.authenticateUser(email,password,res)
+
+      const token = generateUserToken(res,result._id as string)
+
       res.status(200).json({ 
         _id:result._id,
         name: result.name,
@@ -52,6 +56,7 @@ class UserController {
         phone: result.phone,
         isVerified: result.isVerified,
         isBlocked: result.isBlocked,
+        token,
       });
 
     }catch(error:any){

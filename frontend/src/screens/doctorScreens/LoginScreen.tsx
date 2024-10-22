@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Col, Row, Container, Card } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,6 +16,12 @@ const DoctorLoginScreen: React.FC = () => {
   const dispatch = useDispatch();
   const { doctorInfo } = useSelector((state: RootState) => state.doctorAuth);
   const [login, { isLoading }] = useDoctorLoginMutation();
+
+  useEffect(() => {
+    if (doctorInfo) {
+      navigate("/doctor/dashboard");
+    }
+  }, [navigate, doctorInfo]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

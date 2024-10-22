@@ -12,7 +12,6 @@ import bcrypt from "bcryptjs";
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import sendEmail from "../utils/emailSender.js";
-import generateUserToken from "../utils/generateUserJwt.js";
 dotenv.config();
 class UserService {
     registerUser(userData) {
@@ -96,7 +95,6 @@ class UserService {
                 error.name = 'ValidationError';
                 throw error;
             }
-            generateUserToken(res, User._id);
             return User;
         });
     }

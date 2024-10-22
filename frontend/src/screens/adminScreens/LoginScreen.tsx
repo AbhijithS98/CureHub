@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useDispatch,useSelector } from 'react-redux';
 import { toast } from "react-toastify";
 import { useAdminLoginMutation } from "../../slices/adminSlices/adminApiSlice";
 import Loader from "../../components/userComponents/Loader";
 import { setAdminCredentials } from "../../slices/adminSlices/adminAuthSlice";
 import { RootState } from "../../store";
-import { log } from "console";
+
 
 const AdminLoginScreen: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -15,7 +15,14 @@ const AdminLoginScreen: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [login,{isLoading}] = useAdminLoginMutation();
+
   const {adminInfo} = useSelector((state: RootState) => state.adminAuth)
+
+  useEffect(() => {
+    if (adminInfo) {
+      navigate("/admin/dashboard");
+    }
+  }, [navigate, adminInfo]);
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,7 +31,7 @@ const AdminLoginScreen: React.FC = () => {
 
         const res = await login({email,password}).unwrap();
         toast.success("Login successful!");
-        dispatch(setAdminCredentials({ id: res.adminId }));
+        dispatch(setAdminCredentials({ id: res.adminId, token: res.token }));
         navigate("/admin/dashboard");
 
       } catch(err:any){
@@ -75,6 +82,12 @@ const AdminLoginScreen: React.FC = () => {
                   Sign In
                 </Button>
               </div>
+              <Row className="py-3 text-center">
+              <Col>
+                <Link to="/admin/forgot-password">Forgot Password?</Link>
+              </Col>
+              </Row>
+
             </Form>
           </Card>
         </Col>

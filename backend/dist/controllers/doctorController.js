@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import doctorService from "../services/doctorService.js";
+import generateDoctorToken from "../utils/generateDoctorJwt.js";
 class DoctorController {
     register(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -60,6 +61,7 @@ class DoctorController {
             const { email, password } = req.body;
             try {
                 const result = yield doctorService.authenticateDoctor(email, password, res);
+                const token = generateDoctorToken(res, result._id);
                 res.status(200).json({
                     _id: result._id,
                     name: result.name,
@@ -71,6 +73,7 @@ class DoctorController {
                     isVerified: result.isVerified,
                     isApproved: result.isApproved,
                     isBlocked: result.isBlocked,
+                    token,
                 });
             }
             catch (error) {

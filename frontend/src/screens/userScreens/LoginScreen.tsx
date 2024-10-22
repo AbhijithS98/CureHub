@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import FormContainer from '../../components/FormContainer';
 import Loader from '../../components/userComponents/Loader';
 import { Form, Button, Col, Row } from 'react-bootstrap';
@@ -18,6 +18,12 @@ const LoginScreen: React.FC = () => {
   const { userInfo } = useSelector((state : RootState) => state.userAuth);
   const [login, {isLoading:loginLoading}] = useLoginMutation();
   const [resendOtp, {isLoading:resendLoading}] = useResendOtpMutation();
+  
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/");
+    }
+  }, [navigate, userInfo]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

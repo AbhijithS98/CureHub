@@ -11,7 +11,6 @@ import doctorRepository from "../repositories/doctorRepository.js";
 import sendEmail from "../utils/emailSender.js";
 import bcrypt from "bcryptjs";
 import crypto from 'crypto';
-import generateDoctorToken from "../utils/generateDoctorJwt.js";
 class DoctorService {
     registerDoctor(req) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -98,12 +97,16 @@ class DoctorService {
                 error.name = 'ValidationError';
                 throw error;
             }
+            if (!doctor.isApproved) {
+                const error = Error('You are not Approved by the admin yet!');
+                error.name = 'ValidationError';
+                throw error;
+            }
             if (doctor.isBlocked) {
                 const error = Error('Your account has been blocked. Please contact support.');
                 error.name = 'ValidationError';
                 throw error;
             }
-            generateDoctorToken(res, doctor._id);
             return doctor;
         });
     }

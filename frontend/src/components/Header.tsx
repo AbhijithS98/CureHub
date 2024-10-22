@@ -47,9 +47,9 @@ function Header() {
               {userInfo? (
                 <>
                   <Nav className="ml-auto">
-                    <LinkContainer to="/profile">
+                    {/* <LinkContainer to="/profile">
                       <Nav.Link>Profile</Nav.Link>
-                    </LinkContainer>
+                    </LinkContainer> */}
                     <Nav.Link onClick={handleLogout}>
                       <FaSignOutAlt />
                       Logout</Nav.Link>

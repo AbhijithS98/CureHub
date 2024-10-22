@@ -2,7 +2,7 @@ import  jwt  from "jsonwebtoken";
 import { Response } from "express";
 
 
-const generateDoctorToken = (res: Response, doctorId: string): void =>{
+const generateDoctorToken = (res: Response, doctorId: string): string =>{
   const token = jwt.sign({ doctorId }, process.env.JWT_SECRET_DOCTOR as string, {
     expiresIn: '30d',
   });
@@ -13,6 +13,7 @@ const generateDoctorToken = (res: Response, doctorId: string): void =>{
     sameSite: 'strict',
     maxAge: 30 * 24 * 60 * 60 * 1000,  
   });
+  return token;
 }
 
 export default generateDoctorToken; 
