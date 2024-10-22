@@ -8,15 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import adminService from "../services/adminService.js";
+import generateAdminToken from "../utils/generateAdminJwt.js";
 class AdminController {
     login(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { email, password } = req.body;
                 const admin = yield adminService.authenticateAdmin(email, password, res);
+                const token = generateAdminToken(res, admin._id);
                 res.status(200).json({
                     message: "Admin Login success!",
                     adminId: admin._id,
+                    token,
                 });
             }
             catch (error) {
@@ -32,7 +35,33 @@ class AdminController {
                 res.status(200).json({ message: 'Logout successful' });
             }
             catch (error) {
-                console.error('Logout error:', error);
+                console.error('admin Logout error:', error);
+                next(error);
+            }
+        });
+    }
+    sendPassResetLink(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { email } = req.body;
+                yield adminService.sendResetLink(email);
+                res.status(200).json({ message: 'Reset link send successful' });
+            }
+            catch (error) {
+                console.error('admin send reset link error:', error.message);
+                next(error);
+            }
+        });
+    }
+    resetPassword(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { token, newPassword } = req.body;
+                yield adminService.resetPass(token, newPassword);
+                res.status(200).json({ message: "Password reset successful, please Login!" });
+            }
+            catch (error) {
+                console.error("admin Reset password error: ", error.message);
                 next(error);
             }
         });

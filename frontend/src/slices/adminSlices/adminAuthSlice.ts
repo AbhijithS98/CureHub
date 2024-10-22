@@ -2,6 +2,7 @@ import {  createSlice } from '@reduxjs/toolkit'
 
 interface AdminInfo {
   adminId: string;
+  token: string;
 }
 
 interface AdminAuthState {

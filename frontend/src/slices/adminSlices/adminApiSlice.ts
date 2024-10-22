@@ -38,6 +38,20 @@ export const adminApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    adminPassResetLink: builder.mutation({
+      query: (data) => ({
+        url: `${ADMIN_URL}/pass-reset-link`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    adminResetPassword: builder.mutation({
+      query: (data) => ({
+        url: `${ADMIN_URL}/reset-password`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   })
 })
 
@@ -47,6 +61,8 @@ export const {
   useAdminListDoctorsQuery,
   useAdminApproveDoctorMutation,
   useAdminRejectDoctorMutation,
+  useAdminPassResetLinkMutation,
+  useAdminResetPasswordMutation,
   
 } = adminApiSlice;
 

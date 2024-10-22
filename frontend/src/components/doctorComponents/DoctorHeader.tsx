@@ -47,9 +47,9 @@ function DoctorHeader() {
              {doctorInfo? (
               <>
               <Nav className="ml-auto">
-                <LinkContainer to="/doctor/profile">
+                {/* <LinkContainer to="/doctor/profile">
                   <Nav.Link>Profile</Nav.Link>
-                </LinkContainer>
+                </LinkContainer> */}
                 <Nav.Link onClick={handleLogout}>
                   <FaSignOutAlt />
                   Logout

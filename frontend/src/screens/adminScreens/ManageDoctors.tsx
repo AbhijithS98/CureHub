@@ -60,7 +60,6 @@ const ManageDoctors: React.FC = () => {
               <th>Specialization</th>
               <th>Experience (Years)</th>
               <th>Medical License Number</th>
-              <th>ID Proof</th>
               <th>Email</th>
               <th>Actions</th>
             </tr>
@@ -72,11 +71,6 @@ const ManageDoctors: React.FC = () => {
                 <td>{doctor.specialization}</td>
                 <td>{doctor.experience}</td>
                 <td>{doctor.medicalLicenseNumber}</td>
-                <td>
-                  <a href={doctor.idProof} target="_blank" rel="noopener noreferrer">
-                    View ID Proof
-                  </a>
-                </td>
                 <td>{doctor.email}</td>
                 <td>
                   <Button  

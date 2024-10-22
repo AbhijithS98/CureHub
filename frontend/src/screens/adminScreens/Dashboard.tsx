@@ -17,17 +17,7 @@ const AdminDashboard: React.FC = () => {
             </Card.Body>
           </Card> 
         </Col>
-        <Col md={4}>
-          <Card className="shadow p-3 bg-white rounded">
-            <Card.Body>
-              <Card.Title>Total Patients</Card.Title>
-              <Card.Text>
-                View and manage all registered patients.
-              </Card.Text>
-              <Card.Link href="/admin/patients">Manage Patients</Card.Link>
-            </Card.Body>
-          </Card>
-        </Col>       
+      
       </Row>
     </Container>
   );

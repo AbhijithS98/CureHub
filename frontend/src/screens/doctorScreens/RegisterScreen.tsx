@@ -59,14 +59,52 @@ const RegisterScreen: React.FC = () => {
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); 
 
-    if (!formData.idProof) {
-      toast.error("ID Proof is required");
+    const nameRegex = /^[a-zA-Z\s]{3,}$/;
+    if (!nameRegex.test(formData.name)) {
+      toast.error("Please enter a valid name");
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
+
+    if (!formData.idProof) {
+      toast.error("ID Proof is required");
+      return;
+    }
+
+    if (!formData.phone) {
+      toast.error("phone number is required");
+      return;
+    }
+
+    if (!formData.specialization) {
+      toast.error("Specialization is required");
+      return;
+    }
+
+    if (!formData.medicalLicenseNumber) {
+      toast.error("Medical license number is required");
+      return;
+    }
+
+    if (!formData.experience) {
+      toast.error("Experience is required")
+    }
+   
 
     const data = new FormData();
     data.append("name", formData.name);
@@ -117,8 +155,7 @@ const RegisterScreen: React.FC = () => {
             type="text"
             placeholder="Enter Name"
             value={formData.name}
-            onChange={(e) => handleFormData({ name: e.target.value })}
-            required
+            onChange={(e) => handleFormData({ name: e.target.value })}        
           ></Form.Control>
       </Form.Group>
 
@@ -129,7 +166,6 @@ const RegisterScreen: React.FC = () => {
           placeholder="Enter Email"
           value={formData.email}
           onChange={(e) => handleFormData({ email: e.target.value })}
-          required
         />
       </Form.Group>
      
@@ -140,7 +176,6 @@ const RegisterScreen: React.FC = () => {
           placeholder="Enter Mobile"
           value={formData.phone}
           onChange={(e) => handleFormData({ phone: e.target.value })}
-          required
         />
       </Form.Group>
 
@@ -151,7 +186,6 @@ const RegisterScreen: React.FC = () => {
           placeholder="Enter Specialization"
           value={formData.specialization}
           onChange={(e) => handleFormData({ specialization: e.target.value })}
-          required
         />
       </Form.Group>
 
@@ -162,7 +196,6 @@ const RegisterScreen: React.FC = () => {
           placeholder="Enter Medical License Number"
           value={formData.medicalLicenseNumber}
           onChange={(e) => handleFormData({ medicalLicenseNumber: e.target.value })}
-          required
         />
       </Form.Group>
       
@@ -173,7 +206,6 @@ const RegisterScreen: React.FC = () => {
           placeholder="Enter Experience"
           value={formData.experience}
           onChange={(e) => handleFormData({ experience: e.target.value })}
-          required
         />
       </Form.Group>
 
@@ -182,8 +214,7 @@ const RegisterScreen: React.FC = () => {
         <Form.Control
           type="file"
           name="idProof" 
-          onChange={handleFileChange}
-          required  
+          onChange={handleFileChange}  
         />
       </Form.Group>
 
@@ -194,7 +225,6 @@ const RegisterScreen: React.FC = () => {
           placeholder="Enter Password"
           value={formData.password}
           onChange={(e) => handleFormData({ password: e.target.value })}
-          required
         />
       </Form.Group>
       
@@ -205,7 +235,6 @@ const RegisterScreen: React.FC = () => {
           placeholder="Confirm Password"
           value={formData.confirmPassword}
           onChange={(e) => handleFormData({ confirmPassword: e.target.value })}
-          required
         />
       </Form.Group>
         {isLoading && <Loader />}

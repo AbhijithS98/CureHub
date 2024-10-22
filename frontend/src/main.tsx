@@ -22,13 +22,15 @@ import DoctorRegisterScreen from './screens/doctorScreens/RegisterScreen';
 import DoctorOtpScreen from './screens/doctorScreens/OtpScreen';
 import ConfirmationScreen from './screens/doctorScreens/ConfirmationScreen';
 import DoctorLoginScreen from './screens/doctorScreens/LoginScreen';
+import DoctorDashboard from './screens/doctorScreens/DoctorDashboard';
 import DoctorForgotPassScreen from './screens/doctorScreens/ForgotPassScreen'
 import DoctorResetPassScreen from './screens/doctorScreens/ResetPassScreen';
 {/* Admin screens imports */}
 import AdminLoginScreen from './screens/adminScreens/LoginScreen';
 import AdminDashboard from './screens/adminScreens/Dashboard';
 import ManageDoctors from './screens/adminScreens/ManageDoctors';
-import DoctorDashboard from './screens/doctorScreens/DoctorDashboard';
+import AdminForgotPassScreen from './screens/adminScreens/ForgotPassScreen';
+import AdminResetPassScreen from './screens/adminScreens/ResetPassScreen';
 
 
 const router = createBrowserRouter(
@@ -56,10 +58,13 @@ const router = createBrowserRouter(
         <Route path="reset-password" element={<DoctorResetPassScreen />}></Route>
       </Route>
 
+      {/* Admin Routes */}
       <Route path="admin">
         <Route path="login" element={<AdminLoginScreen />}></Route>
         <Route path="dashboard" element={<AdminDashboard />}></Route>
         <Route path="list-doctors" element={<ManageDoctors />}></Route>
+        <Route path="forgot-password" element={<AdminForgotPassScreen />}></Route>
+        <Route path="reset-password" element={<AdminResetPassScreen />}></Route>
       </Route>
 
     </Route>

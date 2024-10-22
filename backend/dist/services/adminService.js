@@ -8,8 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import adminRepository from "../repositories/adminRepository.js";
+import sendEmail from "../utils/emailSender.js";
 import bcrypt from 'bcryptjs';
-import generateAdminToken from "../utils/generateAdminJwt.js";
+import crypto from 'crypto';
 class AdminService {
     authenticateAdmin(email, password, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -25,7 +26,6 @@ class AdminService {
                 error.name = 'ValidationError';
                 throw error;
             }
-            generateAdminToken(res, admin._id);
             return admin;
         });
     }
@@ -42,6 +42,39 @@ class AdminService {
             catch (error) {
                 throw new Error('Error clearing cookies');
             }
+        });
+    }
+    sendResetLink(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const admin = yield adminRepository.findAdminByEmail(email);
+            if (!admin) {
+                const error = Error('doctor not found');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            const resetToken = crypto.randomBytes(32).toString('hex');
+            const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000);
+            yield adminRepository.updateResettoken(admin.email, resetToken, tokenExpiry);
+            const resetLink = `${process.env.FRONTEND_URL}/admin/reset-password?token=${resetToken}`;
+            yield sendEmail({
+                to: admin.email,
+                subject: 'Password Reset',
+                html: `<p>You requested a password reset. Click the link below to reset your password:</p>
+             <a href="${resetLink}">Reset Password</a>`
+            });
+        });
+    }
+    resetPass(token, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const admin = yield adminRepository.findAdminByPwResetToken(token);
+            if (!admin) {
+                const error = Error('Invalid or expired token');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            const salt = yield bcrypt.genSalt(10);
+            const hashedPassword = yield bcrypt.hash(password, salt);
+            yield adminRepository.updatePassword(token, hashedPassword);
         });
     }
     getDoctors() {

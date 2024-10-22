@@ -113,7 +113,7 @@ class UserService {
       throw error
     }
 
-    generateUserToken(res,User._id as string)
+    
     return User;
   }
   

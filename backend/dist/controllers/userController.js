@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import userService from "../services/userService.js";
+import generateUserToken from "../utils/generateUserJwt.js";
 class UserController {
     register(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -48,6 +49,7 @@ class UserController {
             const { email, password } = req.body;
             try {
                 const result = yield userService.authenticateUser(email, password, res);
+                const token = generateUserToken(res, result._id);
                 res.status(200).json({
                     _id: result._id,
                     name: result.name,
@@ -55,6 +57,7 @@ class UserController {
                     phone: result.phone,
                     isVerified: result.isVerified,
                     isBlocked: result.isBlocked,
+                    token,
                 });
             }
             catch (error) {

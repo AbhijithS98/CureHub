@@ -66,7 +66,7 @@ const RegisterScreen: React.FC = () => {
             placeholder="Enter Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            required
+            
           ></Form.Control>
         </Form.Group>
 
@@ -77,7 +77,7 @@ const RegisterScreen: React.FC = () => {
             placeholder="Enter Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
+            
           ></Form.Control>
         </Form.Group>
 
@@ -88,7 +88,7 @@ const RegisterScreen: React.FC = () => {
             placeholder="Enter Mobile"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            required
+            
           ></Form.Control>
         </Form.Group>
 
@@ -99,7 +99,7 @@ const RegisterScreen: React.FC = () => {
             placeholder="Enter Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
+            
           ></Form.Control>
         </Form.Group>
 
@@ -110,7 +110,7 @@ const RegisterScreen: React.FC = () => {
             placeholder="Confirm Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            required
+            
           ></Form.Control>
         </Form.Group>
         

@@ -2,6 +2,7 @@ import multer, {FileFilterCallback } from "multer";
 import path from "path";
 import { Request } from "express";
 
+
 const storage = multer.diskStorage({
   destination: (req: Request, file: Express.Multer.File, cb) => {
     cb(null, "public/doctorDocuments");
@@ -12,6 +13,7 @@ const storage = multer.diskStorage({
       file.fieldname + "_" + Date.now() + path.extname(file.originalname)
     );
   },
+  
 });
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb:FileFilterCallback) => {

@@ -11,6 +11,7 @@ interface DoctorInfo {
   isVerified: boolean;
   isApproved: boolean;
   isBlocked: boolean;
+  token: string;
 }
 
 interface DoctorAuthState {

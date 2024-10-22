@@ -16,6 +16,28 @@ class AdminRepository{
     return await Doctor.findOne({ email });
   }
 
+  async findAdminByPwResetToken(token: string): Promise<IAdmin | null> {
+    return await Admin.findOne({ pwResetToken:token, pwTokenExpiresAt: { $gt: new Date() } });
+  }
+
+  async updateResettoken(email: string, token:string, expiry:Date): Promise<void> {
+    await Admin.updateOne(
+      { email },
+      { pwResetToken: token, pwTokenExpiresAt: expiry}
+    )
+  }
+
+
+  async updatePassword(token: string, newPassword: string): Promise<void> {
+    await Admin.updateOne(
+      { pwResetToken:token },
+      { password: newPassword,
+        pwResetToken: null,
+        pwTokenExpiresAt: null,
+      }
+    )
+  }
+
   async approveDoc(email: string): Promise<void> {
     await Doctor.updateOne(
       { email }, 
