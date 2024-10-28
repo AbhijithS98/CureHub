@@ -38,7 +38,7 @@ function AdminHeader() {
         <Container>
           <LinkContainer to="/admin/dashboard">
             <Navbar.Brand>
-              <h1>CUREHUB ADMIN</h1>
+              <h2>CUREHUB ADMIN</h2>
             </Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />

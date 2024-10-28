@@ -27,18 +27,26 @@ function DoctorHeader() {
    }
   }
 
-  return (
+  return (  
     <header>
       <Navbar
-        style={{ backgroundColor: "rgb(8, 161, 162)" }}
+        style={{ backgroundColor: "rgb(21, 43, 67)", zIndex: 9999 }}
         variant="dark"
         expand="lg"
         collapseOnSelect
+        className="sticky-top"
       >
         <Container>
           <LinkContainer to="/">
-            <Navbar.Brand>
-              <h1 >CUREHUB</h1>
+          <Navbar.Brand className="d-flex align-items-center">
+            <img
+              src={"http://localhost:5173/src/assets/app-logo.png"}
+              alt="CureHub Logo"
+              width="60"
+              height="60"
+              className="me-2"
+            />
+              <h2 >CUREHUB</h2>
             </Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />

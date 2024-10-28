@@ -1,24 +1,18 @@
 import { ObjectId } from "mongoose";
 
-export interface IDoctor {
+export interface IDoc {
   _id:ObjectId;
   name: string;
   email: string;
   specialization: string;
   medicalLicenseNumber: string;
   experience: number;
-  profileImageName?: string;
   phone: string;
-  dob?: Date;
-  idProof: string;
-  address?: {
-    clinicName: string;
-    district: string;
-    city: string;
-  };
-  otp?: {
-    code: number;
-    expiresAt: Date;
+  gender: string;
+  documents: {
+    medicalLicense: string;
+    medicalDegree: string;
+    idProof:string;
   };
   password: string;
   pwResetToken?: string;

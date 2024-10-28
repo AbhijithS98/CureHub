@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import Admin from "../models/admin.js";
 import Doctor from "../models/doctor.js";
+import User from "../models/user.js";
 class AdminRepository {
     findAdminByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -20,10 +21,19 @@ class AdminRepository {
             return yield Doctor.find({ isApproved: false });
         });
     }
+    getAllUsers() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield User.find({});
+        });
+    }
     findDoctorByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("Ar");
             return yield Doctor.findOne({ email });
+        });
+    }
+    findUserByEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield User.findOne({ email });
         });
     }
     findAdminByPwResetToken(token) {
@@ -52,6 +62,16 @@ class AdminRepository {
     deleteDoctor(email) {
         return __awaiter(this, void 0, void 0, function* () {
             yield Doctor.deleteOne({ email });
+        });
+    }
+    blockUser(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield User.updateOne({ email }, { isBlocked: true });
+        });
+    }
+    unblockUser(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield User.updateOne({ email }, { isBlocked: false });
         });
     }
 }

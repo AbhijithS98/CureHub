@@ -4,7 +4,6 @@ import crypto from 'crypto';
 import dotenv from 'dotenv';
 import { IUser } from "../models/user.js";
 import sendEmail from "../utils/emailSender.js";
-import generateUserToken from "../utils/generateUserJwt.js";
 import { Request, Response } from "express";
 
 dotenv.config(); 

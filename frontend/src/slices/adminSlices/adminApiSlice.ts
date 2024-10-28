@@ -52,6 +52,26 @@ export const adminApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    adminListUsers: builder.query({
+      query: () => ({
+        url: `${ADMIN_URL}/list-users`,
+        method: "GET",
+      }),
+    }),
+    adminBlockUser: builder.mutation({
+      query: (data) => ({
+        url: `${ADMIN_URL}/block-user`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    adminUnblockUser: builder.mutation({
+      query: (data) => ({
+        url: `${ADMIN_URL}/unblock-user`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   })
 })
 
@@ -63,6 +83,9 @@ export const {
   useAdminRejectDoctorMutation,
   useAdminPassResetLinkMutation,
   useAdminResetPasswordMutation,
+  useAdminListUsersQuery,
+  useAdminBlockUserMutation,
+  useAdminUnblockUserMutation,
   
 } = adminApiSlice;
 

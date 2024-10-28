@@ -1,41 +1,25 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Table, Button, Container } from "react-bootstrap";
 import { toast } from "react-toastify";
-import Loader from "../../components/userComponents/Loader";
 import { useAdminListDoctorsQuery } from "../../slices/adminSlices/adminApiSlice";
-import { IDoctor } from '../../../../shared/doctor.interface';
-import { useAdminApproveDoctorMutation, useAdminRejectDoctorMutation } from "../../slices/adminSlices/adminApiSlice";
+import { IDoc } from '../../../../shared/doctor.interface'
 
 
 const ManageDoctors: React.FC = () => {
-  const [doctors, setDoctors] = useState<IDoctor[]>([]);
+  const [doctors, setDoctors] = useState<IDoc[]>([]);
   const { data, error, isLoading, refetch } = useAdminListDoctorsQuery({});
-  const [approve,{isLoading:approveLoading}] = useAdminApproveDoctorMutation();
-  const [reject,{isLoading:rejectLoading}] = useAdminRejectDoctorMutation();
 
-  const handleAction = async (email:string, action: "approve" | "reject") => {
-    console.log('email:',email);
-    
-    try{
-      if (action === "approve") {
-        const res = await approve({email}).unwrap();        
-        toast.success(res.message || 'Doctor approved')
+  const navigate = useNavigate();
 
-      } else if (action === "reject") {
-        const res = await reject({email}).unwrap();
-        toast.success(res.message || 'Doctor rejected')
-      }
+  const navigateToDoctorDetails = (doctor:IDoc) => {
+    navigate("/admin/doctor-details", {state: {doctor}})
+  }
 
-      refetch();
-
-    } catch(error:any){
-      toast.error(error.message || "Action failed")
-    }    
-  };
 
   useEffect(() => {
     console.log("runing useeffect");
-    
+    refetch();
     if (data) {   
       setDoctors(data);
     } else if (error) {
@@ -56,37 +40,31 @@ const ManageDoctors: React.FC = () => {
         <Table striped bordered hover responsive className="table-sm">
           <thead>
             <tr>
+              <th>index</th>
               <th>Name</th>
               <th>Specialization</th>
               <th>Experience (Years)</th>
               <th>Medical License Number</th>
               <th>Email</th>
-              <th>Actions</th>
+              <th>Details</th>
             </tr>
           </thead>
           <tbody>
             {doctors.map((doctor, index) => (
               <tr key={index}>
+                <td>{index+1}</td>
                 <td>{doctor.name}</td>
                 <td>{doctor.specialization}</td>
                 <td>{doctor.experience}</td>
                 <td>{doctor.medicalLicenseNumber}</td>
                 <td>{doctor.email}</td>
                 <td>
-                  <Button  
-                  variant="success" 
-                  className="btn-sm"
-                  onClick={() => handleAction(doctor.email,'approve')}
+                  <Button
+                    variant="info"
+                    className="btn-sm"
+                    onClick={() => navigateToDoctorDetails(doctor)} 
                   >
-                    Approve
-                  </Button>
-                  {' '} 
-                  <Button 
-                  variant="danger"
-                  className="btn-sm"
-                  onClick={() => handleAction(doctor.email,'reject')}
-                  >
-                    Reject
+                    View More
                   </Button>
                 </td>
               </tr>
@@ -94,7 +72,6 @@ const ManageDoctors: React.FC = () => {
           </tbody>
         </Table>    
       )}
-      {approveLoading || rejectLoading && <Loader />}
     </Container>
   );
 };

@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { setDoctorCredentials } from '../../slices/doctorSlices/doctorAuthSlice.js';
 import { useDoctorLoginMutation } from '../../slices/doctorSlices/doctorApiSlice.js';
 import Loader from '../../components/userComponents/Loader';
+import IconLoader from '../../components/Spinner.js';
 
 const DoctorLoginScreen: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -77,7 +78,7 @@ const DoctorLoginScreen: React.FC = () => {
               </Col>
             </Row>
 
-            {isLoading && <Loader />}
+            {isLoading && <IconLoader />}
           </Form>
         </Card.Body>
       </Card>

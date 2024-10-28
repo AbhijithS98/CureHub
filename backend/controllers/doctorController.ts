@@ -2,9 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import doctorService from "../services/doctorService.js";
 import generateDoctorToken from "../utils/generateDoctorJwt.js";
 
+
+
 class DoctorController {
    
-  async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async register(req:any, res: Response, next: NextFunction): Promise<void> {
    console.log('entered doctor register');
    
     try {

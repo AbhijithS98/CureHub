@@ -18,19 +18,37 @@ const doctorSchema = new Schema({
     experience: {
         type: Number,
     },
-    profileImageName: {
-        type: String,
-    },
     phone: {
         type: String,
         required: true,
         unique: true,
     },
+    gender: {
+        type: String,
+        enum: ['male', 'female'],
+        required: true,
+    },
+    documents: {
+        medicalDegree: {
+            type: String,
+            required: true
+        },
+        idProof: {
+            type: String,
+            required: true
+        }
+    },
+    profilePicture: {
+        type: String,
+    },
+    consultationFee: {
+        type: Number,
+    },
+    bio: {
+        type: String,
+    },
     dob: {
         type: Date,
-    },
-    idProof: {
-        type: String,
     },
     address: {
         clinicName: { type: String, default: '' },
@@ -41,6 +59,25 @@ const doctorSchema = new Schema({
         code: { type: Number, default: null },
         expiresAt: { type: Date, default: null },
     },
+    ratingInfo: {
+        average: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 5,
+        },
+        count: {
+            type: Number,
+            default: 0,
+        },
+    },
+    reviews: [
+        {
+            patientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            review: { type: String },
+            createdAt: { type: Date, default: Date.now },
+        },
+    ],
     password: {
         type: String,
         required: true,

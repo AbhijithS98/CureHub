@@ -90,7 +90,6 @@ class AdminService {
     }
     approveDoctor(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("As");
             const doctor = yield adminRepository.findDoctorByEmail(email);
             if (!doctor) {
                 const error = new Error("No doctor found with the email");
@@ -102,7 +101,6 @@ class AdminService {
     }
     rejectDoctor(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("As");
             const doctor = yield adminRepository.findDoctorByEmail(email);
             if (!doctor) {
                 const error = new Error("No doctor found with the email");
@@ -110,6 +108,39 @@ class AdminService {
                 throw error;
             }
             yield adminRepository.deleteDoctor(email);
+        });
+    }
+    getUsers() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const Users = yield adminRepository.getAllUsers();
+            if (!Users) {
+                const error = new Error("No Users found");
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return Users;
+        });
+    }
+    blockUser(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield adminRepository.findUserByEmail(email);
+            if (!user) {
+                const error = new Error("No user found with the email");
+                error.name = 'ValidationError';
+                throw error;
+            }
+            yield adminRepository.blockUser(email);
+        });
+    }
+    unblockUser(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield adminRepository.findUserByEmail(email);
+            if (!user) {
+                const error = new Error("No user found with the email");
+                error.name = 'ValidationError';
+                throw error;
+            }
+            yield adminRepository.unblockUser(email);
         });
     }
 }
