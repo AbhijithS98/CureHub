@@ -52,8 +52,8 @@ const LoginScreen: React.FC = () => {
   };
 
   return (
-      <FormContainer>
-        <h2>Login As Patient</h2>
+      <FormContainer >
+        <h2 className='text-dark'>Login As Patient</h2>
         <Form onSubmit={handleLogin}>
           <Form.Group controlId='email' className='my-3'>
             <Form.Label>Email Address</Form.Label>

@@ -30,15 +30,22 @@ function UserHeader() {
   return (
     <header>
       <Navbar
-        style={{ backgroundColor: "rgb(52, 137, 103)" }}
+        style={{ backgroundColor: "rgb(21, 43, 67)" }}
         variant="dark"
         expand="lg"
         collapseOnSelect
       >
         <Container>
           <LinkContainer to="/">
-            <Navbar.Brand>
-              <h1 >CUREHUB</h1>
+          <Navbar.Brand className="d-flex align-items-center">
+            <img
+              src={"http://localhost:5173/src/assets/app-logo.png"}
+              alt="CureHub Logo"
+              width="60"
+              height="60"
+              className="me-2"
+            />
+              <h2 >CUREHUB</h2>
             </Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />

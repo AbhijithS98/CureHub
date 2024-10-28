@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Row, Col, Button, Image, Card } from 'react-bootstrap';
+import { FaHandHoldingHeart } from 'react-icons/fa';
 
 const ConfirmationScreen: React.FC = () => {
     return (
@@ -8,12 +9,7 @@ const ConfirmationScreen: React.FC = () => {
                 <Col md={8} lg={6} className="mx-auto">
                     <Card className="shadow-lg text-center">
                         <Card.Body className="p-5">
-                            <Image
-                                src="/assets/thank-you.svg" // Add a custom SVG or image path here
-                                alt="Thank You"
-                                className="mb-4"
-                                style={{ width: '100px', height: '100px' }}
-                            />
+                            <FaHandHoldingHeart size={100} color="#3CB371"/>
                             <Card.Title className="mb-4" style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333' }}>
                                 Thank you for registering!
                             </Card.Title>

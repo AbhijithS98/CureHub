@@ -40,3 +40,28 @@
 .read-the-docs {
   color: #888;
 } */
+
+/* Center the loader container */
+.icon-loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: '50px';
+  height: '50px';
+  margin: 'auto';
+}
+
+/* Spinning effect for the FaSpinner icon */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Keyframes for the spinning animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

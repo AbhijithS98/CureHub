@@ -17,6 +17,18 @@ const AdminDashboard: React.FC = () => {
             </Card.Body>
           </Card> 
         </Col>
+
+        <Col md={4}>
+          <Card className="shadow p-3 bg-white rounded">
+            <Card.Body>
+              <Card.Title>Manage Users</Card.Title>
+              <Card.Text>
+                View and manage all users.
+              </Card.Text>
+              <Card.Link href="/admin/list-users">Manage Users</Card.Link>
+            </Card.Body>
+          </Card> 
+        </Col>
       
       </Row>
     </Container>

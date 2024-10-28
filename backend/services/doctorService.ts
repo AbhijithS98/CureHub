@@ -4,11 +4,13 @@ import sendEmail from "../utils/emailSender.js";
 import bcrypt from "bcryptjs";
 import crypto from 'crypto';
 import { Request, Response } from "express";
+import { IRequestWithFiles } from "../types/fileReqInterface.js";
+
 
 
 class DoctorService {
 
-  async registerDoctor(req: Request): Promise<IDoctor> {
+  async registerDoctor(req: any): Promise<IDoctor> {
       
     const formData = req.body;
     const { email, password } = formData;
@@ -20,9 +22,11 @@ class DoctorService {
         throw error;
     }
     
-    const idProofPath = req.file?.path;
-    if (!idProofPath) {
-        const error = Error('ID proof is required');
+    const idProofPath = req.files? req.files['idProof'][0].path.replace(/\\/g, '/').replace(/^public\//, '') : null;
+    const medicalDegreePath = req.files? req.files['medicalDegree'][0].path.replace(/\\/g, '/').replace(/^public\//, '') : null;
+
+    if (!idProofPath || !medicalDegreePath) {
+        const error = Error('All files (ID proof, Medical License, Medical Degree) are required');
         error.name = 'ValidationError';  
         throw error;
     }
@@ -40,7 +44,10 @@ class DoctorService {
         code: otpCode,
         expiresAt: otpExpiresAt
       },
-      idProof: idProofPath,
+      documents: {
+        idProof: idProofPath,
+        medicalDegree: medicalDegreePath,
+      },
       isVerified: false,
     };
 

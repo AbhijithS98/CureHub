@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { IAdmin } from "../models/admin.js";
 import { IDoctor } from "../models/doctor.js";
+import { IUser } from "../models/user.js";
 import adminRepository from "../repositories/adminRepository.js";
 import sendEmail from "../utils/emailSender.js";
 import bcrypt from 'bcryptjs'
@@ -101,7 +102,6 @@ class AdminService{
   }
 
   async approveDoctor(email:string):Promise<void>{
-    console.log("As");
 
     const doctor = await adminRepository.findDoctorByEmail(email);
     if(!doctor){
@@ -116,7 +116,6 @@ class AdminService{
 
 
   async rejectDoctor(email:string):Promise<void>{
-    console.log("As");
 
     const doctor = await adminRepository.findDoctorByEmail(email);
     if(!doctor){
@@ -126,6 +125,45 @@ class AdminService{
     }
 
     await adminRepository.deleteDoctor(email);
+  }
+
+
+  async getUsers(): Promise<IUser[] | null> {
+
+    const Users = await adminRepository.getAllUsers();
+    
+    if(!Users){
+     const error = new Error("No Users found")
+     error.name = 'ValidationError'
+     throw error;
+   }
+   
+    return Users
+   }
+
+
+   async blockUser(email:string):Promise<void>{
+
+    const user = await adminRepository.findUserByEmail(email);
+    if(!user){
+      const error = new Error("No user found with the email")
+      error.name = 'ValidationError'
+      throw error;
+    }
+
+    await adminRepository.blockUser(email); 
+  }
+
+  async unblockUser(email:string):Promise<void>{
+
+    const user = await adminRepository.findUserByEmail(email);
+    if(!user){
+      const error = new Error("No user found with the email")
+      error.name = 'ValidationError'
+      throw error;
+    }
+
+    await adminRepository.unblockUser(email); 
   }
 }
 

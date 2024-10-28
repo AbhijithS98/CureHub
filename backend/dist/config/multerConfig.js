@@ -16,8 +16,11 @@ const fileFilter = (req, file, cb) => {
         cb(new Error("Only images are allowed!"), false);
     }
 };
-export const multerUploadDoctorProfile = multer({
+export const uploadDoctorDocuments = multer({
     storage: storage,
     fileFilter: fileFilter,
-    limits: { fileSize: 2 * 1024 * 1024 },
-});
+    limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
+}).fields([
+    { name: "idProof", maxCount: 1 },
+    { name: "medicalDegree", maxCount: 1 }
+]);

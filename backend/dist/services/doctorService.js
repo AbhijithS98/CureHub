@@ -14,7 +14,6 @@ import crypto from 'crypto';
 class DoctorService {
     registerDoctor(req) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
             const formData = req.body;
             const { email, password } = formData;
             const existingDoctor = yield doctorRepository.findDoctorByEmail(email);
@@ -23,9 +22,10 @@ class DoctorService {
                 error.name = 'ValidationError';
                 throw error;
             }
-            const idProofPath = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
-            if (!idProofPath) {
-                const error = Error('ID proof is required');
+            const idProofPath = req.files ? req.files['idProof'][0].path.replace(/\\/g, '/').replace(/^public\//, '') : null;
+            const medicalDegreePath = req.files ? req.files['medicalDegree'][0].path.replace(/\\/g, '/').replace(/^public\//, '') : null;
+            if (!idProofPath || !medicalDegreePath) {
+                const error = Error('All files (ID proof, Medical License, Medical Degree) are required');
                 error.name = 'ValidationError';
                 throw error;
             }
@@ -36,7 +36,10 @@ class DoctorService {
             const newDoctorData = Object.assign(Object.assign({}, formData), { password: hashedPassword, otp: {
                     code: otpCode,
                     expiresAt: otpExpiresAt
-                }, idProof: idProofPath, isVerified: false });
+                }, documents: {
+                    idProof: idProofPath,
+                    medicalDegree: medicalDegreePath,
+                }, isVerified: false });
             const doctor = yield doctorRepository.createDoctor(newDoctorData);
             yield sendEmail({
                 to: doctor.email,

@@ -7,10 +7,16 @@ export interface IDoctor extends Document {
   specialization: string;
   medicalLicenseNumber: string;
   experience: number;
-  profileImageName?: string;
   phone: string;
+  gender: string;
+  documents: {
+    medicalDegree: string;
+    idProof:string;
+  };
+  profilePicture?: string;
+  consultationFee?: number;
+  bio?: string;
   dob?: Date;
-  idProof: string;
   address?: {
     clinicName: string;
     district: string;
@@ -20,6 +26,17 @@ export interface IDoctor extends Document {
     code: number;
     expiresAt: Date;
   };
+  ratingInfo?: {
+    average: number; 
+    count: number;  
+  };
+  reviews?: [
+    {
+      patientId: string; 
+      review: string;     
+      createdAt: Date;    
+    }
+  ];
   password: string;
   pwResetToken?: string;
   pwTokenExpiresAt?: Date;
@@ -49,20 +66,38 @@ const doctorSchema: Schema<IDoctor> = new Schema(
     experience: {
       type: Number,
     },  
-    profileImageName: {
-      type: String,
-    },
     phone: {
       type: String,
       required: true,
       unique: true,
     },
+    gender: {
+      type: String,
+      enum: ['male', 'female'],
+      required: true,
+    },
+    documents: {
+      medicalDegree: {
+        type: String, 
+        required: true
+      },
+      idProof: {
+        type: String, 
+        required: true
+      }
+    },
+    profilePicture: {
+      type: String,
+    },
+    consultationFee: {
+      type: Number,
+    },
+    bio: {
+      type: String,
+    },
     dob: {
       type: Date,
     },
-    idProof: {
-      type: String,
-    },  
     address: {
       clinicName: {type: String, default: ''},
       district: {type: String, default: ''},
@@ -72,6 +107,25 @@ const doctorSchema: Schema<IDoctor> = new Schema(
       code: { type: Number, default: null },
       expiresAt: { type: Date, default: null },
     },
+    ratingInfo: {
+      average: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5,
+      },
+      count: {
+        type: Number,
+        default: 0,
+      },
+    },
+    reviews: [
+      {
+        patientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        review: { type: String },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
     password: {
       type: String,
       required: true,

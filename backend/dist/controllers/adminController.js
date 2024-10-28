@@ -80,7 +80,6 @@ class AdminController {
     }
     approveDoctor(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("Ac");
             try {
                 const { email } = req.body;
                 yield adminService.approveDoctor(email);
@@ -101,6 +100,46 @@ class AdminController {
             }
             catch (error) {
                 console.error('Rejecting doctor error:', error);
+                next(error);
+            }
+        });
+    }
+    listUsers(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield adminService.getUsers();
+                res.status(200).json(result);
+            }
+            catch (error) {
+                console.error('fetching Users list error:', error);
+                next(error);
+            }
+        });
+    }
+    blockUser(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log("hit blockkkkkkk");
+            try {
+                const { email } = req.body;
+                console.log("user email: ", email);
+                yield adminService.blockUser(email);
+                res.status(200).json({ message: 'User blocked Succesfully' });
+            }
+            catch (error) {
+                console.error('Blocking user error:', error);
+                next(error);
+            }
+        });
+    }
+    unblockUser(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { email } = req.body;
+                yield adminService.unblockUser(email);
+                res.status(200).json({ message: 'User unblocked Succesfully' });
+            }
+            catch (error) {
+                console.error('unBlocking user error:', error);
                 next(error);
             }
         });

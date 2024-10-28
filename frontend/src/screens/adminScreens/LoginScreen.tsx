@@ -3,6 +3,7 @@ import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch,useSelector } from 'react-redux';
 import { toast } from "react-toastify";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAdminLoginMutation } from "../../slices/adminSlices/adminApiSlice";
 import Loader from "../../components/userComponents/Loader";
 import { setAdminCredentials } from "../../slices/adminSlices/adminAuthSlice";
@@ -12,6 +13,12 @@ import { RootState } from "../../store";
 const AdminLoginScreen: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  const togglePasswordVisibility = ()=>{
+    setShowPassword(!showPassword);
+  }
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [login,{isLoading}] = useAdminLoginMutation();
@@ -20,9 +27,10 @@ const AdminLoginScreen: React.FC = () => {
 
   useEffect(() => {
     if (adminInfo) {
-      navigate("/admin/dashboard");
+      navigate("/admin/dashboard", { replace: true });
     }
   }, [navigate, adminInfo]);
+  
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -66,14 +74,24 @@ const AdminLoginScreen: React.FC = () => {
 
               <Form.Group controlId="password" className="mb-3">
                 <Form.Label>Password</Form.Label>
+                <div className="input-group">
                 <Form.Control
-                  type="password"
+                  type={showPassword? "text" : "password"}
                   placeholder="Enter password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="border-primary rounded"
                   required
                 />
+                <Button 
+                  className="border-primary"
+                  variant="outline-secondary"
+                  onClick={togglePasswordVisibility}
+                  style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </Button>
+                </div>
               </Form.Group>
 
               {isLoading && <Loader/>}
