@@ -18,6 +18,7 @@ interface FormData {
   gender: string;
   password: string;
   confirmPassword: string;
+  profilePicture: File | null;
   medicalDegree: File | null;
   idProof: File | null;
 }
@@ -34,6 +35,7 @@ const RegisterScreen: React.FC = () => {
     gender: "",
     password: "",
     confirmPassword: "",
+    profilePicture: null,
     medicalDegree: null,
     idProof: null,
   });
@@ -106,6 +108,11 @@ const RegisterScreen: React.FC = () => {
       return;
     }
 
+    if (!formData.profilePicture) {
+      toast.error("Please upload a profile picture");
+      return;
+    }
+
     if (!formData.phone) {
       toast.error("phone number is required");
       return;
@@ -137,6 +144,7 @@ const RegisterScreen: React.FC = () => {
     data.append("experience", formData.experience);
     data.append("idProof", formData.idProof); 
     data.append("medicalDegree", formData.medicalDegree); 
+    data.append("profilePicture", formData.profilePicture); 
 
     try {
      
@@ -155,6 +163,7 @@ const RegisterScreen: React.FC = () => {
         gender: "",
         password: "",
         confirmPassword: "",
+        profilePicture: null,
         medicalDegree: null,
         idProof: null,
       });
@@ -262,6 +271,16 @@ const RegisterScreen: React.FC = () => {
           placeholder="Enter Experience"
           value={formData.experience}
           onChange={(e) => handleFormData({ experience: e.target.value })}
+        />
+      </Form.Group>
+
+      <Form.Group className="my-2" controlId="profilePicture">
+        <Form.Label>Profile Picture</Form.Label>
+        <Form.Control
+          className="border-primary"
+          type="file"
+          name="profilePicture"
+          onChange={(e) => handleFileChange(e as React.ChangeEvent<HTMLInputElement>, 'profilePicture')}
         />
       </Form.Group>
 

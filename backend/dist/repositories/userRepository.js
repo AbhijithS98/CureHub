@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import User from "../models/user.js";
+import Doctor from "../models/doctor.js";
 class UserRepository {
     findUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -51,6 +52,16 @@ class UserRepository {
                 pwResetToken: null,
                 pwTokenExpiresAt: null,
             });
+        });
+    }
+    getAllDoctors() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Doctor.find({ isApproved: true });
+        });
+    }
+    getAllSpecializations() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Doctor.distinct("specialization");
         });
     }
 }

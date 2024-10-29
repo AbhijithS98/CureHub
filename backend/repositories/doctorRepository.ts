@@ -51,6 +51,35 @@ class DoctorRepository {
       }
     )
   }
+
+  async updateDoctorDetails(req:any): Promise<void> {
+    const { 
+      name, email, phone, 
+      specialization, availability, 
+      medicalLicenseNumber,gender,
+      dob,experience,consultationFee,
+      clinicName,district,city,bio, 
+    } = req.body;
+
+    await Doctor.updateOne(
+      { email },
+      { name,
+        email,
+        phone,
+        specialization,
+        availability,
+        medicalLicenseNumber,
+        gender,
+        dob,
+        experience,
+        consultationFee,
+        'address.clinicName': clinicName,
+        'address.district': district,
+        'address.city': city,
+        bio
+      }
+    )
+  }
 }
 
 export default new DoctorRepository();

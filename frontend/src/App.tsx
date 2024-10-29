@@ -4,24 +4,24 @@ import Header from './components/Header';
 import UserHeader from './components/userComponents/UserHeader';
 import DoctorHeader from './components/doctorComponents/DoctorHeader';
 import AdminHeader from './components/adminComponents/AdminHeader';
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
-
+import { RootState } from './store.js';
+import { useSelector } from "react-redux";
 
 const App: React.FC = () => {
-  const location = useLocation();
-  const isUserPage = location.pathname.startsWith("/user");
-  const isDoctorPage = location.pathname.startsWith("/doctor")
-  const isAdminPage = location.pathname.startsWith("/admin")
+  const { userInfo } = useSelector((state: RootState) => state.userAuth);
+  const { adminInfo } = useSelector((state: RootState) => state.adminAuth);
+  const { doctorInfo } = useSelector((state: RootState) => state.doctorAuth);
 
   return (
     <>
-     {isUserPage ? (
+     {userInfo ? (
         <UserHeader />
-      ) : isDoctorPage ? (
+      ) : doctorInfo ? (
         <DoctorHeader />
-      ) : isAdminPage ? (
+      ) : adminInfo ? (
         <AdminHeader />
       ) : (
         <Header />

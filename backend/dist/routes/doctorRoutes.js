@@ -10,4 +10,6 @@ router.post('/login', doctorController.login);
 router.post('/logout', doctorController.logout);
 router.post('/pass-reset-link', doctorController.sendPassResetLink);
 router.post('/reset-password', doctorController.resetPassword);
+router.get('/get-profile', doctorController.getProfile);
+router.put('/update-profile', doctorController.updateProfile);
 export default router;

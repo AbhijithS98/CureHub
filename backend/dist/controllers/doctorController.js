@@ -120,5 +120,36 @@ class DoctorController {
             }
         });
     }
+    getProfile(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const email = req.query.email;
+                if (!email) {
+                    res.status(400).json({ message: "Email is required" });
+                    return;
+                }
+                console.log("doctor's email is: ", email);
+                const doctor = yield doctorService.getDoctor(email);
+                res.status(200).json({ doctor });
+            }
+            catch (error) {
+                console.error("Getting doctor profile error: ", error.message);
+                next(error);
+            }
+        });
+    }
+    updateProfile(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('entered doctor updation');
+            try {
+                yield doctorService.updateDoctor(req);
+                res.status(200).json({ message: 'Doctor details updated successfully.' });
+            }
+            catch (error) {
+                console.error("Updating doctor error: ", error.message);
+                next(error);
+            }
+        });
+    }
 }
 export default new DoctorController();

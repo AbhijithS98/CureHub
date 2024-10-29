@@ -146,5 +146,27 @@ class UserService {
             yield userRepository.updatePassword(token, hashedPassword);
         });
     }
+    fetchDocSpecs() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const Specializations = yield userRepository.getAllSpecializations();
+            if (!Specializations) {
+                const error = new Error("No Specializations  found");
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return Specializations;
+        });
+    }
+    fetchDoctors() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const Doctors = yield userRepository.getAllDoctors();
+            if (!Doctors) {
+                const error = new Error("No doctors found");
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return Doctors;
+        });
+    }
 }
 export default new UserService();

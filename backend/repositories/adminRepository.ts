@@ -10,6 +10,10 @@ class AdminRepository{
   }
 
   async getAllDoctors(): Promise<IDoctor[] | null> {
+    return await Doctor.find({ isApproved: true });
+  }
+
+  async getAllUnapprovedDoctors(): Promise<IDoctor[] | null> {
     return await Doctor.find({ isApproved: false});
   }
 
@@ -65,6 +69,18 @@ class AdminRepository{
 
   async unblockUser(email: string): Promise<void> {
     await User.updateOne(
+      { email }, 
+      { isBlocked: false });
+  }
+
+  async blockDoctor(email: string): Promise<void> {
+    await Doctor.updateOne(
+      { email }, 
+      { isBlocked: true });
+  }
+
+  async unblockDoctor(email: string): Promise<void> {
+    await Doctor.updateOne(
       { email }, 
       { isBlocked: false });
   }

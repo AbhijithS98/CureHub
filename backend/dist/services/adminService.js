@@ -88,6 +88,17 @@ class AdminService {
             return Doctors;
         });
     }
+    getUnapprovedDoctors() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const Doctors = yield adminRepository.getAllUnapprovedDoctors();
+            if (!Doctors) {
+                const error = new Error("No doctors found");
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return Doctors;
+        });
+    }
     approveDoctor(email) {
         return __awaiter(this, void 0, void 0, function* () {
             const doctor = yield adminRepository.findDoctorByEmail(email);
@@ -141,6 +152,28 @@ class AdminService {
                 throw error;
             }
             yield adminRepository.unblockUser(email);
+        });
+    }
+    blockDoctor(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const Doctor = yield adminRepository.findDoctorByEmail(email);
+            if (!Doctor) {
+                const error = new Error("No Doctor found with the email");
+                error.name = 'ValidationError';
+                throw error;
+            }
+            yield adminRepository.blockDoctor(email);
+        });
+    }
+    unblockDoctor(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const Doctor = yield adminRepository.findDoctorByEmail(email);
+            if (!Doctor) {
+                const error = new Error("No Doctor found with the email");
+                error.name = 'ValidationError';
+                throw error;
+            }
+            yield adminRepository.unblockDoctor(email);
         });
     }
 }

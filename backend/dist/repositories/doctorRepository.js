@@ -53,5 +53,25 @@ class DoctorRepository {
             });
         });
     }
+    updateDoctorDetails(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { name, email, phone, specialization, availability, medicalLicenseNumber, gender, dob, experience, consultationFee, clinicName, district, city, bio, } = req.body;
+            yield Doctor.updateOne({ email }, { name,
+                email,
+                phone,
+                specialization,
+                availability,
+                medicalLicenseNumber,
+                gender,
+                dob,
+                experience,
+                consultationFee,
+                'address.clinicName': clinicName,
+                'address.district': district,
+                'address.city': city,
+                bio
+            });
+        });
+    }
 }
 export default new DoctorRepository();

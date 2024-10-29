@@ -24,8 +24,9 @@ class DoctorService {
             }
             const idProofPath = req.files ? req.files['idProof'][0].path.replace(/\\/g, '/').replace(/^public\//, '') : null;
             const medicalDegreePath = req.files ? req.files['medicalDegree'][0].path.replace(/\\/g, '/').replace(/^public\//, '') : null;
-            if (!idProofPath || !medicalDegreePath) {
-                const error = Error('All files (ID proof, Medical License, Medical Degree) are required');
+            const profilePicturePath = req.files ? req.files['profilePicture'][0].path.replace(/\\/g, '/').replace(/^public\//, '') : null;
+            if (!idProofPath || !medicalDegreePath || !profilePicturePath) {
+                const error = Error('All files (ID proof, Medical Degree, profilePicture) are required');
                 error.name = 'ValidationError';
                 throw error;
             }
@@ -33,7 +34,7 @@ class DoctorService {
             const hashedPassword = yield bcrypt.hash(password, salt);
             const otpCode = Math.floor(100000 + Math.random() * 900000);
             const otpExpiresAt = new Date(Date.now() + 3 * 60 * 1000);
-            const newDoctorData = Object.assign(Object.assign({}, formData), { password: hashedPassword, otp: {
+            const newDoctorData = Object.assign(Object.assign({}, formData), { password: hashedPassword, profilePicture: profilePicturePath, otp: {
                     code: otpCode,
                     expiresAt: otpExpiresAt
                 }, documents: {
@@ -159,6 +160,29 @@ class DoctorService {
             const salt = yield bcrypt.genSalt(10);
             const hashedPassword = yield bcrypt.hash(password, salt);
             yield doctorRepository.updatePassword(token, hashedPassword);
+        });
+    }
+    getDoctor(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const Doctor = yield doctorRepository.findDoctorByEmail(email);
+            if (!Doctor) {
+                const error = Error('No doctor with this email.');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return Doctor;
+        });
+    }
+    updateDoctor(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { email } = req.body;
+            const Doctor = yield doctorRepository.findDoctorByEmail(email);
+            if (!Doctor) {
+                const error = Error('No doctor with this email.');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            yield doctorRepository.updateDoctorDetails(req);
         });
     }
 }

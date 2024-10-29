@@ -90,7 +90,21 @@ class AdminService{
 
   async getDoctors(): Promise<IDoctor[] | null> {
 
-   const Doctors = await adminRepository.getAllDoctors();
+    const Doctors = await adminRepository.getAllDoctors();
+ 
+    if(!Doctors){
+     const error = new Error("No doctors found")
+     error.name = 'ValidationError'
+     throw error;
+   }
+   
+    return Doctors
+   }
+
+
+  async getUnapprovedDoctors(): Promise<IDoctor[] | null> {
+
+   const Doctors = await adminRepository.getAllUnapprovedDoctors();
 
    if(!Doctors){
     const error = new Error("No doctors found")
@@ -164,6 +178,30 @@ class AdminService{
     }
 
     await adminRepository.unblockUser(email); 
+  }
+
+  async blockDoctor(email:string):Promise<void>{
+
+    const Doctor = await adminRepository.findDoctorByEmail(email);
+    if(!Doctor){
+      const error = new Error("No Doctor found with the email")
+      error.name = 'ValidationError'
+      throw error;
+    }
+
+    await adminRepository.blockDoctor(email); 
+  }
+
+  async unblockDoctor(email:string):Promise<void>{
+
+    const Doctor = await adminRepository.findDoctorByEmail(email);
+    if(!Doctor){
+      const error = new Error("No Doctor found with the email")
+      error.name = 'ValidationError'
+      throw error;
+    }
+
+    await adminRepository.unblockDoctor(email); 
   }
 }
 

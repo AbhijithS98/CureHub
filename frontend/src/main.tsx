@@ -17,6 +17,7 @@ import OtpScreen from './screens/userScreens/OtpScreen';
 import LoginScreen from './screens/userScreens/LoginScreen';
 import ForgotPasswordScreen from './screens/userScreens/ForgotPasswordScreen';
 import ResetPasswordScreen from './screens/userScreens/ResetPasswordScreen';
+import DoctorListingScreen from './screens/userScreens/DoctorListingScreen';
 {/* Doctor screens imports */}
 import DoctorRegisterScreen from './screens/doctorScreens/RegisterScreen';
 import DoctorOtpScreen from './screens/doctorScreens/OtpScreen';
@@ -25,21 +26,24 @@ import DoctorLoginScreen from './screens/doctorScreens/LoginScreen';
 import DoctorDashboard from './screens/doctorScreens/DoctorDashboard';
 import DoctorForgotPassScreen from './screens/doctorScreens/ForgotPassScreen'
 import DoctorResetPassScreen from './screens/doctorScreens/ResetPassScreen';
+import DoctorProfileScreen from './screens/doctorScreens/ProfileScreen';
 {/* Admin screens imports */}
 import AdminLoginScreen from './screens/adminScreens/LoginScreen';
 import AdminDashboard from './screens/adminScreens/Dashboard';
-import ManageDoctors from './screens/adminScreens/ManageDoctors';
+import ManageDoctorRequests from './screens/adminScreens/ManageDoctorRequests';
 import AdminForgotPassScreen from './screens/adminScreens/ForgotPassScreen';
 import AdminResetPassScreen from './screens/adminScreens/ResetPassScreen';
 import AdminDoctorDetailsScreen from './screens/adminScreens/DoctorDetails';
 import AdminManageUsers from './screens/adminScreens/ManageUsers';
+import AdminManageDoctors from './screens/adminScreens/ManageDoctors';
 
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App />}>
       <Route index element={<HomeScreen />}></Route>
-
+      <Route path="list-doctors" element={<DoctorListingScreen />}></Route>
+      
       {/* User Routes */}
       <Route path="user">
         <Route path="register" element={<RegisterScreen />}></Route>
@@ -58,17 +62,19 @@ const router = createBrowserRouter(
         <Route path="dashboard" element={<DoctorDashboard />}></Route>
         <Route path="forgot-password" element={<DoctorForgotPassScreen />}></Route>
         <Route path="reset-password" element={<DoctorResetPassScreen />}></Route>
+        <Route path="profile" element={<DoctorProfileScreen />}></Route>
       </Route>
 
       {/* Admin Routes */}
       <Route path="admin">
         <Route path="login" element={<AdminLoginScreen />}></Route>
         <Route path="dashboard" element={<AdminDashboard />}></Route>
-        <Route path="list-doctors" element={<ManageDoctors />}></Route>
+        <Route path="list-unapproved-doctors" element={<ManageDoctorRequests />}></Route>
         <Route path="forgot-password" element={<AdminForgotPassScreen />}></Route>
         <Route path="reset-password" element={<AdminResetPassScreen />}></Route>
         <Route path="doctor-details" element={<AdminDoctorDetailsScreen />}></Route>
         <Route path="list-users" element={<AdminManageUsers />}></Route>
+        <Route path="list-doctors" element={<AdminManageDoctors />}></Route>
       </Route>
 
     </Route>

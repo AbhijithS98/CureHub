@@ -40,6 +40,13 @@ export interface IDoctor extends Document {
   password: string;
   pwResetToken?: string;
   pwTokenExpiresAt?: Date;
+  availability?: [
+    {
+      date: Date;
+      startTime: string;
+      endTime: string;
+    }
+  ];
   isVerified: boolean;
   isApproved: boolean;
   isBlocked: boolean;
@@ -138,6 +145,13 @@ const doctorSchema: Schema<IDoctor> = new Schema(
       type: Date,
       default: null
     },
+    availability: [
+      {
+        date: { type: Date },
+        startTime: { type: String },
+        endTime: { type: String }
+      }
+    ],
     isVerified: {
       type: Boolean,
       default: false,

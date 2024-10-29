@@ -34,7 +34,7 @@ app.use('/api/users',userRoutes)
 app.use('/api/doctors',doctorRoutes)
 app.use('/api/admin',adminRoutes)
 
-console.log("path: ",path.join(__dirname,'../public'));
+
 
 app.use(express.static(path.join(__dirname,'../public')));
 

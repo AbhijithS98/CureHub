@@ -30,5 +30,6 @@ export const uploadDoctorDocuments = multer({
   limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
 }).fields([
   { name: "idProof", maxCount: 1 },
-  { name: "medicalDegree", maxCount: 1 }
+  { name: "medicalDegree", maxCount: 1 },
+  { name: "profilePicture", maxCount: 1 }
 ]);
