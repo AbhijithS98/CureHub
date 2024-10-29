@@ -4,11 +4,12 @@ import { Container, Card, Row, Col, ListGroup, Badge, Image, Button, ListGroupIt
 import { toast, ToastPosition, Id } from "react-toastify";
 import { useAdminApproveDoctorMutation, useAdminRejectDoctorMutation } from "../../slices/adminSlices/adminApiSlice";
 import Spinner from '../../components/Spinner'
+import { IDoc } from '../../../../shared/doctor.interface';
 
 
 const DoctorDetails: React.FC = () => {
   const location = useLocation();
-  const doctor = location.state?.doctor;
+  const doctor:IDoc = location.state?.doctor;
   const [approve,{isLoading:approveLoading}] = useAdminApproveDoctorMutation();
   const [reject,{isLoading:rejectLoading}] = useAdminRejectDoctorMutation();
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ const DoctorDetails: React.FC = () => {
         const res = await reject({email}).unwrap();
         toast.success(res.message || 'Doctor rejected')
       }
-      navigate("/admin/list-doctors")
+      navigate("/admin/list-unapproved-doctors")
       
     } catch(error:any){
       toast.error(error.message || "Action failed")
@@ -75,10 +76,19 @@ const DoctorDetails: React.FC = () => {
             </Badge>
           </Card.Header>
           <Card.Body>
-
+            
             <Row>
+              
               <Col md={6}>
                 <ListGroup variant="flush">
+                  <ListGroup.Item>
+                  <Image 
+                  src={`http://localhost:5000/${doctor.profilePicture}`} 
+                  roundedCircle
+                  className="img-fluid mb-3 border border-primary p-1" 
+                  style={{ maxWidth: '200px', height: 'auto' }} 
+                  />
+                  </ListGroup.Item>
                   <ListGroup.Item>
                     <strong>Email:</strong> {doctor.email}
                   </ListGroup.Item>
@@ -92,6 +102,10 @@ const DoctorDetails: React.FC = () => {
                     <strong>Experience:</strong> {doctor.experience} years
                   </ListGroup.Item>
                   <ListGroup.Item>
+                    <strong>Medical License Number:</strong> {doctor.medicalLicenseNumber}
+                  </ListGroup.Item>
+                </ListGroup>
+                <ListGroup.Item>
                   <ul className="mt-2">
                   <li>
                     <strong>ID Proof:</strong> 
@@ -105,13 +119,11 @@ const DoctorDetails: React.FC = () => {
                   </li>                 
                   </ul>
                   </ListGroup.Item>
-                </ListGroup>
               </Col>
+
               <Col md={6}>
                 <ListGroup variant="flush">
-                  <ListGroup.Item>
-                    <strong>Medical License Number:</strong> {doctor.medicalLicenseNumber}
-                  </ListGroup.Item>
+                
                   <ListGroup.Item>                 
                   <ul className="mt-2">
                     <li>
@@ -125,8 +137,9 @@ const DoctorDetails: React.FC = () => {
                       />
                     </li>                 
                   </ul>
-                </ListGroup.Item>
-                  <ListGroupItem className="d-flex justify-content-end">
+                  </ListGroup.Item>
+                  {!doctor.isApproved ? (
+                    <ListGroupItem className="d-flex justify-content-end">
                   <Button  
                     variant="success" 
                     className="btn-lg me-2"
@@ -143,7 +156,19 @@ const DoctorDetails: React.FC = () => {
                       Reject
                     </Button>
                     {approveLoading || rejectLoading && <Spinner />}
-                  </ListGroupItem>        
+                  </ListGroupItem> 
+                  ) : (
+                    <ListGroupItem className="d-flex justify-content-end">
+                      <Button  
+                      variant="primary" 
+                      className="btn-lg me-2"
+                      onClick={() => navigate("/admin/list-doctors")}
+                      >
+                        GoBack
+                      </Button>
+                    </ListGroupItem>
+                  )}
+                         
                 </ListGroup>
               </Col>
 

@@ -127,6 +127,40 @@ class DoctorController {
       next(error)
     }
   }
+
+  async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+  
+    try {
+      const email = req.query.email as string | undefined;
+   
+      if (!email) {
+        res.status(400).json({ message: "Email is required" });
+        return;
+      }  
+      
+      console.log("doctor's email is: ",email);
+      const doctor = await doctorService.getDoctor(email)
+      res.status(200).json({doctor});
+
+    } catch (error: any) {
+      console.error("Getting doctor profile error: ", error.message);
+      next(error)
+    }
+  }
+
+
+  async updateProfile(req:any, res: Response, next: NextFunction): Promise<void> {
+    console.log('entered doctor updation');
+    
+     try {
+       await doctorService.updateDoctor(req);
+       res.status(200).json({ message: 'Doctor details updated successfully.'});
+ 
+     } catch (error: any) {
+       console.error("Updating doctor error: ", error.message);
+       next(error)
+     }
+   }
 }
 
 export default new DoctorController();

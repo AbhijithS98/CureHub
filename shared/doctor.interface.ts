@@ -10,13 +10,43 @@ export interface IDoc {
   phone: string;
   gender: string;
   documents: {
-    medicalLicense: string;
     medicalDegree: string;
     idProof:string;
   };
+  profilePicture?: string;
+  consultationFee?: number;
+  bio?: string;
+  dob?: Date;
+  address?: {
+    clinicName: string;
+    district: string;
+    city: string;
+  };
+  otp?: {
+    code: number;
+    expiresAt: Date;
+  };
+  ratingInfo?: {
+    average: number; 
+    count: number;  
+  };
+  reviews?: [
+    {
+      patientId: string; 
+      review: string;     
+      createdAt: Date;    
+    }
+  ];
   password: string;
   pwResetToken?: string;
   pwTokenExpiresAt?: Date;
+  availability?: [
+    {
+      date: Date;
+      startTime: string;
+      endTime: string;
+    }
+  ];
   isVerified: boolean;
   isApproved: boolean;
   isBlocked: boolean;

@@ -1,5 +1,6 @@
 import { Navbar, Nav, Container, } from "react-bootstrap";
 import { FaSignInAlt, FaSignOutAlt, FaUserPlus } from "react-icons/fa";
+import { BsPersonFill } from "react-icons/bs";
 import { LinkContainer } from "react-router-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from 'react-toastify';
@@ -34,7 +35,7 @@ function DoctorHeader() {
         variant="dark"
         expand="lg"
         collapseOnSelect
-        className="sticky-top"
+        className="sticky-top mb-5"
       >
         <Container>
           <LinkContainer to="/">
@@ -55,9 +56,11 @@ function DoctorHeader() {
              {doctorInfo? (
               <>
               <Nav className="ml-auto">
-                {/* <LinkContainer to="/doctor/profile">
-                  <Nav.Link>Profile</Nav.Link>
-                </LinkContainer> */}
+                <LinkContainer to="/doctor/profile" state={{ email: doctorInfo.email }}>
+                  <Nav.Link>
+                    <BsPersonFill />Profile
+                  </Nav.Link>
+                </LinkContainer>
                 <Nav.Link onClick={handleLogout}>
                   <FaSignOutAlt />
                   Logout

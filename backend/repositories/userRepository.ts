@@ -1,4 +1,5 @@
 import User,{ IUser} from "../models/user.js";
+import Doctor,{ IDoctor } from "../models/doctor.js";
 
 
 class UserRepository {
@@ -47,6 +48,15 @@ class UserRepository {
         pwTokenExpiresAt: null,
       }
     )
+  }
+
+  async getAllDoctors(): Promise<IDoctor[] | null> {
+    return await Doctor.find({ isApproved: true });
+  }
+
+
+  async getAllSpecializations(): Promise<string[] | []> {
+    return await Doctor.distinct("specialization");
   }
 }
 

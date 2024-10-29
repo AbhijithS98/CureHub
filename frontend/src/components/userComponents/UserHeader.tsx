@@ -1,6 +1,8 @@
 import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
 import { FaSignInAlt, FaSignOutAlt, FaUserPlus } from "react-icons/fa";
 import { LinkContainer } from "react-router-bootstrap";
+import { BsPersonFill } from "react-icons/bs";
+import { FaUserDoctor } from "react-icons/fa6";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from 'react-toastify';
 import { RootState } from '../../store.js';
@@ -51,27 +53,36 @@ function UserHeader() {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
+                <Nav className="ml-auto">
+                  <LinkContainer to="/list-doctors">
+                      <Nav.Link className="mx-2">
+                        <FaUserDoctor />Find a Doctor
+                      </Nav.Link>
+                    </LinkContainer>
+                </Nav>
               {userInfo? (
                 <>
                   <Nav className="ml-auto">
-                    <LinkContainer to="/profile">
-                      <Nav.Link>Profile</Nav.Link>
+                    <LinkContainer to="/user/profile">
+                      <Nav.Link className="mx-2">
+                        <BsPersonFill />Profile
+                      </Nav.Link>
                     </LinkContainer>
-                    <Nav.Link onClick={handleLogout}>
-                      <FaSignOutAlt />
-                      Logout</Nav.Link>
+                    <Nav.Link className="mx-2" onClick={handleLogout}>
+                      <FaSignOutAlt /> Logout
+                    </Nav.Link>
                   </Nav>
                 </>
               ):(
                 <>  
                   <LinkContainer to="/user/login">
-                   <Nav.Link>
+                   <Nav.Link className="mx-2">
                     <FaSignInAlt /> Login
                    </Nav.Link>
                   </LinkContainer>
               
                   <LinkContainer to="/user/register">
-                    <Nav.Link>
+                    <Nav.Link className="mx-2">
                       <FaUserPlus /> Sign Up 
                     </Nav.Link>
                   </LinkContainer>

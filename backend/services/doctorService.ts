@@ -24,9 +24,10 @@ class DoctorService {
     
     const idProofPath = req.files? req.files['idProof'][0].path.replace(/\\/g, '/').replace(/^public\//, '') : null;
     const medicalDegreePath = req.files? req.files['medicalDegree'][0].path.replace(/\\/g, '/').replace(/^public\//, '') : null;
+    const profilePicturePath = req.files? req.files['profilePicture'][0].path.replace(/\\/g, '/').replace(/^public\//, '') : null;
 
-    if (!idProofPath || !medicalDegreePath) {
-        const error = Error('All files (ID proof, Medical License, Medical Degree) are required');
+    if (!idProofPath || !medicalDegreePath || !profilePicturePath) {
+        const error = Error('All files (ID proof, Medical Degree, profilePicture) are required');
         error.name = 'ValidationError';  
         throw error;
     }
@@ -40,6 +41,7 @@ class DoctorService {
     const newDoctorData = {
       ...formData,
       password: hashedPassword,
+      profilePicture: profilePicturePath,
       otp: {
         code: otpCode,
         expiresAt: otpExpiresAt
@@ -192,6 +194,37 @@ async resetPass(token:string, password:string): Promise<void> {
 
   await doctorRepository.updatePassword(token,hashedPassword);
 }
+
+async getDoctor(email:string): Promise<IDoctor | null> {
+ 
+  const Doctor = await doctorRepository.findDoctorByEmail(email);
+
+  if(!Doctor){
+    const error = Error('No doctor with this email.');
+    error.name = 'ValidationError';  
+    throw error;
+  }
+
+  return Doctor
+}
+
+
+async updateDoctor(req: any): Promise<void> {
+  
+    const { email } = req.body;
+
+    const Doctor = await doctorRepository.findDoctorByEmail(email);
+
+    if(!Doctor){
+      const error = Error('No doctor with this email.');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+  
+    await doctorRepository.updateDoctorDetails(req);
+
+}
+
 }
 
 export default new DoctorService();

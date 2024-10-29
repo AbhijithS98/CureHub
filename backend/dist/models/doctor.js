@@ -90,6 +90,13 @@ const doctorSchema = new Schema({
         type: Date,
         default: null
     },
+    availability: [
+        {
+            date: { type: Date },
+            startTime: { type: String },
+            endTime: { type: String }
+        }
+    ],
     isVerified: {
         type: Boolean,
         default: false,

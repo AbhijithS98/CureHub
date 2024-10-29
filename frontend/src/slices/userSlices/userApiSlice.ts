@@ -52,6 +52,18 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    userListDoctors: builder.query({
+      query: () => ({
+        url: `${USER_URL}/list-doctors`,
+        method: "GET",
+      }),
+    }),
+    userGetDocSpecializations: builder.query({
+      query: () => ({
+        url: `${USER_URL}/get-doc-specializations`,
+        method: "GET",
+      }),
+    }),
   })
 })
 
@@ -63,5 +75,7 @@ export const {
   useResendOtpMutation,
   usePassResetLinkMutation,
   useResetPasswordMutation,
+  useUserListDoctorsQuery,
+  useUserGetDocSpecializationsQuery,
 
 } = userApiSlice;

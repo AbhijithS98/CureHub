@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import { IUser } from "../models/user.js";
+import { IDoctor } from "../models/doctor.js";
 import sendEmail from "../utils/emailSender.js";
 import { Request, Response } from "express";
 
@@ -173,6 +174,34 @@ class UserService {
 
       await userRepository.updatePassword(token,hashedPassword);
   }
+
+
+  async fetchDocSpecs(): Promise<string[] | []> {
+
+    const  Specializations = await userRepository.getAllSpecializations();
+ 
+    if(!Specializations ){
+     const error = new Error("No Specializations  found")
+     error.name = 'ValidationError'
+     throw error;
+    }
+   
+    return Specializations
+   }
+
+
+   async fetchDoctors(): Promise<IDoctor[] | null> {
+
+    const Doctors = await userRepository.getAllDoctors();
+ 
+    if(!Doctors){
+     const error = new Error("No doctors found")
+     error.name = 'ValidationError'
+     throw error;
+   }
+   
+    return Doctors
+   }
 }
 
 export default new UserService();

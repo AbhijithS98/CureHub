@@ -78,6 +78,18 @@ class AdminController {
             }
         });
     }
+    listUnapprovedDoctors(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield adminService.getUnapprovedDoctors();
+                res.status(200).json(result);
+            }
+            catch (error) {
+                console.error('fetching unapproved doctors list error:', error);
+                next(error);
+            }
+        });
+    }
     approveDoctor(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -140,6 +152,33 @@ class AdminController {
             }
             catch (error) {
                 console.error('unBlocking user error:', error);
+                next(error);
+            }
+        });
+    }
+    blockDoctor(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { email } = req.body;
+                console.log("Doctor email: ", email);
+                yield adminService.blockDoctor(email);
+                res.status(200).json({ message: 'Doctor blocked Succesfully' });
+            }
+            catch (error) {
+                console.error('Blocking Doctor error:', error);
+                next(error);
+            }
+        });
+    }
+    unblockDoctor(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { email } = req.body;
+                yield adminService.unblockDoctor(email);
+                res.status(200).json({ message: 'Doctor unblocked Succesfully' });
+            }
+            catch (error) {
+                console.error('unBlocking Doctor error:', error);
                 next(error);
             }
         });

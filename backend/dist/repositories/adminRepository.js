@@ -18,6 +18,11 @@ class AdminRepository {
     }
     getAllDoctors() {
         return __awaiter(this, void 0, void 0, function* () {
+            return yield Doctor.find({ isApproved: true });
+        });
+    }
+    getAllUnapprovedDoctors() {
+        return __awaiter(this, void 0, void 0, function* () {
             return yield Doctor.find({ isApproved: false });
         });
     }
@@ -72,6 +77,16 @@ class AdminRepository {
     unblockUser(email) {
         return __awaiter(this, void 0, void 0, function* () {
             yield User.updateOne({ email }, { isBlocked: false });
+        });
+    }
+    blockDoctor(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Doctor.updateOne({ email }, { isBlocked: true });
+        });
+    }
+    unblockDoctor(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Doctor.updateOne({ email }, { isBlocked: false });
         });
     }
 }

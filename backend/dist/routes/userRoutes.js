@@ -9,4 +9,6 @@ router.post('/logout', userController.logout);
 router.post('/resend-otp', userController.resendOtp);
 router.post('/pass-reset-link', userController.sendPassResetLink);
 router.post('/reset-password', userController.resetPassword);
+router.get('/list-doctors', userController.getDoctors);
+router.get('/get-doc-specializations', userController.getDocSpecializations);
 export default router;

@@ -74,6 +74,18 @@ class AdminController{
     }
   }
 
+  async listUnapprovedDoctors(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const result = await adminService.getUnapprovedDoctors();
+      res.status(200).json(result)
+
+    } catch (error: any) {
+      console.error('fetching unapproved doctors list error:', error);
+      next(error)
+    }
+  }
+
   async approveDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
    
     try {
@@ -142,6 +154,34 @@ class AdminController{
 
     } catch (error: any) {
       console.error('unBlocking user error:', error);
+      next(error)
+    }
+  }
+
+  async blockDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
+ 
+     try {
+       const {email} = req.body;
+       console.log("Doctor email: ",email);
+       
+       await adminService.blockDoctor(email)
+       res.status(200).json({message:'Doctor blocked Succesfully'})
+ 
+     } catch (error: any) {
+       console.error('Blocking Doctor error:', error);
+       next(error)
+     }
+   }
+
+   async unblockDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
+   
+    try {
+      const {email} = req.body;
+      await adminService.unblockDoctor(email)
+      res.status(200).json({message:'Doctor unblocked Succesfully'})
+
+    } catch (error: any) {
+      console.error('unBlocking Doctor error:', error);
       next(error)
     }
   }
