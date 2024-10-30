@@ -1,6 +1,7 @@
 import { Navbar, Nav, Container, } from "react-bootstrap";
 import { FaSignInAlt, FaSignOutAlt, FaUserPlus } from "react-icons/fa";
 import { BsPersonFill } from "react-icons/bs";
+import { FaUserDoctor } from "react-icons/fa6";
 import { LinkContainer } from "react-router-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from 'react-toastify';
@@ -53,6 +54,13 @@ function DoctorHeader() {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
+                <Nav className="ml-auto">
+                  <LinkContainer to="/list-doctors">
+                      <Nav.Link className="mx-2">
+                        <FaUserDoctor />Find a Doctor
+                      </Nav.Link>
+                  </LinkContainer>
+                </Nav>
              {doctorInfo? (
               <>
               <Nav className="ml-auto">

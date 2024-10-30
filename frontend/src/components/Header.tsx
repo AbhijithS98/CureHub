@@ -1,5 +1,6 @@
 import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
 import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
+import { FaUserDoctor } from "react-icons/fa6";
 import { LinkContainer } from "react-router-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from 'react-toastify';
@@ -52,12 +53,17 @@ function Header() {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
+                <Nav className="ml-auto">
+                  <LinkContainer to="/list-doctors">
+                      <Nav.Link className="mx-2">
+                        <FaUserDoctor />Find a Doctor
+                      </Nav.Link>
+                  </LinkContainer>
+                </Nav>
               {userInfo? (
                 <>
                   <Nav className="ml-auto">
-                    {/* <LinkContainer to="/profile">
-                      <Nav.Link>Profile</Nav.Link>
-                    </LinkContainer> */}
+                   
                     <Nav.Link onClick={handleLogout}>
                       <FaSignOutAlt />
                       Logout</Nav.Link>

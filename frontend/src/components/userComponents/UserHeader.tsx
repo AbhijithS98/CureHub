@@ -58,7 +58,7 @@ function UserHeader() {
                       <Nav.Link className="mx-2">
                         <FaUserDoctor />Find a Doctor
                       </Nav.Link>
-                    </LinkContainer>
+                  </LinkContainer>
                 </Nav>
               {userInfo? (
                 <>

@@ -45,6 +45,7 @@ export interface IDoc {
       date: Date;
       startTime: string;
       endTime: string;
+      _id:ObjectId;
     }
   ];
   isVerified: boolean;

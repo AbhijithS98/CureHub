@@ -161,6 +161,35 @@ class DoctorController {
        next(error)
      }
    }
+
+   
+   async addNewSlots(req:any, res: Response, next: NextFunction): Promise<void> {
+    console.log('entered slot updation');
+     
+     try {
+
+       await doctorService.updateSlots(req);
+       res.status(200).json({ message: 'Slots added successfully.'});
+ 
+     } catch (error: any) {
+       console.error("Updating slot error: ", error.message);
+       next(error)
+     }
+   }
+
+   async deleteSlot(req:any, res: Response, next: NextFunction): Promise<void> {
+    console.log('entered slot deletion');
+     
+     try {
+
+       await doctorService.removeSlot(req);
+       res.status(200).json({ message: 'Slot deleted successfully.'});
+ 
+     } catch (error: any) {
+       console.error("deleting slot error: ", error.message);
+       next(error)
+     }
+   }
 }
 
 export default new DoctorController();

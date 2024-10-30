@@ -141,5 +141,18 @@ class UserController {
             }
         });
     }
+    getSingleDoctor(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const email = req.query.email;
+                const result = yield userService.getSingleDoc(email);
+                res.status(200).json(result);
+            }
+            catch (error) {
+                console.error('fetching single doctor error:', error);
+                next(error);
+            }
+        });
+    }
 }
 export default new UserController();

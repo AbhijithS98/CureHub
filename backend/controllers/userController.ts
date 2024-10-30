@@ -147,6 +147,19 @@ class UserController {
       next(error)
     }
   }
+  
+  async getSingleDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const email = req.query.email as string;
+      const result = await userService.getSingleDoc(email);
+      res.status(200).json(result)
+
+    } catch (error: any) {
+      console.error('fetching single doctor error:', error);
+      next(error)
+    }
+  }
 }
 
 

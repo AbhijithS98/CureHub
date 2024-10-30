@@ -20,7 +20,7 @@ const DoctorLoginScreen: React.FC = () => {
 
   useEffect(() => {
     if (doctorInfo) {
-      navigate("/doctor/dashboard");
+      navigate("/");
     }
   }, [navigate, doctorInfo]);
 
@@ -31,7 +31,7 @@ const DoctorLoginScreen: React.FC = () => {
       const res = await login({ email, password }).unwrap();
       dispatch(setDoctorCredentials(res));
       toast.success("Logged in successfully!");
-      navigate('/doctor/dashboard');
+      navigate('/');
 
     } catch (err: any) {
       toast.error(err?.data?.message || "Login failed!");

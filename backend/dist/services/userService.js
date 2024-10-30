@@ -168,5 +168,16 @@ class UserService {
             return Doctors;
         });
     }
+    getSingleDoc(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const Doctor = yield userRepository.fetchSingleDoctor(email);
+            if (!Doctor) {
+                const error = new Error("No doctor with email found");
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return Doctor;
+        });
+    }
 }
 export default new UserService();

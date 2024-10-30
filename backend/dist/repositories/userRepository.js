@@ -64,5 +64,10 @@ class UserRepository {
             return yield Doctor.distinct("specialization");
         });
     }
+    fetchSingleDoctor(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Doctor.findOne({ email });
+        });
+    }
 }
 export default new UserRepository();

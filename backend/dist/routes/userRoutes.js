@@ -11,4 +11,5 @@ router.post('/pass-reset-link', userController.sendPassResetLink);
 router.post('/reset-password', userController.resetPassword);
 router.get('/list-doctors', userController.getDoctors);
 router.get('/get-doc-specializations', userController.getDocSpecializations);
+router.get('/view-doctor', userController.getSingleDoctor);
 export default router;
