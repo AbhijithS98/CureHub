@@ -65,6 +65,20 @@ export const doctorApiSlice = apiSlice.injectEndpoints({
         body: updatedData,
       }),
     }),
+    doctorAddSlots: builder.mutation({
+      query: ({ docEmail, newSlots }) => ({
+        url: `${DOCTOR_URL}/add-slots?email=${docEmail}`,  
+        method: "PUT",
+        body: {newSlots},
+      }),
+    }),
+    doctorDeleteSlot: builder.mutation({
+      query: ({slotId, docEmail}) => ({
+        url: `${DOCTOR_URL}/delete-slot`,  
+        method: "DELETE",
+        body: {slotId, docEmail},
+      }),
+    }),
   })
 })
 
@@ -78,5 +92,7 @@ export const {
   useDoctorResetPasswordMutation,
   useDoctorGetProfileQuery,
   useDoctorUpdateProfileMutation,
+  useDoctorAddSlotsMutation,
+  useDoctorDeleteSlotMutation,
 
 } = doctorApiSlice;

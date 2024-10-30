@@ -58,6 +58,10 @@ class UserRepository {
   async getAllSpecializations(): Promise<string[] | []> {
     return await Doctor.distinct("specialization");
   }
+  
+  async fetchSingleDoctor(email:string): Promise<IDoctor | null> {
+    return await Doctor.findOne({email});
+  }
 }
 
 export default new UserRepository();

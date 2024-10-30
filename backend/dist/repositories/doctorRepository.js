@@ -55,12 +55,11 @@ class DoctorRepository {
     }
     updateDoctorDetails(req) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { name, email, phone, specialization, availability, medicalLicenseNumber, gender, dob, experience, consultationFee, clinicName, district, city, bio, } = req.body;
+            const { name, email, phone, specialization, medicalLicenseNumber, gender, dob, experience, consultationFee, clinicName, district, city, bio, } = req.body;
             yield Doctor.updateOne({ email }, { name,
                 email,
                 phone,
                 specialization,
-                availability,
                 medicalLicenseNumber,
                 gender,
                 dob,
@@ -71,6 +70,16 @@ class DoctorRepository {
                 'address.city': city,
                 bio
             });
+        });
+    }
+    addSlots(email, newSlots) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Doctor.updateOne({ email }, { $push: { availability: { $each: newSlots } } }, { new: true });
+        });
+    }
+    deleteSlot(email, slotId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Doctor.updateOne({ email }, { $pull: { availability: { _id: slotId } } }, { new: true });
         });
     }
 }

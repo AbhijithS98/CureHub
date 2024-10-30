@@ -5,6 +5,7 @@ import { IDoc } from '../../../../shared/doctor.interface';
 import { useUserListDoctorsQuery,
          useUserGetDocSpecializationsQuery
        } from '../../slices/userSlices/userApiSlice';
+import { useNavigate } from 'react-router-dom';
 import './style.css' 
 
 const DoctorListing = () => {
@@ -13,6 +14,7 @@ const DoctorListing = () => {
   const [filteredDoctors, setFilteredDoctors] = useState<IDoc[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSpecialization, setSelectedSpecialization] = useState('');
+  const navigate = useNavigate();
 
   const {data:list,error:listingError,isLoading:listLoading} = useUserListDoctorsQuery({});
   const {data:specs,error:specsError,isLoading:specsLoading} = useUserGetDocSpecializationsQuery({});
@@ -66,7 +68,7 @@ const DoctorListing = () => {
 
       <Row className="mt-4">
         
-        <Col md={3}>
+        <Col md={3} >
           <h5>Filter by Specialization</h5>
           <Form>
             {specializations.map((spec, index) => (
@@ -102,12 +104,16 @@ const DoctorListing = () => {
                     style={{ borderRadius: '10px', height: '300px', objectFit: 'cover' }}
                   />
                   <Card.Body>
-                    <Card.Title>{doctor.name}</Card.Title>
+                    <Card.Title>Dr. {doctor.name}</Card.Title>
                     <Card.Text>
                       <strong>Specialization:</strong> {doctor.specialization} <br />
                       <strong>Consultation Fee:</strong> ${doctor.consultationFee}
                     </Card.Text>
-                    <Button variant="info" className="text-dark">
+                    <Button 
+                      variant="info" 
+                      className="text-dark"
+                      onClick={() => navigate("/view-doctor", { state: { email: doctor.email } })}
+                    > 
                       View <FaArrowRight />
                     </Button>
                   </Card.Body>

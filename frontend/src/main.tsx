@@ -11,13 +11,14 @@ import store from './store'
 import App from './App'
 import 'bootstrap/dist/css/bootstrap.min.css';
 {/* User screens imports */}
-import HomeScreen from './screens/userScreens/HomeScreen';
+import HomeScreen from './screens/HomeScreen';
 import RegisterScreen from './screens/userScreens/RegisterScreen';
 import OtpScreen from './screens/userScreens/OtpScreen';
 import LoginScreen from './screens/userScreens/LoginScreen';
 import ForgotPasswordScreen from './screens/userScreens/ForgotPasswordScreen';
 import ResetPasswordScreen from './screens/userScreens/ResetPasswordScreen';
 import DoctorListingScreen from './screens/userScreens/DoctorListingScreen';
+import ViewDoctorScreen from './screens/userScreens/ViewDoctorScreen';
 {/* Doctor screens imports */}
 import DoctorRegisterScreen from './screens/doctorScreens/RegisterScreen';
 import DoctorOtpScreen from './screens/doctorScreens/OtpScreen';
@@ -43,6 +44,7 @@ const router = createBrowserRouter(
     <Route path='/' element={<App />}>
       <Route index element={<HomeScreen />}></Route>
       <Route path="list-doctors" element={<DoctorListingScreen />}></Route>
+      <Route path="view-doctor" element={<ViewDoctorScreen />}></Route>
       
       {/* User Routes */}
       <Route path="user">
@@ -59,7 +61,6 @@ const router = createBrowserRouter(
         <Route path="otp" element={<DoctorOtpScreen />}></Route>
         <Route path="reg-confirm" element={<ConfirmationScreen />}></Route>
         <Route path="login" element={<DoctorLoginScreen />}></Route>
-        <Route path="dashboard" element={<DoctorDashboard />}></Route>
         <Route path="forgot-password" element={<DoctorForgotPassScreen />}></Route>
         <Route path="reset-password" element={<DoctorResetPassScreen />}></Route>
         <Route path="profile" element={<DoctorProfileScreen />}></Route>

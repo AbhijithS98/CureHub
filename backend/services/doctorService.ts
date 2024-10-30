@@ -225,6 +225,41 @@ async updateDoctor(req: any): Promise<void> {
 
 }
 
+async updateSlots(req: any): Promise<void> {
+  
+  const { email } = req.query;
+  const { newSlots } = req.body;
+  console.log("slots are: ",newSlots);
+  
+
+  const Doctor = await doctorRepository.findDoctorByEmail(email);
+
+  if(!Doctor){
+    const error = Error('No doctor with this email.');
+    error.name = 'ValidationError';  
+    throw error;
+  }
+
+  await doctorRepository.addSlots(email,newSlots);
+}
+
+
+  async removeSlot(req: any): Promise<void> {
+    
+    const { slotId, docEmail } = req.body;
+    console.log("slotId: ",slotId, "docEmail: ", docEmail);
+    
+
+    const Doctor = await doctorRepository.findDoctorByEmail(docEmail);
+
+    if(!Doctor){
+      const error = Error('No doctor with this email.');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+
+    await doctorRepository.deleteSlot(docEmail,slotId);
+  }
 }
 
 export default new DoctorService();

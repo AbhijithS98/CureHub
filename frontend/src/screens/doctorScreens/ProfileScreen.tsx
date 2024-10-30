@@ -6,14 +6,19 @@ import { useDispatch } from "react-redux";
 import { IDoc } from '../../../../shared/doctor.interface';
 import { toast } from 'react-toastify';
 import IconLoader from "../../components/Spinner";
+import { FaTrash } from 'react-icons/fa';
 import { useDoctorUpdateProfileMutation } from '../../slices/doctorSlices/doctorApiSlice';
-import { useDoctorLogoutMutation } from "../../slices/doctorSlices/doctorApiSlice.js";
+import { useDoctorAddSlotsMutation, 
+         useDoctorLogoutMutation, 
+         useDoctorDeleteSlotMutation } from '../../slices/doctorSlices/doctorApiSlice';
 import { clearDoctorCredentials } from "../../slices/doctorSlices/doctorAuthSlice.js";
+import { ObjectId } from 'mongoose';
 
 interface AvailabilitySlot {
   date: Date;
   startTime: string;
   endTime: string;
+  _id?: ObjectId;
 }
 
 const ProfileScreen: React.FC = () => {
@@ -24,11 +29,13 @@ const ProfileScreen: React.FC = () => {
   const {data, error, isLoading, refetch} = useDoctorGetProfileQuery(email);
   const doctorInfo:IDoc = data?.doctor;
   const [updateDoctorProfile, {isLoading:updateLoading}] = useDoctorUpdateProfileMutation();
+  const [removeSlot, {isLoading:deleteSlotLoading}] = useDoctorDeleteSlotMutation();
+  const [addSlots, {isLoading:addSlotLoading}] = useDoctorAddSlotsMutation();
   const [logout] = useDoctorLogoutMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
-  const [availability, setAvailability] = useState<AvailabilitySlot[]>(doctorInfo?.availability || []);
+  const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [formData, setFormData] = useState({
     name:  '',
     email: '',
@@ -87,7 +94,7 @@ const ProfileScreen: React.FC = () => {
     const updatedAvailability = [...availability];
     if (field === 'date') {
       updatedAvailability[index][field] = new Date(value); 
-    } else {
+    } else if(field === 'startTime' || field === 'endTime'){
       updatedAvailability[index][field] = value; 
     }
     setAvailability(updatedAvailability);
@@ -104,9 +111,41 @@ const ProfileScreen: React.FC = () => {
     setAvailability(updatedAvailability);
   };
 
+  const updateSlots = async () => {
+    if(availability.length){
+      const docEmail = doctorInfo.email
+      const newSlots = availability;
+      
+      try{
+        await addSlots({ docEmail, newSlots }).unwrap();
+        toast.success("Slots added successfully!");
+        refetch();
+        setAvailability([])
+      }catch (error:any) {
+        console.error("Error adding availability: ", error);
+        toast.error(error.message || "Error adding availability.")
+      }
+    }
+  }
+
+  const deleteSlot = async (slotId:ObjectId) => {
+      const docEmail = doctorInfo.email
+      
+      try{
+        await removeSlot({slotId, docEmail}).unwrap();
+        toast.success("Slot deleted successfully!");
+        refetch();
+
+      }catch (error:any) {
+        console.error("Error deleting slot: ", error);
+        toast.error(error.message || "Error deleting slot.")
+      }
+    
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const updatedData = { ...formData, availability };
+    const updatedData = { ...formData };
 
     try {
       
@@ -144,171 +183,44 @@ const ProfileScreen: React.FC = () => {
             <p><strong>Experience:</strong> {doctorInfo.experience}</p>
           </div>
         );
-      case 'appointments':
+      case 'availabilities':
         return (
           <div>
-            <h3>Appointments</h3>
+            <h3>Manage availabilities</h3>
             <Table striped bordered hover responsive className="mt-3">
               <thead>
                 <tr>
                   <th>Date</th>
-                  <th>Time</th>
-                  <th>Patient</th>
+                  <th>Start Time</th>
+                  <th>End Time</th>
+                  <th>Delete</th>
                 </tr>
               </thead>
               <tbody>
-                {/* {doctorInfo.appointments.map((appointment, index) => (
+                {doctorInfo.availability?.map((slot, index) => {
+                  const date = new Date(slot.date);
+                  return (
                   <tr key={index}>
-                    <td>{appointment.date}</td>
-                    <td>{appointment.time}</td>
-                    <td>{appointment.patientName}</td>
+                    <td>{date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</td>
+                    <td>{slot.startTime}</td>
+                    <td>{slot.endTime}</td>
+                    <td><Button className="btn btn-danger" onClick={()=>deleteSlot(slot._id)}>
+                            <FaTrash />
+                        </Button>
+                    </td>
                   </tr>
-                ))} */}
+                  );
+                })}
               </tbody>
             </Table>
-          </div>
-        );
-      case 'profile':
-        return (
-          <div>
-            <h3>Profile Information</h3>
-
-            <Form className="mt-4" onSubmit={handleSubmit}>
-
-              <Form.Group controlId="name" className="mb-3">
-                <Form.Label>Name*</Form.Label>
-                <Form.Control 
-                  type="text" 
-                  value={formData.name} 
-                  onChange={handleInputChange}
-                />
-              </Form.Group>
-              
-              <Form.Group controlId="email" className="mb-3">
-                <Form.Label>Email*</Form.Label>
-                <Form.Control 
-                  type="email" 
-                  value={formData.email} 
-                  onChange={handleInputChange}
-                />
-              </Form.Group>
-             
-              <Form.Group controlId="phone" className="mb-3">
-                <Form.Label>Phone*</Form.Label>
-                <Form.Control 
-                  type="text" 
-                  value={formData.phone} 
-                  onChange={handleInputChange}
-                />
-              </Form.Group>
-            
-              <Row className="mb-3">
-                <Col md={4}>
-                  <Form.Group controlId="specialization">
-                    <Form.Label>Specialization*</Form.Label>
-                    <Form.Control 
-                      type="text" 
-                      value={formData.specialization} 
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                </Col>
-
-                <Col md={4}>
-                  <Form.Group controlId="medicalLicenseNumber">
-                    <Form.Label>Medical License Number*</Form.Label>
-                    <Form.Control 
-                      type="text" 
-                      value={formData.medicalLicenseNumber} 
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                </Col>
-
-                <Col md={4}>
-                  <Form.Group controlId="gender">
-                    <Form.Label>Gender</Form.Label>
-                    <Form.Select value={formData.gender || ''} onChange={handleInputChange}>
-                      <option value="">Select Gender</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-              </Row>
-            
-              <Row className="mb-3">
-                <Col md={4}>
-                  <Form.Group controlId="dob">
-                    <Form.Label>Date of Birth*</Form.Label>
-                    <Form.Control 
-                      type="date" 
-                      value={formData.dob ? new Date(formData.dob).toISOString().split('T')[0] : ''} 
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                </Col>
-
-                <Col md={4}>
-                  <Form.Group controlId="experience">
-                    <Form.Label>Experience  <span className="text-muted">(in years)</span>*</Form.Label>
-                    <Form.Control type="number" value={formData.experience} onChange={handleInputChange}/>
-                  </Form.Group>
-                </Col>
-
-                <Col md={4}>
-                  <Form.Group controlId="consultationFee">
-                    <Form.Label>Consultation Fee  <span className="text-muted">(in Rupees)</span>*</Form.Label>
-                    <Form.Control type="number" value={formData.consultationFee} onChange={handleInputChange}/>
-                  </Form.Group>
-                </Col>
-              </Row>
-              
-              <Row className="mb-3">
-                <Col md={4}>
-                  <Form.Group controlId="clinicName">
-                    <Form.Label>Clinic Name*</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={formData.clinicName || ""}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                </Col>
-                
-                <Col md={4}>
-                  <Form.Group controlId="district">
-                    <Form.Label>District*</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={formData.district || ""}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                </Col>
-                
-                <Col md={4}>
-                  <Form.Group controlId="city">
-                    <Form.Label>City*</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={formData.city || ""}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-            
-              <h5>Availability*</h5>
-              <br/>
-              {availability.map((slot, index) => (
+            {availability.map((slot, index) => (
                 <Row key={index} className="mb-3">
                   <Col md={4}>
                     <Form.Group controlId={`availabilityDate-${index}`}>
                       <Form.Label>Date</Form.Label>
                       <Form.Control
                         type="date"
-                        value={slot.date ? slot.date.toISOString().split('T')[0] : ''}
+                        value={slot.date ? new Date(slot.date).toISOString().split('T')[0] : ''}
                         onChange={(e) => handleAvailabilityChange(index, 'date', e.target.value)}
                       />
                     </Form.Group>
@@ -341,12 +253,175 @@ const ProfileScreen: React.FC = () => {
                   </Col>
                 </Row>  
               ))}
-              <Button className="mb-2 " variant="secondary" size="sm" onClick={addAvailabilitySlot}>
+
+              <div className="d-flex justify-content-between mb-2">
+              <Button  variant="secondary" size="sm" onClick={addAvailabilitySlot}>
                 Add new Slot
               </Button>
+              {availability.length? (
+                <Button  variant="success" size="sm" onClick={updateSlots}>
+                  Save new Slot
+                </Button> ) : null}
+              </div>
+          </div>
+        );
+      case 'appointments':
+      return (
+        <div>
+          <h3>Appointments</h3>
+          <Table striped bordered hover responsive className="mt-3">
+            <thead>
+              <tr>      
+                <th>Date</th>
+                <th>Time</th>
+                <th>Patient</th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* {doctorInfo.appointments.map((appointment, index) => (
+                <tr key={index}>
+                  <td>{appointment.date}</td>
+                  <td>{appointment.time}</td>
+                  <td>{appointment.patientName}</td>
+                </tr>
+              ))} */}
+            </tbody>
+          </Table>
+        </div>
+      );
+      case 'profile':
+        return (
+          <div>
+            <h3>Profile Information</h3>
+
+            <Form className="mt-4" onSubmit={handleSubmit}>
+
+              <Form.Group controlId="name" className="mb-3">
+                <Form.Label><strong>Name*</strong></Form.Label>
+                <Form.Control 
+                  type="text" 
+                  value={formData.name} 
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
               
+              <Form.Group controlId="email" className="mb-3">
+                <Form.Label><strong>Email*</strong></Form.Label>
+                <Form.Control 
+                  type="email" 
+                  value={formData.email} 
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+             
+              <Form.Group controlId="phone" className="mb-3">
+                <Form.Label><strong>Phone*</strong></Form.Label>
+                <Form.Control 
+                  type="text" 
+                  value={formData.phone} 
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+            
+              <Row className="mb-3">
+                <Col md={4}>
+                  <Form.Group controlId="specialization">
+                    <Form.Label><strong>Specialization*</strong></Form.Label>
+                    <Form.Control 
+                      type="text" 
+                      value={formData.specialization} 
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                </Col>
+
+                <Col md={4}>
+                  <Form.Group controlId="medicalLicenseNumber">
+                    <Form.Label><strong>Medical License Number*</strong></Form.Label>
+                    <Form.Control 
+                      type="text" 
+                      value={formData.medicalLicenseNumber} 
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                </Col>
+
+                <Col md={4}>
+                  <Form.Group controlId="gender">
+                    <Form.Label><strong>Gender*</strong></Form.Label>
+                    <Form.Select value={formData.gender || ''} onChange={handleInputChange}>
+                      <option value="">Select Gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+              </Row>
+            
+              <Row className="mb-3">
+                <Col md={4}>
+                  <Form.Group controlId="dob">
+                    <Form.Label><strong>Date of Birth*</strong></Form.Label>
+                    <Form.Control 
+                      type="date" 
+                      value={formData.dob ? new Date(formData.dob).toISOString().split('T')[0] : ''} 
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                </Col>
+
+                <Col md={4}>
+                  <Form.Group controlId="experience">
+                    <Form.Label><strong>Experience*</strong>  <span className="text-muted">(in years)</span></Form.Label>
+                    <Form.Control type="number" value={formData.experience} onChange={handleInputChange}/>
+                  </Form.Group>
+                </Col>
+
+                <Col md={4}>
+                  <Form.Group controlId="consultationFee">
+                    <Form.Label><strong>Consultation Fee*</strong>  <span className="text-muted">(in Rupees)</span></Form.Label>
+                    <Form.Control type="number" value={formData.consultationFee} onChange={handleInputChange}/>
+                  </Form.Group>
+                </Col>
+              </Row>
+              
+              <Row className="mb-3">
+                <Col md={4}>
+                  <Form.Group controlId="clinicName">
+                    <Form.Label><strong>Clinic Name*</strong></Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={formData.clinicName || ""}
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                </Col>
+                
+                <Col md={4}>
+                  <Form.Group controlId="district">
+                    <Form.Label><strong>District*</strong></Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={formData.district || ""}
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                </Col>
+                
+                <Col md={4}>
+                  <Form.Group controlId="city">
+                    <Form.Label><strong>City*</strong></Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={formData.city || ""}
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+            
               <Form.Group controlId="bio" className="mb-3">
-                    <Form.Label>Bio*</Form.Label>
+                    <Form.Label><strong>Bio*</strong></Form.Label>
                     <Form.Control
                       as="textarea"
                       value={formData.bio || ""}
@@ -378,6 +453,7 @@ const ProfileScreen: React.FC = () => {
           <Card className="p-3 shadow-sm mb-3 bg-light">
             <Card.Body>
               <Button variant="outline-primary" onClick={() => setSelectedTab('overview')} className="w-100 text-center mb-2">Overview</Button>
+              <Button variant="outline-primary" onClick={() => setSelectedTab('availabilities')} className="w-100 text-center mb-2">Availabilities</Button>
               <Button variant="outline-primary" onClick={() => setSelectedTab('appointments')} className="w-100 text-center mb-2">Appointments</Button>
               <Button variant="outline-primary" onClick={() => setSelectedTab('profile')} className="w-100 text-center mb-2">Profile</Button>
               <Button variant="danger" onClick={handleLogout} className="w-100 text-center mt-5">Logout</Button>

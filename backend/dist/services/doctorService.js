@@ -185,5 +185,32 @@ class DoctorService {
             yield doctorRepository.updateDoctorDetails(req);
         });
     }
+    updateSlots(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { email } = req.query;
+            const { newSlots } = req.body;
+            console.log("slots are: ", newSlots);
+            const Doctor = yield doctorRepository.findDoctorByEmail(email);
+            if (!Doctor) {
+                const error = Error('No doctor with this email.');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            yield doctorRepository.addSlots(email, newSlots);
+        });
+    }
+    removeSlot(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { slotId, docEmail } = req.body;
+            console.log("slotId: ", slotId, "docEmail: ", docEmail);
+            const Doctor = yield doctorRepository.findDoctorByEmail(docEmail);
+            if (!Doctor) {
+                const error = Error('No doctor with this email.');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            yield doctorRepository.deleteSlot(docEmail, slotId);
+        });
+    }
 }
 export default new DoctorService();

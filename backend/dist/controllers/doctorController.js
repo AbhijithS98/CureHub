@@ -151,5 +151,31 @@ class DoctorController {
             }
         });
     }
+    addNewSlots(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('entered slot updation');
+            try {
+                yield doctorService.updateSlots(req);
+                res.status(200).json({ message: 'Slots added successfully.' });
+            }
+            catch (error) {
+                console.error("Updating slot error: ", error.message);
+                next(error);
+            }
+        });
+    }
+    deleteSlot(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('entered slot deletion');
+            try {
+                yield doctorService.removeSlot(req);
+                res.status(200).json({ message: 'Slot deleted successfully.' });
+            }
+            catch (error) {
+                console.error("deleting slot error: ", error.message);
+                next(error);
+            }
+        });
+    }
 }
 export default new DoctorController();

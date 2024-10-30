@@ -55,7 +55,7 @@ class DoctorRepository {
   async updateDoctorDetails(req:any): Promise<void> {
     const { 
       name, email, phone, 
-      specialization, availability, 
+      specialization, 
       medicalLicenseNumber,gender,
       dob,experience,consultationFee,
       clinicName,district,city,bio, 
@@ -67,7 +67,6 @@ class DoctorRepository {
         email,
         phone,
         specialization,
-        availability,
         medicalLicenseNumber,
         gender,
         dob,
@@ -80,6 +79,25 @@ class DoctorRepository {
       }
     )
   }
+
+
+  async addSlots(email: string, newSlots: any): Promise<void> {
+    await Doctor.updateOne(
+      { email }, 
+      { $push: { availability: { $each: newSlots } } },
+      { new: true }
+  )}
+
+
+  async deleteSlot(email: string, slotId: string): Promise<void> {
+    await Doctor.updateOne(
+      { email }, 
+      { $pull: { availability: { _id: slotId } } },
+      { new: true }
+    );
+  }
+  
+
 }
 
 export default new DoctorRepository();

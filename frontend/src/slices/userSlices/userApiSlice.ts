@@ -64,6 +64,12 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    userViewDoctor: builder.query({
+      query: (email:string) => ({
+        url: `${USER_URL}/view-doctor?email=${email}`,
+        method: "GET",
+      }),
+    }),
   })
 })
 
@@ -77,5 +83,6 @@ export const {
   useResetPasswordMutation,
   useUserListDoctorsQuery,
   useUserGetDocSpecializationsQuery,
+  useUserViewDoctorQuery,
 
 } = userApiSlice;

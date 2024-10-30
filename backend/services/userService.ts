@@ -202,6 +202,20 @@ class UserService {
    
     return Doctors
    }
+
+
+   async getSingleDoc(email:string): Promise<IDoctor | null> {
+
+    const Doctor = await userRepository.fetchSingleDoctor(email);
+ 
+    if(!Doctor){
+     const error = new Error("No doctor with email found")
+     error.name = 'ValidationError'
+     throw error;
+   }
+   
+    return Doctor
+   }
 }
 
 export default new UserService();
