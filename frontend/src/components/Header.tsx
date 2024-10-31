@@ -1,6 +1,7 @@
 import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
 import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
+import { BsPersonFill } from "react-icons/bs";
 import { LinkContainer } from "react-router-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from 'react-toastify';
@@ -58,13 +59,17 @@ function Header() {
                       <Nav.Link className="mx-2">
                         <FaUserDoctor />Find a Doctor
                       </Nav.Link>
-                  </LinkContainer>
+                  </LinkContainer>  
                 </Nav>
               {userInfo? (
                 <>
                   <Nav className="ml-auto">
-                   
-                    <Nav.Link onClick={handleLogout}>
+                    <LinkContainer to="/user/profile" state={{ email: userInfo.email }}>
+                        <Nav.Link className="mx-2">
+                          <BsPersonFill />Profile
+                        </Nav.Link>
+                      </LinkContainer>
+                    <Nav.Link className="mx-2" onClick={handleLogout}>
                       <FaSignOutAlt />
                       Logout</Nav.Link>
                   </Nav>

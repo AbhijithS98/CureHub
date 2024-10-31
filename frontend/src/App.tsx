@@ -1,28 +1,31 @@
 import './App.css'
 import "react-toastify/dist/ReactToastify.css";
 import Header from './components/Header';
-import UserHeader from './components/userComponents/UserHeader';
 import DoctorHeader from './components/doctorComponents/DoctorHeader';
 import AdminHeader from './components/adminComponents/AdminHeader';
 import Footer from './screens/Footer';
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation  } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import { RootState } from './store.js';
 import { useSelector } from "react-redux";
 
 const App: React.FC = () => {
-  const { userInfo } = useSelector((state: RootState) => state.userAuth);
-  const { adminInfo } = useSelector((state: RootState) => state.adminAuth);
+  let location = useLocation();
+  let isAdminPage = location.pathname.startsWith("/admin");
+  let isDoctorPage = location.pathname.startsWith("/doctor");
+
+  let isDoctorAuthPage = ["/doctor/login", "/doctor/register", "/doctor/otp"].includes(location.pathname);
+
   const { doctorInfo } = useSelector((state: RootState) => state.doctorAuth);
+
+
 
   return (
     <>
-     {userInfo ? (
-        <UserHeader />
-      ) : doctorInfo ? (
+     { doctorInfo || isDoctorPage && !isDoctorAuthPage ? (
         <DoctorHeader />
-      ) : adminInfo ? (
+      ) : isAdminPage ? (
         <AdminHeader />
       ) : (
         <Header />
@@ -31,7 +34,7 @@ const App: React.FC = () => {
      <Container className="my-2">
         <Outlet />
       </Container>
-      {!adminInfo && <Footer />} 
+      {!isAdminPage && <Footer />} 
     </>
   )
 }
