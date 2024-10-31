@@ -4,6 +4,7 @@ import Header from './components/Header';
 import UserHeader from './components/userComponents/UserHeader';
 import DoctorHeader from './components/doctorComponents/DoctorHeader';
 import AdminHeader from './components/adminComponents/AdminHeader';
+import Footer from './screens/Footer';
 import { Outlet } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
@@ -30,6 +31,7 @@ const App: React.FC = () => {
      <Container className="my-2">
         <Outlet />
       </Container>
+      {!adminInfo && <Footer />} 
     </>
   )
 }

@@ -62,6 +62,25 @@ class UserRepository {
   async fetchSingleDoctor(email:string): Promise<IDoctor | null> {
     return await Doctor.findOne({email});
   }
+
+
+  async updateUserDetails(req:any): Promise<void> {
+    const { 
+      name, email, phone, 
+      dob, address
+    } = req.body;
+
+    await User.updateOne(
+      { email },
+      { name,
+        email,
+        phone,
+        dob,
+        address
+      }
+    )
+  }
+
 }
 
 export default new UserRepository();

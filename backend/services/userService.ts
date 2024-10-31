@@ -216,6 +216,38 @@ class UserService {
    
     return Doctor
    }
+
+
+   async getUser(email:string): Promise<IUser | null> {
+ 
+    const User = await userRepository.findUserByEmail(email);
+  
+    if(!User){
+      const error = Error('No User with this email.');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+  
+    return User
+  }
+
+
+  
+async updateUser(req: any): Promise<void> {
+  
+  const { email } = req.body;
+
+  const User = await userRepository.findUserByEmail(email);
+
+  if(!User){
+    const error = Error('No User with this email.');
+    error.name = 'ValidationError';  
+    throw error;
+  }
+
+  await userRepository.updateUserDetails(req);
+
+}
 }
 
 export default new UserService();

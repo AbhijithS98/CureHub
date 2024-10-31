@@ -154,5 +154,36 @@ class UserController {
             }
         });
     }
+    getProfile(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const email = req.query.email;
+                if (!email) {
+                    res.status(400).json({ message: "Email is required" });
+                    return;
+                }
+                console.log("user's email is: ", email);
+                const user = yield userService.getUser(email);
+                res.status(200).json({ user });
+            }
+            catch (error) {
+                console.error("Getting user profile error: ", error.message);
+                next(error);
+            }
+        });
+    }
+    updateProfile(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('entered user updation');
+            try {
+                yield userService.updateUser(req);
+                res.status(200).json({ message: 'user details updated successfully.' });
+            }
+            catch (error) {
+                console.error("Updating user error: ", error.message);
+                next(error);
+            }
+        });
+    }
 }
 export default new UserController();

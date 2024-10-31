@@ -63,7 +63,7 @@ function UserHeader() {
               {userInfo? (
                 <>
                   <Nav className="ml-auto">
-                    <LinkContainer to="/user/profile">
+                    <LinkContainer to="/user/profile" state={{ email: userInfo.email }}>
                       <Nav.Link className="mx-2">
                         <BsPersonFill />Profile
                       </Nav.Link>

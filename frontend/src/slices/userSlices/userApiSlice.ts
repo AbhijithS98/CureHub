@@ -70,6 +70,19 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    userGetProfile: builder.query({
+      query: (email:string) => ({
+        url: `${USER_URL}/get-profile?email=${email}`,
+        method: "GET",
+      }),
+    }),
+    userUpdateProfile: builder.mutation({
+      query: (updatedData) => ({
+        url: `${USER_URL}/update-profile`,  
+        method: "PUT",
+        body: updatedData,
+      }),
+    }),
   })
 })
 
@@ -84,5 +97,7 @@ export const {
   useUserListDoctorsQuery,
   useUserGetDocSpecializationsQuery,
   useUserViewDoctorQuery,
+  useUserGetProfileQuery,
+  useUserUpdateProfileMutation,
 
 } = userApiSlice;

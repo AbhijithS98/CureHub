@@ -15,5 +15,7 @@ router.post('/reset-password',userController.resetPassword)
 router.get('/list-doctors',userController.getDoctors)
 router.get('/get-doc-specializations',userController.getDocSpecializations)
 router.get('/view-doctor',userController.getSingleDoctor)
+router.get('/get-profile',userController.getProfile);
+router.put('/update-profile',userController.updateProfile);
 
 export default router;

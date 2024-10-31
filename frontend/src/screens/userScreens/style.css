@@ -17,13 +17,6 @@
   transform: scale(1.1); 
 }
 
-/* .doctor-img {
-  margin-left: 50px;
-  width: 700px;
-  height: auto;
-  border-radius: 50%;
-  
-} */
 .doctor-images {
   display: flex;
   justify-content: center;
@@ -54,7 +47,7 @@
   background-color: #f8d3e5;
   text-align: center;
   padding: 20px;
-  border-radius: 25px; /* Adjust the value for the desired roundness */
+  border-radius: 25px; 
   border: 1px solid #ced4da;
 }
 
@@ -150,4 +143,48 @@
   color: #007bff;
   text-decoration: none;
   font-size: 18px;
+}
+
+
+/* Styles for the user profile Screen*/
+.profile-screen {
+  padding-top: 2rem;
+}
+
+.profile-photo {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #007bff;
+}
+
+.profile-screen .btn {
+  font-weight: 600;
+}
+
+.profile-screen .btn-outline-primary {
+  color: #007bff;
+  border-color: #007bff;
+}
+
+.profile-screen .btn-outline-primary:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+
+
+/* Styles for the footer*/
+.footer-section a:hover {
+  color: #00aaff; 
+}
+
+.social-icons a {
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+  color: #00aaff; 
 }

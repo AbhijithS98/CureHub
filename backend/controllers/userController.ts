@@ -160,6 +160,40 @@ class UserController {
       next(error)
     }
   }
+
+  async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+  
+    try {
+      const email = req.query.email as string | undefined;
+   
+      if (!email) {
+        res.status(400).json({ message: "Email is required" });
+        return;
+      }  
+      
+      console.log("user's email is: ",email);
+      const user = await userService.getUser(email)
+      res.status(200).json({user});
+
+    } catch (error: any) {
+      console.error("Getting user profile error: ", error.message);
+      next(error)
+    }
+  }
+
+
+  async updateProfile(req:any, res: Response, next: NextFunction): Promise<void> {
+    console.log('entered user updation');
+    
+     try {
+       await userService.updateUser(req);
+       res.status(200).json({ message: 'user details updated successfully.'});
+ 
+     } catch (error: any) {
+       console.error("Updating user error: ", error.message);
+       next(error)
+     }
+   }
 }
 
 
