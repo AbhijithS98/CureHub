@@ -69,5 +69,16 @@ class UserRepository {
             return yield Doctor.findOne({ email });
         });
     }
+    updateUserDetails(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { name, email, phone, dob, address } = req.body;
+            yield User.updateOne({ email }, { name,
+                email,
+                phone,
+                dob,
+                address
+            });
+        });
+    }
 }
 export default new UserRepository();

@@ -179,5 +179,28 @@ class UserService {
             return Doctor;
         });
     }
+    getUser(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const User = yield userRepository.findUserByEmail(email);
+            if (!User) {
+                const error = Error('No User with this email.');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return User;
+        });
+    }
+    updateUser(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { email } = req.body;
+            const User = yield userRepository.findUserByEmail(email);
+            if (!User) {
+                const error = Error('No User with this email.');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            yield userRepository.updateUserDetails(req);
+        });
+    }
 }
 export default new UserService();

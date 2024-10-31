@@ -180,7 +180,7 @@ const RegisterScreen: React.FC = () => {
 
   return (
     <FormContainer>
-    <h2 className="text-dark">Register As Doctor</h2>
+    <h2 className="text-dark text-center">Register As Doctor</h2>
     <Form onSubmit={submitForm}>
 
       <Form.Group className="my-2" controlId="name">

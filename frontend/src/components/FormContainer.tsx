@@ -6,9 +6,9 @@ interface FormContainerProps {
 }
 const FormContainer = ({ children }:FormContainerProps) => {
   return (
-    <Container>
-      <Row className="justify-content-md-center mt-5">
-        <Col xs={12} md={6} className="card p-5">
+    <Container >
+      <Row className="justify-content-md-center  mt-5">
+        <Col xs={12} md={6} className="card p-5 border-secondary">
           {children}
         </Col>
       </Row>

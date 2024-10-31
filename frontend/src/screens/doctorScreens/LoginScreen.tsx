@@ -4,14 +4,15 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store.js';
 import { toast } from 'react-toastify';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { setDoctorCredentials } from '../../slices/doctorSlices/doctorAuthSlice.js';
 import { useDoctorLoginMutation } from '../../slices/doctorSlices/doctorApiSlice.js';
-import Loader from '../../components/userComponents/Loader';
 import IconLoader from '../../components/Spinner.js';
 
 const DoctorLoginScreen: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -23,6 +24,10 @@ const DoctorLoginScreen: React.FC = () => {
       navigate("/");
     }
   }, [navigate, doctorInfo]);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,13 +45,14 @@ const DoctorLoginScreen: React.FC = () => {
 
   return (
     <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
-      <Card className="p-4" style={{ maxWidth: '400px', width: '100%' }}>
+      <Card className="p-4 border-secondary" style={{ maxWidth: '400px', width: '100%' }}>
         <h3 className="text-center">Doctor Login</h3>
         <Card.Body>
           <Form onSubmit={handleLogin}>
             <Form.Group controlId="email" className="my-3">
               <Form.Label>Email Address</Form.Label>
               <Form.Control
+              className="border-secondary"
                 type="email"
                 placeholder="Enter email"
                 value={email}
@@ -57,13 +63,23 @@ const DoctorLoginScreen: React.FC = () => {
 
             <Form.Group controlId="password" className="my-3">
               <Form.Label>Password</Form.Label>
+              <div className="input-group">
               <Form.Control
-                type="password"
+                className="border-secondary"
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <Button
+              variant="outline-secondary"
+              onClick={togglePasswordVisibility}
+              style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+              >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </Button>
+              </div>
             </Form.Group>
 
             <div className="d-grid">
