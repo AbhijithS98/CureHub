@@ -32,7 +32,6 @@ import DoctorRegisterScreen from './screens/doctorScreens/RegisterScreen';
 import DoctorOtpScreen from './screens/doctorScreens/OtpScreen';
 import ConfirmationScreen from './screens/doctorScreens/ConfirmationScreen';
 import DoctorLoginScreen from './screens/doctorScreens/LoginScreen';
-import DoctorDashboard from './screens/doctorScreens/DoctorDashboard';
 import DoctorForgotPassScreen from './screens/doctorScreens/ForgotPassScreen'
 import DoctorResetPassScreen from './screens/doctorScreens/ResetPassScreen';
 import DoctorProfileScreen from './screens/doctorScreens/ProfileScreen';

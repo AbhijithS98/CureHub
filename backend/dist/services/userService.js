@@ -101,7 +101,7 @@ class UserService {
     clearCookie(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                res.cookie('userJwt', '', {
+                res.cookie('userRefreshJwt', '', {
                     httpOnly: true,
                     secure: process.env.NODE_ENV !== 'development',
                     sameSite: 'strict',

@@ -81,6 +81,12 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: updatedData,
       }),
     }),
+    userRefreshToken: builder.mutation({
+      query: () => ({
+        url: '/users/refresh-token',
+        method: 'POST',
+      }),
+    }),
   })
 })
 
@@ -97,5 +103,7 @@ export const {
   useUserViewDoctorQuery,
   useUserGetProfileQuery,
   useUserUpdateProfileMutation,
+  useUserRefreshTokenMutation,
+  
 
 } = userApiSlice;

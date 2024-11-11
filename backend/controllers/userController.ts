@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import userService from "../services/userService.js";
-import generateUserToken from "../utils/generateUserJwt.js";
+import generateUserTokens from "../utils/generateUserJwt.js";
+import verifyRefreshToken from "../utils/refreshToken.js";
 
 class UserController {
 
@@ -47,7 +48,7 @@ class UserController {
 
       const result = await userService.authenticateUser(email,password,res)
 
-      const token = generateUserToken(res,result._id as string)
+      const token = generateUserTokens(res,result._id as string)
 
       res.status(200).json({ 
         _id:result._id,
@@ -65,6 +66,26 @@ class UserController {
       next(error)
     }
   }
+
+
+
+  async refreshToken(req: Request, res: Response): Promise<void>{
+    const refreshToken = req.cookies.userRefreshJwt;
+  
+    if (!refreshToken) {
+      res.status(401).json({ message: 'No refresh token provided, authorization denied' });
+      return;
+    } 
+  
+      const newAccessToken = verifyRefreshToken(refreshToken,res)
+      console.log("token has refreshed");
+      
+    if(newAccessToken) {  
+      res.status(200).json({ token: newAccessToken });
+    }
+  };
+
+
 
 
   async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -170,8 +191,7 @@ class UserController {
         res.status(400).json({ message: "Email is required" });
         return;
       }  
-      
-      console.log("user's email is: ",email);
+     
       const user = await userService.getUser(email)
       res.status(200).json({user});
 

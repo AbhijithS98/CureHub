@@ -122,7 +122,7 @@ class UserService {
   async clearCookie(req: Request, res: Response): Promise<void> {
    
     try {
-      res.cookie('userJwt', '', {
+      res.cookie('userRefreshJwt', '', {
         httpOnly: true,
         secure: process.env.NODE_ENV !== 'development',
         sameSite: 'strict',

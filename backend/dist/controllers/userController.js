@@ -8,7 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import userService from "../services/userService.js";
-import generateUserToken from "../utils/generateUserJwt.js";
+import generateUserTokens from "../utils/generateUserJwt.js";
+import verifyRefreshToken from "../utils/refreshToken.js";
 class UserController {
     register(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -49,7 +50,7 @@ class UserController {
             const { email, password } = req.body;
             try {
                 const result = yield userService.authenticateUser(email, password, res);
-                const token = generateUserToken(res, result._id);
+                const token = generateUserTokens(res, result._id);
                 res.status(200).json({
                     _id: result._id,
                     name: result.name,
@@ -66,6 +67,21 @@ class UserController {
             }
         });
     }
+    refreshToken(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const refreshToken = req.cookies.userRefreshJwt;
+            if (!refreshToken) {
+                res.status(401).json({ message: 'No refresh token provided, authorization denied' });
+                return;
+            }
+            const newAccessToken = verifyRefreshToken(refreshToken, res);
+            console.log("token has refreshed");
+            if (newAccessToken) {
+                res.status(200).json({ token: newAccessToken });
+            }
+        });
+    }
+    ;
     logout(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -162,7 +178,6 @@ class UserController {
                     res.status(400).json({ message: "Email is required" });
                     return;
                 }
-                console.log("user's email is: ", email);
                 const user = yield userService.getUser(email);
                 res.status(200).json({ user });
             }

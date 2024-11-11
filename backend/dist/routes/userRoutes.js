@@ -13,6 +13,7 @@ router.post('/reset-password', userController.resetPassword);
 router.get('/list-doctors', userController.getDoctors);
 router.get('/get-doc-specializations', userController.getDocSpecializations);
 router.get('/view-doctor', userController.getSingleDoctor);
+router.post('/refresh-token', userController.refreshToken);
 router.get('/get-profile', verifyUserToken, userController.getProfile);
-router.put('/update-profile', userController.updateProfile);
+router.put('/update-profile', verifyUserToken, userController.updateProfile);
 export default router;
