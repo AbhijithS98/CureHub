@@ -9,8 +9,8 @@ const generateUserToken = (res: Response, userId: string): string =>{
 
   res.cookie('userJwt', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV !== 'development',  
-    sameSite: 'strict',
+    secure: process.env.NODE_ENV ==='production',  
+    sameSite: 'lax',
     maxAge: 30 * 24 * 60 * 60 * 1000,  // 30 days in milliseconds
   });
   return token;

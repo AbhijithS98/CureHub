@@ -1,47 +1,51 @@
 import React from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
+import { FaUserMd, FaUser, FaClipboardList } from "react-icons/fa";
+import "./style.css"; 
 
 const AdminDashboard: React.FC = () => {
   return (
-    <Container className="mt-4">
-      <h2 className="text-center mb-4 text-primary">Admin Dashboard</h2>
-      <Row className="mb-4">
+    <Container className="admin-dashboard mt-5">
+      <h2 className="text-center mb-5 text-primary">Admin Dashboard</h2>
+      <Row className="g-4">
         <Col md={4}>
-          <Card className="shadow p-3 bg-white rounded">
+          <Card className="dashboard-card shadow-sm">
             <Card.Body>
-              <Card.Title>Doctor Approval Requests</Card.Title>
-              <Card.Text>
-                View and manage all doctor's request.
-              </Card.Text>
-              <Card.Link href="/admin/list-unapproved-doctors">View Requests</Card.Link>
+              <FaClipboardList className="dashboard-icon text-primary" />
+              <Card.Title className="mt-3">Doctor Approval Requests</Card.Title>
+              <Card.Text>View and manage all doctor's request.</Card.Text>
+              <Card.Link href="/admin/list-unapproved-doctors" className="btn btn-primary">
+                View Requests
+              </Card.Link>
             </Card.Body>
           </Card> 
         </Col>
 
         <Col md={4}>
-          <Card className="shadow p-3 bg-white rounded">
+          <Card className="dashboard-card shadow-sm">
             <Card.Body>
-              <Card.Title>Manage Users</Card.Title>
-              <Card.Text>
-                View and manage all users.
-              </Card.Text>
-              <Card.Link href="/admin/list-users">View List</Card.Link>
+              <FaUser className="dashboard-icon text-primary" />
+              <Card.Title className="mt-3">Manage Users</Card.Title>
+              <Card.Text>View and manage all users.</Card.Text>
+              <Card.Link href="/admin/list-users" className="btn btn-primary">
+                View List
+              </Card.Link>
             </Card.Body>
           </Card> 
         </Col>
 
         <Col md={4}>
-          <Card className="shadow p-3 bg-white rounded">
+          <Card className="dashboard-card shadow-sm">
             <Card.Body>
-              <Card.Title>Manage Doctors</Card.Title>
-              <Card.Text>
-                View and manage all doctors.
-              </Card.Text>
-              <Card.Link href="/admin/list-doctors">View List</Card.Link>
+              <FaUserMd className="dashboard-icon text-primary" />
+              <Card.Title className="mt-3">Manage Doctors</Card.Title>
+              <Card.Text>View and manage all doctors.</Card.Text>
+              <Card.Link href="/admin/list-doctors" className="btn btn-primary">
+                View List
+              </Card.Link>
             </Card.Body>
           </Card> 
         </Col>
-      
       </Row>
     </Container>
   );

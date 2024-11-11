@@ -10,7 +10,7 @@ const generateDoctorToken = (res: Response, doctorId: string): string =>{
   res.cookie('doctorJwt', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV !== 'development',  
-    sameSite: 'strict',
+    sameSite: 'lax',
     maxAge: 30 * 24 * 60 * 60 * 1000,  
   });
   return token;

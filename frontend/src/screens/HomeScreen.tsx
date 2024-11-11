@@ -5,10 +5,12 @@ import { useUserListDoctorsQuery,
 } from '../slices/userSlices/userApiSlice';
 import './userScreens/style.css';
 import { IDoc } from '../../../shared/doctor.interface';
+import { useNavigate } from 'react-router-dom';
 
 const HomeScreen: React.FC = () => {
   const [doctors, setDoctors] = useState<IDoc[]>([]);
   const {data:docList,error:listingError,isLoading:listLoading} = useUserListDoctorsQuery({});
+  const navigate = useNavigate();
   
   useEffect(()=>{
     if(docList){
@@ -76,7 +78,7 @@ const HomeScreen: React.FC = () => {
         <Row className="g-4">
         {doctors.map((doctor) => (
           <Col md={3}>
-            <Card className="doctor-card p-3 shadow-sm">
+            <Card className="doctor-card p-3 shadow-sm" onClick={() => navigate("/view-doctor", { state: { email: doctor.email } })}>
               <Card.Img variant="top" src={`http://localhost:5000/${doctor.profilePicture}`} alt="Doctor Profile 1" />
               <Card.Body>
                 <h5 className="fw-bold">Dr. {doctor.name}</h5>

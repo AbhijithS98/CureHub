@@ -89,7 +89,7 @@ const ViewDoctorScreen: React.FC = () => {
                 {doctor.availability?.map((available, index) => {
                     const date = new Date(available.date);
                     return (
-                      <li className='mb-2' key={index}>
+                      <li className='mb-2 text-success' key={index}>
                        *{date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })} - {available.startTime} to {available.endTime}
                       </li>
                     );
