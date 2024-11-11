@@ -1,93 +1,91 @@
 import { apiSlice } from "../apiSlice";
 
-const ADMIN_URL = "http://localhost:5000/api/admin";
-
 
 export const adminApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     adminLogin: builder.mutation({
       query: (data) => ({
-        url: `${ADMIN_URL}/login`,
+        url: `/admin/login`,
         method: "POST",
         body: data,
       }),
     }),
     adminLogout: builder.mutation<void, void>({
       query: () => ({
-        url: `${ADMIN_URL}/logout`,
+        url: `/admin/logout`,
         method: "POST",
       }),
     }),
     adminListDoctors: builder.query({
       query: () => ({
-        url: `${ADMIN_URL}/list-doctors`,
+        url: `/admin/list-doctors`,
         method: "GET",
       }),
     }),
     adminListUnapprovedDoctors: builder.query({
       query: () => ({
-        url: `${ADMIN_URL}/list-unapproved-doctors`,
+        url: `/admin/list-unapproved-doctors`,
         method: "GET",
       }),
     }),
     adminApproveDoctor: builder.mutation({
       query: (data) => ({
-        url: `${ADMIN_URL}/approve-doctor`,
+        url: `/admin/approve-doctor`,
         method: "POST",
         body: data,
       }),
     }),
     adminRejectDoctor: builder.mutation({
       query: (data) => ({
-        url: `${ADMIN_URL}/reject-doctor`,
+        url: `/admin/reject-doctor`,
         method: "POST",
         body: data,
       }),
     }),
     adminPassResetLink: builder.mutation({
       query: (data) => ({
-        url: `${ADMIN_URL}/pass-reset-link`,
+        url: `/admin/pass-reset-link`,
         method: "POST",
         body: data,
       }),
     }),
     adminResetPassword: builder.mutation({
       query: (data) => ({
-        url: `${ADMIN_URL}/reset-password`,
+        url: `/admin/reset-password`,
         method: "POST",
         body: data,
       }),
     }),
     adminListUsers: builder.query({
       query: () => ({
-        url: `${ADMIN_URL}/list-users`,
+        url: `/admin/list-users`,
         method: "GET",
       }),
     }),
     adminBlockUser: builder.mutation({
       query: (data) => ({
-        url: `${ADMIN_URL}/block-user`,
+        url: `/admin/block-user`,
         method: "POST",
         body: data,
       }),
     }),
     adminUnblockUser: builder.mutation({
       query: (data) => ({
-        url: `${ADMIN_URL}/unblock-user`,
+        url: `/admin/unblock-user`,
         method: "POST",
         body: data,
       }),
     }),
     adminBlockDoctor: builder.mutation({
       query: (data) => ({
-        url: `${ADMIN_URL}/block-doctor`,
+        url: `/admin/block-doctor`,
         method: "POST",
         body: data,
       }),
     }),
     adminUnblockDoctor: builder.mutation({
       query: (data) => ({
-        url: `${ADMIN_URL}/unblock-doctor`,
+        url: `/admin/unblock-doctor`,
         method: "POST",
         body: data,
       }),

@@ -137,7 +137,7 @@ class UserController {
 
 
   async getDocSpecializations(req: Request, res: Response, next: NextFunction): Promise<void> {
-
+    
     try {     
       const result = await userService.fetchDocSpecs();
       res.status(200).json(result)

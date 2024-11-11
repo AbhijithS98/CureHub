@@ -21,7 +21,7 @@ interface AvailabilitySlot {
   _id?: ObjectId;
 }
 
-const ProfileScreen: React.FC = () => {
+const ProfileScreen: React.FC = () => { 
 
   const location = useLocation();
   const { email } = location.state || {};
@@ -145,6 +145,70 @@ const ProfileScreen: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.name.trim()) {
+      toast.error("Name is required")
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      toast.error("Email is required")
+      return;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      toast.error("Enter a valid email address")
+      return;
+    }
+    
+    if (!formData.phone.trim() || !/^\d{10}$/.test(formData.phone)) {
+      toast.error("Enter a valid 10-digit phone number")
+      return;
+    }
+    
+    if (!formData.specialization.trim()) {
+      toast.error("Specialization is required")
+      return;
+    }
+    if (!formData.medicalLicenseNumber.trim()) {
+      toast.error("Medical License Number is required")
+      return;
+    }
+    
+    if (!formData.gender) {
+      toast.error("Gender is required")
+      return;
+    }
+    if (!formData.dob) {
+      toast.error("Date of Birth is required")
+      return;
+    }
+    
+    if (!formData.experience || formData.experience < 0) {
+      toast.error("Experience must be a positive number")
+      return;
+    }
+    
+    if (!formData.consultationFee || formData.consultationFee < 0) {
+      toast.error("Consultation Fee must be a positive number")
+      return;
+    }
+    
+    if (!formData.clinicName.trim()) { 
+      toast.error("Clinic Name is required")
+      return;
+    }
+    if (!formData.district.trim()) {
+      toast.error("District is required")
+      return;
+    }
+    if (!formData.city.trim()) {
+      toast.error("City is required")
+      return;
+    }
+    if (!formData.bio.trim()) {
+      toast.error("Bio is required")
+      return;
+    }
+
     const updatedData = { ...formData };
 
     try {

@@ -1,0 +1,20 @@
+/*styles for admin dashboard*/
+
+.admin-dashboard {
+  padding: 20px 0;
+}
+
+.dashboard-card {
+  border-radius: 8px;
+  padding: 20px;
+  transition: transform 0.3s;
+}
+
+.dashboard-card:hover {
+  transform: scale(1.05);
+}
+
+.dashboard-icon {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}

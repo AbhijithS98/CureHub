@@ -198,7 +198,7 @@ const RegisterScreen: React.FC = () => {
         <Form.Label>Enter Email</Form.Label>
         <Form.Control
           className="border-primary"
-          type="email"
+          type="text"
           placeholder="Enter Email"
           value={formData.email}
           onChange={(e) => handleFormData({ email: e.target.value })}
