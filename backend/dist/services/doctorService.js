@@ -117,7 +117,7 @@ class DoctorService {
     clearCookie(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                res.cookie('doctorJwt', '', {
+                res.cookie('doctorRefreshJwt', '', {
                     httpOnly: true,
                     secure: process.env.NODE_ENV !== 'development',
                     sameSite: 'strict',

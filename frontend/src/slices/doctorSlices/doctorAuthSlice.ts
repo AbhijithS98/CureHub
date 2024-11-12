@@ -36,9 +36,15 @@ const doctorAuthSlice = createSlice({
       state.doctorInfo = null;
       localStorage.removeItem("doctorInfo");
     },
+    setDoctorToken: (state, action: PayloadAction<string>) => {
+      if (state.doctorInfo) {
+        state.doctorInfo.token = action.payload;
+        localStorage.setItem("doctorInfo", JSON.stringify({ ...state.doctorInfo, token: action.payload }));
+      }
+    }
   },
 });
 
-export const { setDoctorCredentials, clearDoctorCredentials } = doctorAuthSlice.actions;
+export const { setDoctorCredentials, clearDoctorCredentials, setDoctorToken } = doctorAuthSlice.actions;
 
 export default doctorAuthSlice.reducer;

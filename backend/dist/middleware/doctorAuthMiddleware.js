@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-const verifyAdminToken = (req, res, next) => {
+const verifyDoctorToken = (req, res, next) => {
     var _a;
     const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
     if (!token) {
@@ -8,8 +8,8 @@ const verifyAdminToken = (req, res, next) => {
         return;
     }
     try {
-        const decoded = jwt.verify(token, process.env.ADMIN_ACCESS_TOKEN_SECRET);
-        req.admin = { Id: decoded.adminId };
+        const decoded = jwt.verify(token, process.env.DOCTOR_ACCESS_TOKEN_SECRET);
+        req.doctor = { Id: decoded.doctorId };
         next();
     }
     catch (error) {
@@ -23,4 +23,4 @@ const verifyAdminToken = (req, res, next) => {
         }
     }
 };
-export default verifyAdminToken;
+export default verifyDoctorToken;

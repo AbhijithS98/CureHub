@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import adminService from "../services/adminService.js";
-import generateAdminToken from "../utils/generateAdminJwt.js";
+import generateAdminTokens from "../utils/generateAdminJwt.js";
+import verifyRefreshToken from "../utils/refreshToken.js";
 
 class AdminController{
   
@@ -10,7 +11,7 @@ class AdminController{
       const {email, password} = req.body;
       const admin = await adminService.authenticateAdmin(email,password,res);
 
-      const token = generateAdminToken(res, admin._id as string);
+      const token = generateAdminTokens(res, admin._id as string);
 
       res.status(200).json({
         message: "Admin Login success!",
@@ -185,6 +186,25 @@ class AdminController{
       next(error)
     }
   }
+
+
+
+  async refreshToken(req: Request, res: Response): Promise<void>{
+    const refreshToken = req.cookies.adminRefreshJwt;
+  
+    if (!refreshToken) {
+      res.status(401).json({ message: 'No adminRefresh token provided, authorization denied' });
+      return;
+    } 
+  
+      const newAccessToken = verifyRefreshToken(refreshToken,'admin',res)
+      console.log("admin token has refreshed");
+      
+    if(newAccessToken) {  
+      res.status(200).json({ token: newAccessToken });
+    }
+  };
+
 }
 
 export default new AdminController();

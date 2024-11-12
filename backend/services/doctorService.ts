@@ -142,7 +142,7 @@ class DoctorService {
   async clearCookie(req: Request, res: Response): Promise<void> {
    
     try {
-      res.cookie('doctorJwt', '', {
+      res.cookie('doctorRefreshJwt', '', {
         httpOnly: true,
         secure: process.env.NODE_ENV !== 'development',
         sameSite: 'strict',

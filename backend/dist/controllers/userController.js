@@ -74,7 +74,7 @@ class UserController {
                 res.status(401).json({ message: 'No refresh token provided, authorization denied' });
                 return;
             }
-            const newAccessToken = verifyRefreshToken(refreshToken, res);
+            const newAccessToken = verifyRefreshToken(refreshToken, 'user', res);
             console.log("token has refreshed");
             if (newAccessToken) {
                 res.status(200).json({ token: newAccessToken });

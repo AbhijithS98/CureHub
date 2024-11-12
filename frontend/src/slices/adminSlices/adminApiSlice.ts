@@ -90,6 +90,12 @@ export const adminApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    adminRefreshToken: builder.mutation({
+      query: () => ({
+        url: '/admin/refresh-token',
+        method: 'POST',
+      }),
+    }),
   })
 })
 
@@ -107,6 +113,7 @@ export const {
   useAdminUnblockUserMutation,
   useAdminBlockDoctorMutation,
   useAdminUnblockDoctorMutation,
+  useAdminRefreshTokenMutation
   
 } = adminApiSlice;
 

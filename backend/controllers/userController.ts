@@ -77,7 +77,7 @@ class UserController {
       return;
     } 
   
-      const newAccessToken = verifyRefreshToken(refreshToken,res)
+      const newAccessToken = verifyRefreshToken(refreshToken,'user',res)
       console.log("token has refreshed");
       
     if(newAccessToken) {  

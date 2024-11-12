@@ -2,19 +2,25 @@ import  jwt  from "jsonwebtoken";
 import { Response } from "express";
 
 
-const generateAdminToken = (res: Response, adminId: string): string =>{
-  const token = jwt.sign({ adminId }, process.env.JWT_SECRET_ADMIN as string, {
-    expiresIn: '30d',
+const generateAdminTokens = (res: Response, adminId: string): string =>{
+  //access token
+  const accessToken = jwt.sign({ adminId }, process.env.ADMIN_ACCESS_TOKEN_SECRET as string, {
+    expiresIn: '10m',
   });
 
-  res.cookie('adminJwt', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV !== 'development',  
-    sameSite: 'lax',
-    maxAge: 30 * 24 * 60 * 60 * 1000,  
-});
+  //refresh token
+  const refreshToken = jwt.sign({ adminId }, process.env.ADMIN_REFRESH_TOKEN_SECRET as string, {
+    expiresIn: '1d',
+  });
 
-  return token;
+  res.cookie('adminRefreshJwt', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV ==='production',  
+    sameSite: 'lax',
+    maxAge: 1 * 24 * 60 * 60 * 1000,  // 1 day in milliseconds
+  });
+  
+  return accessToken;
 }
 
-export default generateAdminToken;
+export default generateAdminTokens; 

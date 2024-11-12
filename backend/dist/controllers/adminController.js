@@ -8,14 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import adminService from "../services/adminService.js";
-import generateAdminToken from "../utils/generateAdminJwt.js";
+import generateAdminTokens from "../utils/generateAdminJwt.js";
+import verifyRefreshToken from "../utils/refreshToken.js";
 class AdminController {
     login(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { email, password } = req.body;
                 const admin = yield adminService.authenticateAdmin(email, password, res);
-                const token = generateAdminToken(res, admin._id);
+                const token = generateAdminTokens(res, admin._id);
                 res.status(200).json({
                     message: "Admin Login success!",
                     adminId: admin._id,
@@ -183,5 +184,20 @@ class AdminController {
             }
         });
     }
+    refreshToken(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const refreshToken = req.cookies.adminRefreshJwt;
+            if (!refreshToken) {
+                res.status(401).json({ message: 'No adminRefresh token provided, authorization denied' });
+                return;
+            }
+            const newAccessToken = verifyRefreshToken(refreshToken, 'admin', res);
+            console.log("admin token has refreshed");
+            if (newAccessToken) {
+                res.status(200).json({ token: newAccessToken });
+            }
+        });
+    }
+    ;
 }
 export default new AdminController();

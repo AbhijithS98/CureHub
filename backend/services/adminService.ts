@@ -35,7 +35,7 @@ class AdminService{
   async clearCookie(req: Request, res: Response): Promise<void> {
 
     try {
-      res.cookie('adminJwt', '', {
+      res.cookie('adminRefreshJwt', '', {
         httpOnly: true,
         secure: process.env.NODE_ENV !== 'development',
         sameSite: 'strict',

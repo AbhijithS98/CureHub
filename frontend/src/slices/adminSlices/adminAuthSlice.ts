@@ -1,4 +1,4 @@
-import {  createSlice } from '@reduxjs/toolkit'
+import {  createSlice, PayloadAction  } from '@reduxjs/toolkit'
 
 interface AdminInfo {
   adminId: string;
@@ -25,9 +25,15 @@ const adminAuthSlice = createSlice({
         clearAdminCredentials : (state) => {
             state.adminInfo = null
             localStorage.removeItem('adminInfo')
+        },
+        setAdminToken: (state, action: PayloadAction<string>) => {
+            if (state.adminInfo) {
+              state.adminInfo.token = action.payload;
+              localStorage.setItem("adminInfo", JSON.stringify({ ...state.adminInfo, token: action.payload }));
+            }
         }
     }
 })
 
-export const { setAdminCredentials, clearAdminCredentials } = adminAuthSlice.actions
+export const { setAdminCredentials, clearAdminCredentials, setAdminToken } = adminAuthSlice.actions
 export default adminAuthSlice.reducer;

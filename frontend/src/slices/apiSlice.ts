@@ -2,6 +2,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store.js";
 import { Mutex } from "async-mutex";
 import { setToken, clearCredentials } from "./userSlices/userAuthSlice.js";
+import { setDoctorToken, clearDoctorCredentials } from "./doctorSlices/doctorAuthSlice.js";
+import { setAdminToken, clearAdminCredentials } from "./adminSlices/adminAuthSlice.js";
 import { toast } from "react-toastify";
 const mutex = new Mutex();
 
@@ -19,7 +21,7 @@ let baseQuery = fetchBaseQuery({
 
     if (endpoint.startsWith("user")) {
       token = state.userAuth?.userInfo?.token;
-    } else if (endpoint.startsWith("doctors")) {
+    } else if (endpoint.startsWith("doctor")) {
       token = state.doctorAuth?.doctorInfo?.token;
     } else if (endpoint.startsWith("admin")) {
       token = state.adminAuth?.adminInfo?.token;
@@ -48,6 +50,14 @@ const baseQueryWithReauth: typeof baseQuery = async (
   api,
   extraOptions
 ) => {
+  let url = "";
+  if (typeof args === "string") {
+    url = args;
+  } else if (args.url) {
+    url = args.url;
+  } 
+  const state = api.getState() as RootState;
+
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
   const error = result.error as CustomError;
@@ -59,8 +69,29 @@ const baseQueryWithReauth: typeof baseQuery = async (
       if (!mutex.isLocked()) {
         const release = await mutex.acquire();
         try {
+         
+          let refreshUrl = "";
+          let setTokenAction;
+          let clearCredentialsAction;
+
+          if (url.startsWith("/users")) {
+            refreshUrl = "/users/refresh-token";
+            setTokenAction = setToken;
+            clearCredentialsAction = clearCredentials; 
+
+          } else if (url.startsWith("/doctors")) {
+            refreshUrl = "/doctors/refresh-token";
+            setTokenAction = setDoctorToken; 
+            clearCredentialsAction = clearDoctorCredentials; 
+
+          } else if (url.startsWith("/admin")) {
+            refreshUrl = "/admin/refresh-token";
+            setTokenAction = setAdminToken; 
+            clearCredentialsAction = clearAdminCredentials; 
+          }
+
           const refreshResult = await baseQuery(
-            { url: "/users/refresh-token", method: "POST" },
+            { url: refreshUrl, method: "POST" },
             api,
             extraOptions
           );
@@ -68,11 +99,11 @@ const baseQueryWithReauth: typeof baseQuery = async (
           if (refreshResult.data) {
             const { token } = refreshResult.data as RefreshTokenResponse;
 
-            api.dispatch(setToken(token));
+            api.dispatch({ type: setTokenAction, payload: token });
 
             result = await baseQuery(args, api, extraOptions);
           } else {
-            api.dispatch(clearCredentials());
+            api.dispatch({ type: clearCredentialsAction });
             toast.error("Session expired. Please log in again.");
           }
         } finally {

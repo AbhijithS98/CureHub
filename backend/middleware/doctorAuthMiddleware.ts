@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 
-interface JwtAdminPayload {
-  adminId: string;  
+interface JwtDoctorPayload {
+  doctorId: string;  
 }
 
-const verifyAdminToken = (req: Request, res: Response, next: NextFunction) => {
+const verifyDoctorToken = (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers.authorization?.split(' ')[1]; 
 
   if (!token) {
@@ -15,8 +15,8 @@ const verifyAdminToken = (req: Request, res: Response, next: NextFunction) => {
   } 
 
   try {
-    const decoded = jwt.verify(token, process.env.ADMIN_ACCESS_TOKEN_SECRET as string) as JwtAdminPayload;
-    req.admin = { Id: decoded.adminId };
+    const decoded = jwt.verify(token, process.env.DOCTOR_ACCESS_TOKEN_SECRET as string) as JwtDoctorPayload;
+    req.doctor = { Id: decoded.doctorId };
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
@@ -29,4 +29,4 @@ const verifyAdminToken = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default verifyAdminToken;
+export default verifyDoctorToken;

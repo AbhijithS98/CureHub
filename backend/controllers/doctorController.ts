@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import doctorService from "../services/doctorService.js";
-import generateDoctorToken from "../utils/generateDoctorJwt.js";
-
+import generateDoctorTokens from "../utils/generateDoctorJwt.js";
+import verifyRefreshToken from "../utils/refreshToken.js";
 
 
 class DoctorController {
@@ -62,7 +62,7 @@ class DoctorController {
 
       const result = await doctorService.authenticateDoctor(email,password,res)
 
-      const token = generateDoctorToken(res,result._id as string)
+      const token = generateDoctorTokens(res,result._id as string)
 
       res.status(200).json({ 
         _id:result._id,
@@ -85,6 +85,25 @@ class DoctorController {
       next(error)
     }
   }
+
+
+  async refreshToken(req: Request, res: Response): Promise<void>{
+    const refreshToken = req.cookies.doctorRefreshJwt;
+  
+    if (!refreshToken) {
+      res.status(401).json({ message: 'No doctorRefresh token provided, authorization denied' });
+      return;
+    } 
+  
+      const newAccessToken = verifyRefreshToken(refreshToken,'doctor',res)
+      console.log("doctor token has refreshed");
+      
+    if(newAccessToken) {  
+      res.status(200).json({ token: newAccessToken });
+    }
+  };
+
+
 
 
   async logout(req: Request, res: Response, next: NextFunction): Promise<void> {

@@ -2,18 +2,25 @@ import  jwt  from "jsonwebtoken";
 import { Response } from "express";
 
 
-const generateDoctorToken = (res: Response, doctorId: string): string =>{
-  const token = jwt.sign({ doctorId }, process.env.JWT_SECRET_DOCTOR as string, {
-    expiresIn: '30d',
+const generateDoctorTokens = (res: Response, doctorId: string): string =>{
+  //access token
+  const accessToken = jwt.sign({ doctorId }, process.env.DOCTOR_ACCESS_TOKEN_SECRET as string, {
+    expiresIn: '10m',
   });
 
-  res.cookie('doctorJwt', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV !== 'development',  
-    sameSite: 'lax',
-    maxAge: 30 * 24 * 60 * 60 * 1000,  
+  //refresh token
+  const refreshToken = jwt.sign({ doctorId }, process.env.DOCTOR_REFRESH_TOKEN_SECRET as string, {
+    expiresIn: '1d',
   });
-  return token;
+
+  res.cookie('doctorRefreshJwt', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV ==='production',  
+    sameSite: 'lax',
+    maxAge: 1 * 24 * 60 * 60 * 1000,  // 1 day in milliseconds
+  });
+  
+  return accessToken;
 }
 
-export default generateDoctorToken; 
+export default generateDoctorTokens; 
