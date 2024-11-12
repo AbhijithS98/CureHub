@@ -8,13 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import mongoose from "mongoose";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 const connectDB = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log('mongouri:', process.env.MONGO_URI);
         yield mongoose.connect(process.env.MONGO_URI);
-        console.log('Database connected');
+        console.log("Database connected");
     }
     catch (error) {
         console.error(error.message);
