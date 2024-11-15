@@ -78,27 +78,43 @@ const ViewDoctorScreen: React.FC = () => {
                       )}
                     </section>
                 </Col>
-               {/* Right section - Ticket Price & Time Slots */}
+                
+            {/* Right section - Ticket Price & Time Slots */}
             <Col md={5}>
-              <Card className="p-3 shadow-sm appointment-box">
-                <h5>Ticket Price </h5>
-                <p className="display-6">₹ {doctor.consultationFee}</p>
+              <Card className="p-4 shadow-lg rounded border-0">
+                  {/* Ticket Price */}
+                  <div className="text-center mb-4">
+                    <h5 className="text-uppercase text-muted">Ticket Price</h5>
+                    <p className="display-4 text-primary fw-bold">₹ {doctor.consultationFee}</p>
+                  </div>
 
-                <h5>Available Time Slots</h5>
-                <ul className="list-unstyled">
-                {doctor.availability?.map((available, index) => {
-                    const date = new Date(available.date);
-                    return (
-                      <li className='mb-2 text-success' key={index}>
-                       *{date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })} - {available.startTime} to {available.endTime}
-                      </li>
-                    );
-                })}
-                </ul>
+                  {/* Available Dates */}
+                  <div className="mb-4">
+                    <h5 className="text-uppercase text-muted">Available Dates</h5>
+                    <ul className="list-group list-group-flush">
+                      {doctor.availability?.map((available, index) => {
+                        const date = new Date(available.date);
+                        return (
+                          <li
+                            className="list-group-item d-flex align-items-center text-success fw-bold"
+                            key={index}
+                          >
+                            <i className="bi bi-calendar-check-fill me-2"></i>
+                            {date.toLocaleDateString(undefined, {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
 
-                <Button variant="primary" className="w-100 mt-3" >
-                  Book an Appointment
-                </Button>
+                  {/* Book Button */}
+                  <Button variant="primary" className="w-100 py-2 shadow rounded-pill">
+                    <i className="bi bi-calendar-plus me-2"></i> Book an Appointment
+                  </Button>
               </Card>
             </Col>
           </Row>

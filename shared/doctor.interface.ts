@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import { ObjectId, Types } from "mongoose";
 
 export interface IDoc {
   _id:ObjectId;
@@ -43,9 +43,13 @@ export interface IDoc {
   availability?: [
     {
       date: Date;
-      startTime: string;
-      endTime: string;
-      _id:ObjectId;
+      timeSlots: {
+        time: string; 
+        isBooked: boolean; 
+        user: ObjectId | null;
+        _id: ObjectId; 
+      }[];
+      _id: ObjectId
     }
   ];
   isVerified: boolean;

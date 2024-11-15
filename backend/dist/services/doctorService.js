@@ -212,5 +212,18 @@ class DoctorService {
             yield doctorRepository.deleteSlot(docEmail, slotId);
         });
     }
+    removeTimeSlot(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { slotId, timeSlotId, docEmail } = req.body;
+            console.log("slotId: ", slotId, "timeSlotId: ", timeSlotId, "docEmail: ", docEmail);
+            const Doctor = yield doctorRepository.findDoctorByEmail(docEmail);
+            if (!Doctor) {
+                const error = Error('No doctor with this email.');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            yield doctorRepository.deleteTimeSlot(docEmail, slotId, timeSlotId);
+        });
+    }
 }
 export default new DoctorService();

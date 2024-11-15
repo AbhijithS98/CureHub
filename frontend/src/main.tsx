@@ -35,6 +35,7 @@ import DoctorLoginScreen from './screens/doctorScreens/LoginScreen';
 import DoctorForgotPassScreen from './screens/doctorScreens/ForgotPassScreen'
 import DoctorResetPassScreen from './screens/doctorScreens/ResetPassScreen';
 import DoctorProfileScreen from './screens/doctorScreens/ProfileScreen';
+import DoctorAvailabilityScreen from './screens/doctorScreens/SetAvailabilityScreen';
 
 {/* Admin screens imports */}
 import AdminLoginScreen from './screens/adminScreens/LoginScreen';
@@ -78,6 +79,10 @@ const router = createBrowserRouter(
         <Route
           path="profile"
           element={<DoctorProtectedRoute><DoctorProfileScreen /></DoctorProtectedRoute>}
+        />
+        <Route
+          path="availabilities"
+          element={<DoctorProtectedRoute><DoctorAvailabilityScreen /></DoctorProtectedRoute>}
         />
       </Route>
 

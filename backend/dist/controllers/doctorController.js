@@ -193,5 +193,18 @@ class DoctorController {
             }
         });
     }
+    deleteTimeSlot(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('entered time slot deletion');
+            try {
+                yield doctorService.removeTimeSlot(req);
+                res.status(200).json({ message: 'Time Slot deleted successfully.' });
+            }
+            catch (error) {
+                console.error("deleting time slot error: ", error.message);
+                next(error);
+            }
+        });
+    }
 }
 export default new DoctorController();

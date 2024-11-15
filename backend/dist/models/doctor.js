@@ -93,8 +93,13 @@ const doctorSchema = new Schema({
     availability: [
         {
             date: { type: Date },
-            startTime: { type: String },
-            endTime: { type: String }
+            timeSlots: [
+                {
+                    time: { type: String, },
+                    isBooked: { type: Boolean, default: false },
+                    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+                },
+            ],
         }
     ],
     isVerified: {

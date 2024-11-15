@@ -260,6 +260,23 @@ async updateSlots(req: any): Promise<void> {
 
     await doctorRepository.deleteSlot(docEmail,slotId);
   }
+
+
+  async removeTimeSlot(req: any): Promise<void> {
+    
+    const { slotId, timeSlotId, docEmail } = req.body;
+    console.log("slotId: ",slotId, "timeSlotId: ",timeSlotId, "docEmail: ", docEmail);
+  
+    const Doctor = await doctorRepository.findDoctorByEmail(docEmail);
+
+    if(!Doctor){
+      const error = Error('No doctor with this email.');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+
+    await doctorRepository.deleteTimeSlot(docEmail,slotId,timeSlotId);
+  }
 }
 
 export default new DoctorService();

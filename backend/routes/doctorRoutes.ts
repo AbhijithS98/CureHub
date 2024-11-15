@@ -19,6 +19,7 @@ router.get('/get-profile',verifyDoctorToken,doctorController.getProfile);
 router.put('/update-profile',verifyDoctorToken,doctorController.updateProfile);
 router.put('/add-slots',verifyDoctorToken,doctorController.addNewSlots);
 router.delete('/delete-slot',verifyDoctorToken,doctorController.deleteSlot);
+router.delete('/delete-timeSlot',verifyDoctorToken,doctorController.deleteTimeSlot);
 
 
 export default router;

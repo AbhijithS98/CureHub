@@ -8,17 +8,21 @@ import { toast } from 'react-toastify';
 import IconLoader from "../../components/Spinner";
 import { FaTrash } from 'react-icons/fa';
 import { useDoctorUpdateProfileMutation } from '../../slices/doctorSlices/doctorApiSlice';
-import { useDoctorAddSlotsMutation, 
-         useDoctorLogoutMutation, 
-         useDoctorDeleteSlotMutation } from '../../slices/doctorSlices/doctorApiSlice';
+import { useDoctorLogoutMutation, 
+         useDoctorDeleteSlotMutation,
+         useDoctorDeleteTimeSlotMutation } from '../../slices/doctorSlices/doctorApiSlice';
 import { clearDoctorCredentials } from "../../slices/doctorSlices/doctorAuthSlice.js";
 import { ObjectId } from 'mongoose';
 
 interface AvailabilitySlot {
-  date: Date;
-  startTime: string;
-  endTime: string;
-  _id?: ObjectId;
+  date: Date; 
+  timeSlots: {
+    time: string; 
+    isBooked: boolean; 
+    user: ObjectId | null; 
+    _id: ObjectId;
+  }[];
+  _id: ObjectId;
 }
 
 const ProfileScreen: React.FC = () => { 
@@ -30,12 +34,13 @@ const ProfileScreen: React.FC = () => {
   const doctorInfo:IDoc = data?.doctor;
   const [updateDoctorProfile, {isLoading:updateLoading}] = useDoctorUpdateProfileMutation();
   const [removeSlot, {isLoading:deleteSlotLoading}] = useDoctorDeleteSlotMutation();
-  const [addSlots, {isLoading:addSlotLoading}] = useDoctorAddSlotsMutation();
+  const [removeTimeSlot, {isLoading:deleteTimeSlotLoading}] = useDoctorDeleteTimeSlotMutation();
   const [logout] = useDoctorLogoutMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
+    
+  const [viewingDate, setViewingDate] = useState<AvailabilitySlot | null>(null);
+
   const [formData, setFormData] = useState({
     name:  '',
     email: '',
@@ -90,44 +95,6 @@ const ProfileScreen: React.FC = () => {
     setFormData({ ...formData, [id]: value });
   };
 
-  const handleAvailabilityChange = (index:number, field:keyof AvailabilitySlot, value:string) => {
-    const updatedAvailability = [...availability];
-    if (field === 'date') {
-      updatedAvailability[index][field] = new Date(value); 
-    } else if(field === 'startTime' || field === 'endTime'){
-      updatedAvailability[index][field] = value; 
-    }
-    setAvailability(updatedAvailability);
-  };
-
-
-  const addAvailabilitySlot = () => {
-    setAvailability([...availability, { date: new Date(), startTime: '', endTime: '' }]);
-  };
-
-  
-  const removeAvailabilitySlot = (index:number) => {
-    const updatedAvailability = availability.filter((_, i) => i !== index);
-    setAvailability(updatedAvailability);
-  };
-
-  const updateSlots = async () => {
-    if(availability.length){
-      const docEmail = doctorInfo.email
-      const newSlots = availability;
-      
-      try{
-        await addSlots({ docEmail, newSlots }).unwrap();
-        toast.success("Slots added successfully!");
-        refetch();
-        setAvailability([])
-      }catch (error:any) {
-        console.error("Error adding availability: ", error);
-        toast.error(error.message || "Error adding availability.")
-      }
-    }
-  }
-
   const deleteSlot = async (slotId:ObjectId) => {
       const docEmail = doctorInfo.email
       
@@ -140,7 +107,20 @@ const ProfileScreen: React.FC = () => {
         console.error("Error deleting slot: ", error);
         toast.error(error.message || "Error deleting slot.")
       }
+  }
+
+  const deleteTimeSlot = async (slotId:ObjectId, timeSlotId:ObjectId) => {
+    const docEmail = doctorInfo.email
     
+    try{
+      await removeTimeSlot({slotId, timeSlotId, docEmail}).unwrap();
+      toast.success("Time Slot deleted successfully!");
+      refetch();
+
+    }catch (error:any) {
+      console.error("Error deleting time slot: ", error);
+      toast.error(error.message || "Error deleting time slot.")
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -247,16 +227,26 @@ const ProfileScreen: React.FC = () => {
             <p><strong>Experience:</strong> {doctorInfo.experience}</p>
           </div>
         );
+
       case 'availabilities':
         return (
           <div>
-            <h3>Manage availabilities</h3>
+            <div className="d-flex justify-content-between align-items-center">
+              <h3>Manage availabilities</h3>
+              <Button 
+                className="btn btn-success"
+                onClick={() => navigate("/doctor/availabilities", {state : { docEmail: doctorInfo.email }} )} 
+              >
+                Set New Slots
+              </Button>
+            </div>
+            {viewingDate === null ? ( 
             <Table striped bordered hover responsive className="mt-3">
               <thead>
                 <tr>
                   <th>Date</th>
-                  <th>Start Time</th>
-                  <th>End Time</th>
+                  <th>Total Slots</th>
+                  <th>Actions</th>
                   <th>Delete</th>
                 </tr>
               </thead>
@@ -266,8 +256,16 @@ const ProfileScreen: React.FC = () => {
                   return (
                   <tr key={index}>
                     <td>{date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</td>
-                    <td>{slot.startTime}</td>
-                    <td>{slot.endTime}</td>
+                    <td>{slot.timeSlots.length}</td>
+                    <td>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => setViewingDate(slot)}
+                        >
+                          View Slots
+                        </Button>
+                      </td>
                     <td><Button className="btn btn-danger" onClick={()=>deleteSlot(slot._id)}>
                             <FaTrash />
                         </Button>
@@ -277,58 +275,46 @@ const ProfileScreen: React.FC = () => {
                 })}
               </tbody>
             </Table>
-            {availability.map((slot, index) => (
-                <Row key={index} className="mb-3">
-                  <Col md={4}>
-                    <Form.Group controlId={`availabilityDate-${index}`}>
-                      <Form.Label>Date</Form.Label>
-                      <Form.Control
-                        type="date"
-                        value={slot.date ? new Date(slot.date).toISOString().split('T')[0] : ''}
-                        onChange={(e) => handleAvailabilityChange(index, 'date', e.target.value)}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group controlId={`availabilityStartTime-${index}`}>
-                      <Form.Label>Start Time</Form.Label>
-                      <Form.Control
-                        type="time"
-                        value={slot.startTime}
-                        onChange={(e) => handleAvailabilityChange(index, 'startTime', e.target.value)}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Group controlId={`availabilityEndTime-${index}`}>
-                      <Form.Label>End Time</Form.Label>
-                      <Form.Control
-                        type="time"
-                        value={slot.endTime}
-                        onChange={(e) => handleAvailabilityChange(index, 'endTime', e.target.value)}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col className="text-end mt-2 ">
-                    <Button variant="danger" size="sm" onClick={() => removeAvailabilitySlot(index)}>
-                      Remove
-                    </Button>
-                    
-                  </Col>
-                </Row>  
-              ))}
-
-              <div className="d-flex justify-content-between mb-2">
-              <Button  variant="secondary" size="sm" onClick={addAvailabilitySlot}>
-                Add new Slot
-              </Button>
-              {availability.length? (
-                <Button  variant="success" size="sm" onClick={updateSlots}>
-                  Save new Slot
-                </Button> ) : null}
-              </div>
+            ) : (
+              <>
+                <Table striped bordered hover responsive className="mt-3">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {viewingDate.timeSlots.map((timeSlot, index) => (
+                        <tr key={index}>
+                          <td>{new Date(viewingDate.date).toLocaleDateString('en-GB')}</td>
+                          <td>{timeSlot.time}</td>
+                          <td>{timeSlot.isBooked ? <Button variant='danger' size='sm'>Booked</Button> : 
+                                                   <Button variant='success' size='sm'>Available</Button>}
+                          </td>
+                          <td>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => deleteTimeSlot(viewingDate._id!, timeSlot._id)}
+                            >
+                              <FaTrash />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                  <Button variant="secondary" size="sm" onClick={()=>setViewingDate(null)} className="mb-3">
+                    Back
+                  </Button>
+                </tbody>
+               </Table>
+              </>
+            )}
           </div>
         );
+
       case 'appointments':
       return (
         <div>

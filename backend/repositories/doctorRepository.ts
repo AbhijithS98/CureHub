@@ -79,8 +79,7 @@ class DoctorRepository {
       }
     )
   }
-
-
+  
   async addSlots(email: string, newSlots: any): Promise<void> {
     await Doctor.updateOne(
       { email }, 
@@ -97,6 +96,14 @@ class DoctorRepository {
     );
   }
   
+
+  async deleteTimeSlot(email: string, slotId: string, timeSlotId: string): Promise<void> {
+    await Doctor.updateOne(
+      { email, "availability._id": slotId },
+      { $pull: { "availability.$.timeSlots": { _id: timeSlotId } } },
+      { new: true }
+    );
+  }
 
 }
 

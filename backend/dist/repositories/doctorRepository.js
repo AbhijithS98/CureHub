@@ -82,5 +82,10 @@ class DoctorRepository {
             yield Doctor.updateOne({ email }, { $pull: { availability: { _id: slotId } } }, { new: true });
         });
     }
+    deleteTimeSlot(email, slotId, timeSlotId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Doctor.updateOne({ email, "availability._id": slotId }, { $pull: { "availability.$.timeSlots": { _id: timeSlotId } } }, { new: true });
+        });
+    }
 }
 export default new DoctorRepository();

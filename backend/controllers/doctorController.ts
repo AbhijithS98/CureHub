@@ -209,6 +209,21 @@ class DoctorController {
        next(error)
      }
    }
+
+
+   async deleteTimeSlot(req:any, res: Response, next: NextFunction): Promise<void> {
+    console.log('entered time slot deletion');
+     
+     try {
+
+       await doctorService.removeTimeSlot(req);
+       res.status(200).json({ message: 'Time Slot deleted successfully.'});
+ 
+     } catch (error: any) {
+       console.error("deleting time slot error: ", error.message);
+       next(error)
+     }
+   }
 }
 
 export default new DoctorController();

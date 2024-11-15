@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 
 
 export interface IDoctor extends Document {
@@ -43,8 +43,11 @@ export interface IDoctor extends Document {
   availability?: [
     {
       date: Date;
-      startTime: string;
-      endTime: string;
+      timeSlots: {
+        time: string; 
+        isBooked: boolean; 
+        user: Types.ObjectId | null; 
+      }[];
     }
   ];
   isVerified: boolean;
@@ -148,8 +151,13 @@ const doctorSchema: Schema<IDoctor> = new Schema(
     availability: [
       {
         date: { type: Date },
-        startTime: { type: String },
-        endTime: { type: String }
+        timeSlots: [
+          {
+            time: { type: String,}, 
+            isBooked: { type: Boolean, default: false },
+            user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, 
+          },
+        ],
       }
     ],
     isVerified: {
