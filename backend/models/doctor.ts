@@ -33,7 +33,7 @@ export interface IDoctor extends Document {
   reviews?: [
     {
       patientId: string; 
-      review: string;     
+      comment: string;     
       createdAt: Date;    
     }
   ];
@@ -132,7 +132,7 @@ const doctorSchema: Schema<IDoctor> = new Schema(
     reviews: [
       {
         patientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        review: { type: String },
+        comment: { type: String },
         createdAt: { type: Date, default: Date.now },
       },
     ],

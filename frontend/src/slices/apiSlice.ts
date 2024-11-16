@@ -113,9 +113,22 @@ const baseQueryWithReauth: typeof baseQuery = async (
         await mutex.waitForUnlock();
         result = await baseQuery(args, api, extraOptions);
       }
-    } else {
-      // api.dispatch(clearCredentials());
-    }
+    } 
+
+  } else if(error && error.status === 403){
+    const errMsg = error.data?.message || error.data?.error;
+    if(errMsg === 'Your account has been blocked. Please contact support.'){
+      if (url.startsWith("/users")) {
+     
+        api.dispatch(clearCredentials())
+        window.location.href =  `/user/login?message=${encodeURIComponent(errMsg)}`;
+
+      } else if(url.startsWith("/doctors")){
+        api.dispatch(clearDoctorCredentials())
+        toast.error(errMsg);
+        window.location.href = "/doctor/login";
+      }
+    } 
   }
 
   return result;
@@ -125,4 +138,5 @@ export const apiSlice = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["User", "Doctor", "Admin"],
   endpoints: (builder) => ({}),
+  keepUnusedDataFor: 0,
 });

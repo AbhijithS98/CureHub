@@ -6,6 +6,10 @@ class UserRepository {
   async findUserByEmail(email: string): Promise<IUser | null> {
     return await User.findOne({ email });
   }
+
+  async findUserById(_id: string): Promise<IUser | null> {
+    return await User.findOne({ _id });
+  }
  
   async findUserByPwResetToken(token: string): Promise<IUser | null> {
     return await User.findOne({ pwResetToken:token, pwTokenExpiresAt: { $gt: new Date() } });

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate, } from 'react-router-dom';
 import { Container, Card, Button, Spinner, Row, Col } from 'react-bootstrap';
 import { IDoc } from '../../../../shared/doctor.interface';
 import { useUserViewDoctorQuery } from '../../slices/userSlices/userApiSlice';
@@ -8,6 +8,7 @@ import './style.css';
 
 const ViewDoctorScreen: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const email = location.state?.email;
   const [doctor, setDoctor] = useState<IDoc | null>(null);
 
@@ -88,31 +89,11 @@ const ViewDoctorScreen: React.FC = () => {
                     <p className="display-4 text-primary fw-bold">₹ {doctor.consultationFee}</p>
                   </div>
 
-                  {/* Available Dates */}
-                  <div className="mb-4">
-                    <h5 className="text-uppercase text-muted">Available Dates</h5>
-                    <ul className="list-group list-group-flush">
-                      {doctor.availability?.map((available, index) => {
-                        const date = new Date(available.date);
-                        return (
-                          <li
-                            className="list-group-item d-flex align-items-center text-success fw-bold"
-                            key={index}
-                          >
-                            <i className="bi bi-calendar-check-fill me-2"></i>
-                            {date.toLocaleDateString(undefined, {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-
                   {/* Book Button */}
-                  <Button variant="primary" className="w-100 py-2 shadow rounded-pill">
+                  <Button 
+                    variant="primary" 
+                    className="w-100 py-2 shadow rounded-pill"
+                    onClick={() => navigate("/user/book-slot", { state: { doctor } })}>
                     <i className="bi bi-calendar-plus me-2"></i> Book an Appointment
                   </Button>
               </Card>

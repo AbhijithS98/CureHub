@@ -26,6 +26,9 @@ import ResetPasswordScreen from './screens/userScreens/ResetPasswordScreen';
 import DoctorListingScreen from './screens/userScreens/DoctorListingScreen';
 import ViewDoctorScreen from './screens/userScreens/ViewDoctorScreen';
 import ProfileScreen from './screens/userScreens/ProfileScreen';
+import AppointmentBookingScreen from './screens/userScreens/BookAppointmentScreen';
+import PaymentScreen from './screens/userScreens/PaymentScreen';
+import ThankyouScreen from './screens/userScreens/ThankYouScreen';
 
 {/* Doctor screens imports */}
 import DoctorRegisterScreen from './screens/doctorScreens/RegisterScreen';
@@ -62,10 +65,10 @@ const router = createBrowserRouter(
         <Route path="login" element={<LoginScreen />}></Route>
         <Route path="forgot-password" element={<ForgotPasswordScreen />}></Route>
         <Route path="reset-password" element={<ResetPasswordScreen />}></Route>
-        <Route
-          path="profile"
-          element={<UserProtectedRoute><ProfileScreen /></UserProtectedRoute>}
-        />
+        <Route path="profile" element={<UserProtectedRoute><ProfileScreen /></UserProtectedRoute>}/>
+        <Route path="book-slot" element={<UserProtectedRoute><AppointmentBookingScreen /></UserProtectedRoute>}/>
+        <Route path="payment" element={<UserProtectedRoute><PaymentScreen /></UserProtectedRoute>}/>
+        <Route path="thank-you" element={<UserProtectedRoute><ThankyouScreen /></UserProtectedRoute>}/>
       </Route>
 
       {/* Doctor Routes */}

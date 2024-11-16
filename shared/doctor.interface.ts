@@ -33,7 +33,7 @@ export interface IDoc {
   reviews?: [
     {
       patientId: string; 
-      review: string;     
+      comment: string;     
       createdAt: Date;    
     }
   ];

@@ -74,7 +74,7 @@ const doctorSchema = new Schema({
     reviews: [
         {
             patientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-            review: { type: String },
+            comment: { type: String },
             createdAt: { type: Date, default: Date.now },
         },
     ],

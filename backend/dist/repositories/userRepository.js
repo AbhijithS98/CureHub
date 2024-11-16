@@ -15,6 +15,11 @@ class UserRepository {
             return yield User.findOne({ email });
         });
     }
+    findUserById(_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield User.findOne({ _id });
+        });
+    }
     findUserByPwResetToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield User.findOne({ pwResetToken: token, pwTokenExpiresAt: { $gt: new Date() } });

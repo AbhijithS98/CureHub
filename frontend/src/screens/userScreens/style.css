@@ -188,3 +188,44 @@
 .social-icons a:hover {
   color: #00aaff; 
 }
+
+
+
+
+
+/* Styles for BookApointment Screen*/
+
+.appointment-booking-screen {
+  margin-top: 2rem;
+}
+
+.doc-pro-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.date-list button {
+  min-width: 150px;
+}
+
+.card {
+  border-radius: 10px;
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+.list-group-item {
+  transition: background-color 0.2s ease-in-out;
+}
+
+.list-group-item:hover {
+  background-color: #f8f9fa;
+}
+
+.bg-light.text-muted {
+  opacity: 0.6;
+}
+
