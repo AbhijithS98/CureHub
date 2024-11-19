@@ -1,35 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Container, Row, Col, Card, ListGroup, Form, Image } from 'react-bootstrap';
+import { ObjectId } from 'mongoose';
+import { useDoctorGetAvailabilityQuery } from '../../slices/doctorSlices/doctorApiSlice';
 import './style.css';
 
 interface Slot {
+  _id: string,
+  doctor: ObjectId; 
   date: Date;
   timeSlots: {
-    time: string;
-    isBooked: boolean;
-    user: string | null; // Assuming `user` is a string (replace with `ObjectId` if required).
-    _id: string; // Replace with `ObjectId` if required.
+    time: string; 
+    user: ObjectId | null; 
+    status: 'Pending' | 'Booked' | 'Completed';
+    payment: ObjectId | null;
+    _id: string,
   }[];
-  _id: string; // Replace with `ObjectId` if required.
+}
+
+interface TimeSlot {
+    time: string; 
+    user: ObjectId | null; 
+    status: 'Pending' | 'Booked' | 'Completed';
+    payment: ObjectId | null;
+    _id: string,
 }
 
 const AppointmentBookingScreen: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const doctor = location.state?.doctor;
+  const { doctor } = location.state;
+  const {data, refetch:availabilityRefetch} = useDoctorGetAvailabilityQuery(doctor._id);
+  const [selectedDate, setSelectedDate] = useState<Slot | null>(null); // Selected date
+  const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null); // Selected time slot
+  const [slots, setSlots] = useState<Slot[] | null>(data?.availability || []);
 
-  const [selectedDate, setSelectedDate] = useState<string | null>(null); // Selected date
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null); // Selected time slot
-  const [slots, setSlots] = useState<Slot[] | null>(doctor?.availability || []);
-
-  const handleDateSelection = (dateId: string) => {
-    setSelectedDate(dateId);
+  const handleDateSelection = (slot: Slot) => {
+    setSelectedDate(slot);
     setSelectedSlot(null); // Reset slot selection when changing the date
   };
 
-  const handleSlotSelection = (slotId: string) => {
-    setSelectedSlot(slotId);
+  const handleSlotSelection = (timeSlot: TimeSlot) => {
+    setSelectedSlot(timeSlot);
   };
 
   const handleConfirmAppointment = () => {
@@ -38,8 +50,16 @@ const AppointmentBookingScreen: React.FC = () => {
       return;
     }
     // Navigate to confirmation screen
-    navigate('/user/payment', { state: { doctor, selectedSlot } });
+    navigate('/user/payment', { state: { doctor, selectedDate, selectedSlot } });
   };
+
+  useEffect(()=>{
+    if(data){
+      setSlots(data.availability)
+    }
+    console.log("data isss: ",data);
+    
+  },[data])
 
   return (
     <Container className="appointment-booking-screen mt-5">
@@ -68,9 +88,9 @@ const AppointmentBookingScreen: React.FC = () => {
                 {slots.map((slot) => (
                   <Button
                     key={slot._id}
-                    variant={selectedDate === slot._id ? 'primary' : 'outline-primary'}
+                    variant={selectedDate?._id === slot._id ? 'primary' : 'outline-primary'}
                     className="m-2"
-                    onClick={() => handleDateSelection(slot._id)}
+                    onClick={() => handleDateSelection(slot)}
                   >
                     {new Date(slot.date).toDateString()}
                   </Button>
@@ -89,27 +109,27 @@ const AppointmentBookingScreen: React.FC = () => {
                     <ListGroup>
                       {/* Find and display slots for the selected date */}
                       {slots
-                        .find((slot) => slot._id === selectedDate)
+                        .find((slot) => slot._id === selectedDate._id)
                         ?.timeSlots.map((timeSlot) => (
                           <ListGroup.Item
                             key={timeSlot._id}
                             className={`d-flex justify-content-between align-items-center ${
-                              timeSlot.isBooked ? 'bg-light text-muted' : ''
+                              timeSlot.status==='Booked' ? 'bg-light text-muted' : ''
                             }`}
                             style={{
-                              cursor: timeSlot.isBooked ? 'not-allowed' : 'pointer',
+                              cursor: timeSlot.status==='Booked' ? 'not-allowed' : 'pointer',
                             }}
                             onClick={() =>
-                              !timeSlot.isBooked && handleSlotSelection(timeSlot._id)
+                              timeSlot.status==='Pending' && handleSlotSelection(timeSlot)
                             }
                           >
                             <span>{timeSlot.time}</span>
-                            {!timeSlot.isBooked ? (
+                            {timeSlot.status!=='Booked' ? (
                               <Form.Check
                                 type="radio"
                                 name="slot"
-                                checked={selectedSlot === timeSlot._id}
-                                onChange={() => handleSlotSelection(timeSlot._id)}
+                                checked={selectedSlot?._id === timeSlot._id}
+                                onChange={() => handleSlotSelection(timeSlot)}
                               />
                             ) : (
                               <small className="text-danger">Booked</small>
@@ -139,7 +159,7 @@ const AppointmentBookingScreen: React.FC = () => {
       ) : (
         <Row>
           <Col>
-            <p className="text-muted text-center">No slots available at the moment.</p>
+            <p className="text-danger text-center">No slots available at the moment.</p>
           </Col>
         </Row>
       )}

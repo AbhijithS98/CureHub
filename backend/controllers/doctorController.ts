@@ -168,6 +168,27 @@ class DoctorController {
   }
 
 
+  async getAvailabilities(req: Request, res: Response, next: NextFunction): Promise<void> {
+  
+    try {
+      const _id = req.query._id as string | undefined;
+   
+      if (!_id) {
+        res.status(400).json({ message: "Doctor id is required" });
+        return;
+      }  
+      
+      console.log("doctor's id is: ",_id);
+      const availability = await doctorService.getAvailability(_id)
+      res.status(200).json({availability});
+
+    } catch (error: any) {
+      console.error("Getting doctor availability error: ", error.message);
+      next(error)
+    }
+  }
+
+
   async updateProfile(req:any, res: Response, next: NextFunction): Promise<void> {
     console.log('entered doctor updation');
     

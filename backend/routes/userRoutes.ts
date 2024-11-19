@@ -20,6 +20,7 @@ router.get('/view-doctor',userController.getSingleDoctor)
 router.post('/refresh-token',userController.refreshToken)
 router.get('/get-profile', verifyUserToken, userController.getProfile);
 router.put('/update-profile', verifyUserToken, userController.updateProfile);
-
+router.put('/book-slot', verifyUserToken, userController.bookSlot);
+router.get('/get-appointments', verifyUserToken, userController.getUserAppointments);
 
 export default router;

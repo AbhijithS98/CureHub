@@ -1,5 +1,8 @@
 import User,{ IUser} from "../models/user.js";
 import Doctor,{ IDoctor } from "../models/doctor.js";
+import Payment,{ IPayment } from "../models/paymentSchema.js";
+import Appointment,{ IAppointment } from "../models/appointments.js";
+import { BookedSlot } from "../types/bookedSlotsInterface.js";
 
 
 class UserRepository {
@@ -85,6 +88,61 @@ class UserRepository {
     )
   }
 
+  async createPayment(paymentData: any): Promise<IPayment> {
+    const payment = new Payment(paymentData);
+    await payment.save();
+    return payment;
+  }
+
+
+
+  async findAppointment(slotId:any, doctorId:any): Promise<IAppointment | null> {
+    return await Appointment.findOne({ _id:slotId, doctor:doctorId });
+  }
+
+
+  async getUserAppointments(userId:any) : Promise<BookedSlot[] | null> {
+    const pipeline = [
+      {
+        $match: {
+          "timeSlots.user": userId, // Match appointments with time slots booked by the user
+        },
+      },
+      {
+        $unwind: "$timeSlots", // Unwind time slots array
+      },
+      {
+        $match: {
+          "timeSlots.user": userId, // Filter relevant time slots after unwinding
+        },
+      },
+      {
+        $lookup: {
+          from: "doctors", // Name of the doctors collection
+          localField: "doctor",
+          foreignField: "_id",
+          as: "doctorDetails", // Resulting doctor details
+        },
+      },
+      {
+        $unwind: "$doctorDetails", // Unwind doctor details array
+      },
+      {
+        $project: {
+          _id: 0, // Exclude appointment ID
+          date: 1,
+          time: "$timeSlots.time", // Include time slot time
+          timeSlotId: "$timeSlots._id", // Include time slot ID
+          status: "$timeSlots.status", // Include time slot status
+          doctorName: { $concat: ["Dr. ", "$doctorDetails.name"] }, // Include doctor name
+        },
+      },
+    ];
+
+    const results:BookedSlot[] | null = await Appointment.aggregate(pipeline);
+    console.log(results);
+    return results
+  }
 }
 
 export default new UserRepository();

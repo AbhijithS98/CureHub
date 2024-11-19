@@ -1,36 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Button, Image, Table, Form, Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
-import { useDoctorGetProfileQuery } from '../../slices/doctorSlices/doctorApiSlice';
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { IDoc } from '../../../../shared/doctor.interface';
 import { toast } from 'react-toastify';
 import IconLoader from "../../components/Spinner";
 import { FaTrash } from 'react-icons/fa';
-import { useDoctorUpdateProfileMutation } from '../../slices/doctorSlices/doctorApiSlice';
-import { useDoctorLogoutMutation, 
+import { useDoctorGetProfileQuery,
+         useDoctorGetAvailabilityQuery,
+         useDoctorUpdateProfileMutation,
+         useDoctorLogoutMutation, 
          useDoctorDeleteSlotMutation,
          useDoctorDeleteTimeSlotMutation } from '../../slices/doctorSlices/doctorApiSlice';
 import { clearDoctorCredentials } from "../../slices/doctorSlices/doctorAuthSlice.js";
 import { ObjectId } from 'mongoose';
 
 interface AvailabilitySlot {
-  date: Date; 
+  _id: ObjectId,
+  doctor: ObjectId; 
+  date: Date;
   timeSlots: {
     time: string; 
-    isBooked: boolean; 
     user: ObjectId | null; 
-    _id: ObjectId;
+    status: 'Pending' | 'Booked' | 'Completed';
+    payment: ObjectId | null;
+    _id: ObjectId,
   }[];
-  _id: ObjectId;
 }
 
 const ProfileScreen: React.FC = () => { 
 
   const location = useLocation();
-  const { email } = location.state || {};
+  const { email, _id } = location.state || {};
   const [selectedTab, setSelectedTab] = useState('overview');
   const {data, error, isLoading, refetch} = useDoctorGetProfileQuery(email);
+  const {data:result, refetch:availabilityRefetch} = useDoctorGetAvailabilityQuery(_id);
   const doctorInfo:IDoc = data?.doctor;
   const [updateDoctorProfile, {isLoading:updateLoading}] = useDoctorUpdateProfileMutation();
   const [removeSlot, {isLoading:deleteSlotLoading}] = useDoctorDeleteSlotMutation();
@@ -38,7 +42,8 @@ const ProfileScreen: React.FC = () => {
   const [logout] = useDoctorLogoutMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-    
+   
+  
   const [viewingDate, setViewingDate] = useState<AvailabilitySlot | null>(null);
 
   const [formData, setFormData] = useState({
@@ -75,8 +80,11 @@ const ProfileScreen: React.FC = () => {
         bio: doctorInfo?.bio || '',
       })
     }
+    if(result){
+      console.log("avls : ",result);
+    }
     
-  },[doctorInfo])
+  },[doctorInfo,result])
 
   const handleLogout = async(e: React.FormEvent)=>{
     try{
@@ -251,7 +259,7 @@ const ProfileScreen: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {doctorInfo.availability?.map((slot, index) => {
+                {result.availability.map((slot:AvailabilitySlot, index:number) => {
                   const date = new Date(slot.date);
                   return (
                   <tr key={index}>
@@ -291,7 +299,7 @@ const ProfileScreen: React.FC = () => {
                         <tr key={index}>
                           <td>{new Date(viewingDate.date).toLocaleDateString('en-GB')}</td>
                           <td>{timeSlot.time}</td>
-                          <td>{timeSlot.isBooked ? <Button variant='danger' size='sm'>Booked</Button> : 
+                          <td>{timeSlot.status==='Booked' ? <Button variant='danger' size='sm'>Booked</Button> : 
                                                    <Button variant='success' size='sm'>Available</Button>}
                           </td>
                           <td>

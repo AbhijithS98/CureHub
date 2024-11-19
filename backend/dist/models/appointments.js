@@ -6,10 +6,11 @@ const appointmentSchema = new Schema({
     timeSlots: [
         {
             time: { type: String, required: true },
-            isBooked: { type: Boolean, default: false },
             user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+            status: { type: String, enum: ['Pending', 'Booked', 'Completed'], default: 'Pending' },
+            payment: { type: mongoose.Schema.Types.ObjectId, ref: 'Payment', default: null },
         },
     ],
-});
+}, { timestamps: true });
 const Appointment = mongoose.model('Appointment', appointmentSchema);
 export default Appointment;

@@ -2,8 +2,9 @@ import userRepository from "../repositories/userRepository.js";
 import bcrypt from "bcryptjs";
 import crypto from 'crypto';
 import dotenv from 'dotenv';
-import { IUser } from "../models/user.js";
+import User, { IUser } from "../models/user.js";
 import { IDoctor } from "../models/doctor.js";
+import { BookedSlot } from "../types/bookedSlotsInterface.js";
 import sendEmail from "../utils/emailSender.js";
 import { Request, Response } from "express";
 
@@ -248,6 +249,72 @@ async updateUser(req: any): Promise<void> {
   await userRepository.updateUserDetails(req);
 
 }
+
+
+
+  async bookAppointment(req: any): Promise<void> {
+    
+    const { slotId, timeSlotId, doctorId, amount } = req.body.bookingDetails;
+    const UserId = req.user.Id;
+    
+    if(!UserId){
+      const error = Error('No UserId is provided.');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+
+    const paymentObject = {
+      user:UserId,
+      amount,
+      method:'Razorpay',
+      status:'Completed'
+    }
+
+    const payment = await userRepository.createPayment(paymentObject);
+    console.log('Payment created:', payment);
+    
+    // Find the appointment and update the specific time slot
+    const appointment = await userRepository.findAppointment(slotId,doctorId);
+
+    if (!appointment) {
+      const error = Error('Appointment not found');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+
+    // Find the time slot to update by timeSlotId
+    const timeSlot = appointment.timeSlots.find((slot) => slot._id.toString() === timeSlotId);
+
+    if (!timeSlot) {
+      const error = Error('Time slot not found');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+
+    // Update the time slot
+    timeSlot.status = 'Booked'; // Change status to 'Booked'
+    timeSlot.user = UserId;     // Assign user to this slot
+    timeSlot.payment = payment._id; // Set the payment ID
+
+    // Save the updated appointment
+    await appointment.save();
+  }
+
+
+  
+  async getAppointments(userId:any): Promise<BookedSlot[] | null> {
+ 
+    const Appointments = await userRepository.getUserAppointments(userId);
+  
+    if(!Appointments){
+      const error = Error('No Appointments for this user');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+  
+    return Appointments
+  }
+  
 }
 
 export default new UserService();

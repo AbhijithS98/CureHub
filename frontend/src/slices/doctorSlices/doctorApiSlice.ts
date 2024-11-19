@@ -56,6 +56,12 @@ export const doctorApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    doctorGetAvailability: builder.query({
+      query: (_id:string) => ({
+        url: `/doctors/get-availability?_id=${_id}`,
+        method: "GET",
+      }),
+    }),
     doctorUpdateProfile: builder.mutation({
       query: (updatedData) => ({
         url: `/doctors/update-profile`,  
@@ -102,6 +108,7 @@ export const {
   useDoctorPassResetLinkMutation,
   useDoctorResetPasswordMutation,
   useDoctorGetProfileQuery,
+  useDoctorGetAvailabilityQuery,
   useDoctorUpdateProfileMutation,
   useDoctorAddSlotsMutation,
   useDoctorDeleteSlotMutation,

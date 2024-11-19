@@ -64,7 +64,7 @@ function DoctorHeader() {
              {doctorInfo? (
               <>
               <Nav className="ml-auto">
-                <LinkContainer to="/doctor/profile" state={{ email: doctorInfo.email }}>
+                <LinkContainer to="/doctor/profile" state={{ email: doctorInfo.email, _id: doctorInfo._id }}>
                   <Nav.Link>
                     <BsPersonFill />Profile
                   </Nav.Link>

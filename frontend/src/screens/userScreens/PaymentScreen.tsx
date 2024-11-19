@@ -3,24 +3,26 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store.js';
 import { Button, Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
-import './style.css';
 import { toast } from 'react-toastify';
+import { useUserBookSlotMutation } from '../../slices/userSlices/userApiSlice.js';
+import './style.css';
+
 
 const PaymentScreen: React.FC = () => {
   const { userInfo } = useSelector((state: RootState) => state.userAuth);
+  const [bookSlot,isLoading] = useUserBookSlotMutation();
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Extract doctor, selected slot, and totalAmount from location state
-  const { doctor, selectedSlot } = location.state;
+  const { doctor, selectedDate, selectedSlot } = location.state;
 
-  // Calculating detailed breakdown
-  const doctorFee = doctor.consultationFee; // Assuming doctor fee is part of doctor data
-  const applicationCharge = 100; // Example application fee
-  const gst = (doctorFee + applicationCharge) * 0.18; // 18% GST
+  
+  const doctorFee = doctor.consultationFee; 
+  const applicationCharge = 100; 
+  const gst = (doctorFee + applicationCharge) * 0.18; 
   const finalAmount:number = doctorFee + applicationCharge + gst;
 
-  // Payment handler (e.g., Razorpay integration)
+  // Payment handler (Razorpay integration)
   const handlePayment = async () => {
     const response = await fetch('http://localhost:5000/api/payment/create-order', {
       method: 'POST',
@@ -33,21 +35,27 @@ const PaymentScreen: React.FC = () => {
     const data = await response.json();
     if(data.success){
       const options = {
-        key: 'rzp_test_SLWTHwkkbKB9bv', // Replace with your Razorpay key
-        amount: finalAmount * 100, // Amount in paise
+        key: 'rzp_test_SLWTHwkkbKB9bv',
+        amount: finalAmount * 100, 
         currency: 'INR',
         name: 'CURE HUB',
         description: `Payment for appointment with Dr. ${doctor.name}`,
         order_id: data.order.id,
         handler: async function (response: any) {
-          // On successful payment, you can confirm the appointment
+          
+          const bookingDetails = { slotId: selectedDate._id,
+                                   timeSlotId: selectedSlot._id, 
+                                   doctorId: doctor._id,
+                                   amount: finalAmount
+                                 }
+                                 console.log("bd: ",bookingDetails);
+          await bookSlot({bookingDetails}).unwrap();
           toast.success('Payment successful!');
           navigate("/user/thank-you")
-          // // Proceed with booking logic here (e.g., update database, send confirmation)
-          // navigate('/confirmation', { state: { doctor, selectedSlot, response } });
+        
         },
         prefill: {
-          name: userInfo?.name, // You can fill user details here
+          name: userInfo?.name, 
           email: userInfo?.email,
           contact: userInfo?.phone,
         },
@@ -77,7 +85,8 @@ const PaymentScreen: React.FC = () => {
         <Col>
           <Card className="shadow-sm">
             <Card.Body>
-              <h5>Selected Slot: {selectedSlot}</h5>
+              <h6>Selected Date: {new Date(selectedDate.date).toDateString()}</h6>
+              <h6>Selected Time: {selectedSlot.time}</h6>
               <ListGroup variant="flush">
                 <ListGroup.Item>
                   <strong>Doctor's Fee:</strong> ₹{doctor.consultationFee.toFixed(2)}

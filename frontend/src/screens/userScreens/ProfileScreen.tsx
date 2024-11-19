@@ -3,11 +3,15 @@ import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Col, Container, Row, Table, Form, Card, Spinner, Alert } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import { useUserGetProfileQuery } from '../../slices/userSlices/userApiSlice.js';
-import './style.css';
+import { useUserGetProfileQuery, 
+         useUserGetAppointmentsQuery, 
+         useLogoutMutation, 
+         useUserUpdateProfileMutation } from '../../slices/userSlices/userApiSlice.js';
 import { Iuser } from '../../../../shared/user.interface.js';
-import { useLogoutMutation, useUserUpdateProfileMutation } from "../../slices/userSlices/userApiSlice.js";
 import { clearCredentials } from "../../slices/userSlices/userAuthSlice.js";
+import './style.css';
+
+
 
 const ProfileScreen: React.FC = () => {
 
@@ -15,7 +19,9 @@ const ProfileScreen: React.FC = () => {
   const { email } = location.state || {};
   const [selectedTab, setSelectedTab] = useState('bookings');
   const {data, error, isLoading, refetch} = useUserGetProfileQuery(email);
+  const {data:result, refetch:appointmentsRefetch} = useUserGetAppointmentsQuery({});
   const userInfo:Iuser = data?.user;
+  
   const [updateProfile, {isLoading:updateLoading}] = useUserUpdateProfileMutation();
   const [logout] = useLogoutMutation();
   const dispatch = useDispatch();
@@ -41,7 +47,11 @@ const ProfileScreen: React.FC = () => {
         dob: userInfo?.dob ? new Date(userInfo.dob).toISOString().split('T')[0] : ''
       })
     }
-  },[userInfo]);
+    if(result){
+     console.log("res: ", result);
+     
+    }
+  },[userInfo,result]);
 
   const handleTabChange = (tab: string) => {
     setSelectedTab(tab);

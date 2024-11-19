@@ -200,5 +200,32 @@ class UserController {
             }
         });
     }
+    bookSlot(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield userService.bookAppointment(req);
+                res.status(200).json({ message: "user's slot booked successfully." });
+            }
+            catch (error) {
+                console.error("user slot booking error: ", error.message);
+                next(error);
+            }
+        });
+    }
+    getUserAppointments(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.Id;
+                console.log("entered gua: ", userId);
+                const result = yield userService.getAppointments(userId);
+                res.status(200).json(result);
+            }
+            catch (error) {
+                console.error('fetching user appointments error: ', error);
+                next(error);
+            }
+        });
+    }
 }
 export default new UserController();

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface DoctorInfo {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   specialization: string;

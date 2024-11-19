@@ -154,6 +154,24 @@ class DoctorController {
             }
         });
     }
+    getAvailabilities(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const _id = req.query._id;
+                if (!_id) {
+                    res.status(400).json({ message: "Doctor id is required" });
+                    return;
+                }
+                console.log("doctor's id is: ", _id);
+                const availability = yield doctorService.getAvailability(_id);
+                res.status(200).json({ availability });
+            }
+            catch (error) {
+                console.error("Getting doctor availability error: ", error.message);
+                next(error);
+            }
+        });
+    }
     updateProfile(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('entered doctor updation');

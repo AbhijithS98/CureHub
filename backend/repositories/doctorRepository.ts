@@ -1,9 +1,14 @@
 import Doctor, { IDoctor } from "../models/doctor.js";
+import Appointment, { IAppointment } from "../models/appointments.js";
 
 class DoctorRepository { 
 
   async findDoctorByEmail(email: string): Promise<IDoctor | null> {
     return await Doctor.findOne({ email });
+  }
+
+  async getAvailabilities(_id: string): Promise<IAppointment[] | null> {
+    return await Appointment.find({ doctor: _id });
   }
 
   async findDoctorByEmailAndOtp(email: string, otp:number): Promise<IDoctor| null> {
@@ -81,11 +86,8 @@ class DoctorRepository {
   }
   
   async addSlots(email: string, newSlots: any): Promise<void> {
-    await Doctor.updateOne(
-      { email }, 
-      { $push: { availability: { $each: newSlots } } },
-      { new: true }
-  )}
+    await Appointment.insertMany(newSlots);
+  }
 
 
   async deleteSlot(email: string, slotId: string): Promise<void> {

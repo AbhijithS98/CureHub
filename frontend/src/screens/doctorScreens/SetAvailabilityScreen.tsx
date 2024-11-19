@@ -5,19 +5,24 @@ import TimePicker from 'react-time-picker';
 import { Card, Button, Form, Table, Row, Col, Pagination } from 'react-bootstrap';
 import { FaTrash } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { useSelector } from "react-redux";
+import { RootState } from '../../store.js';
 import { useDoctorAddSlotsMutation } from '../../slices/doctorSlices/doctorApiSlice';
 import 'react-time-picker/dist/TimePicker.css';
 
 interface IAppointment {
-  date: Date; 
+  doctor: string; 
+  date: Date;
   timeSlots: {
     time: string; 
-    isBooked: boolean; 
     user: string | null; 
-  }[];
+    status: 'Pending' | 'Booked' | 'Completed';
+    payment: string | null;
+  }[]; 
 }
 
 const SetAvailability: React.FC = () => {
+  const { doctorInfo } = useSelector((state: RootState) => state.doctorAuth);
   const location = useLocation();
   const { docEmail } = location.state || {};
   const [frequency, setFrequency] = useState<Frequency>(RRule.WEEKLY);
@@ -113,16 +118,23 @@ const SetAvailability: React.FC = () => {
         tSlots.push(time);
       }
 
-      const slotTimeObjects = tSlots.map((time) => ({
+      const slotTimeObjects:{ time: string; 
+                              user: string | null; 
+                              status: 'Pending' | 'Booked' | 'Completed';
+                              payment: string | null;
+                            }[] = tSlots.map((time) => (
+      {
         time,
-        isBooked: false,
         user: null,
+        status: 'Pending',
+        payment: null
       }));
 
       const FinalSlots: IAppointment[] = [];
       dates.forEach((date) => {
         const formattedDate = new Date(date).toISOString().split('T')[0];
         FinalSlots.push({
+          doctor: doctorInfo?._id as string,
           date: new Date(formattedDate), 
           timeSlots: slotTimeObjects,
         });
@@ -182,6 +194,8 @@ const SetAvailability: React.FC = () => {
       toast.error('No availability slots to save.');
       return;
     }
+    console.log(generatedSlots);
+    
     try {
       await addSlots({ docEmail, newSlots:generatedSlots }).unwrap();
       toast.success('Availability saved successfully!');
@@ -400,7 +414,7 @@ const SetAvailability: React.FC = () => {
                     {viewingDate.timeSlots.map((timeSlot, index) => (
                       <tr key={index}>
                         <td>{timeSlot.time}</td>
-                        <td>{timeSlot.isBooked ? "Booked" : "Available"}</td>
+                        <td>{timeSlot.status}</td>
                         <td>
                           <Button
                             variant="danger"

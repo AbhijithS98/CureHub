@@ -13,6 +13,7 @@ router.post('/pass-reset-link', doctorController.sendPassResetLink);
 router.post('/reset-password', doctorController.resetPassword);
 router.post('/refresh-token', doctorController.refreshToken);
 router.get('/get-profile', verifyDoctorToken, doctorController.getProfile);
+router.get('/get-availability', doctorController.getAvailabilities);
 router.put('/update-profile', verifyDoctorToken, doctorController.updateProfile);
 router.put('/add-slots', verifyDoctorToken, doctorController.addNewSlots);
 router.delete('/delete-slot', verifyDoctorToken, doctorController.deleteSlot);

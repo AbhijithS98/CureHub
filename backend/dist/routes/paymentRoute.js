@@ -20,7 +20,7 @@ const razorpay = new Razorpay({
 router.post('/create-order', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { amount, currency } = req.body;
     const options = {
-        amount: amount * 100, // Razorpay expects amount in paise
+        amount: amount * 100,
         currency: currency || 'INR',
         receipt: `receipt_${Date.now()}`,
     };

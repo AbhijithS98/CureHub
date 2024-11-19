@@ -1,4 +1,5 @@
 import { IDoctor } from "../models/doctor.js";
+import { IAppointment } from "../models/appointments.js";
 import doctorRepository from "../repositories/doctorRepository.js";
 import sendEmail from "../utils/emailSender.js";
 import bcrypt from "bcryptjs";
@@ -206,6 +207,21 @@ async getDoctor(email:string): Promise<IDoctor | null> {
   }
 
   return Doctor
+}
+
+
+async getAvailability(_id:string): Promise<IAppointment[] | null> {
+ 
+  const availabilities = await doctorRepository.getAvailabilities(_id);
+
+  if(!availabilities){
+    const error = Error('No availabilities for this doctor.');
+    error.name = 'ValidationError';  
+    throw error;
+  }
+  console.log("avl: ",availabilities);
+  
+  return availabilities
 }
 
 

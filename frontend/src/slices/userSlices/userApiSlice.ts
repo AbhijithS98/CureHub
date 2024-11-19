@@ -87,6 +87,19 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
       }),
     }),
+    userBookSlot: builder.mutation({
+      query: (bookingDetails) => ({
+        url: `/users/book-slot`,  
+        method: "PUT",
+        body: bookingDetails,
+      }),
+    }),
+    userGetAppointments: builder.query({
+      query: () => ({
+        url: `/users/get-appointments`,
+        method: "GET",
+      }),
+    }),
   })
 })
 
@@ -104,6 +117,7 @@ export const {
   useUserGetProfileQuery,
   useUserUpdateProfileMutation,
   useUserRefreshTokenMutation,
-  
+  useUserBookSlotMutation,
+  useUserGetAppointmentsQuery,
 
 } = userApiSlice;

@@ -18,7 +18,7 @@ const verifyUserToken = async (req: Request, res: Response, next: NextFunction) 
   try {
     const decoded = jwt.verify(token, process.env.USER_ACCESS_TOKEN_SECRET as string) as JwtUserPayload;
     const User = await userRepository.findUserById(decoded.userId);
-    console.log("user: ",User);
+    
 
     if(User?.isBlocked){
       console.error("User is blocked");

@@ -173,6 +173,18 @@ class DoctorService {
             return Doctor;
         });
     }
+    getAvailability(_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const availabilities = yield doctorRepository.getAvailabilities(_id);
+            if (!availabilities) {
+                const error = Error('No availabilities for this doctor.');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            console.log("avl: ", availabilities);
+            return availabilities;
+        });
+    }
     updateDoctor(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const { email } = req.body;

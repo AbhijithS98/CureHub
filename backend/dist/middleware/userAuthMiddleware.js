@@ -20,7 +20,6 @@ const verifyUserToken = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
     try {
         const decoded = jwt.verify(token, process.env.USER_ACCESS_TOKEN_SECRET);
         const User = yield userRepository.findUserById(decoded.userId);
-        console.log("user: ", User);
         if (User === null || User === void 0 ? void 0 : User.isBlocked) {
             console.error("User is blocked");
             res.status(403).json({ message: 'Your account has been blocked. Please contact support.' });

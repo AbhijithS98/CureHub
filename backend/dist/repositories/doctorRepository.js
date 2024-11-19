@@ -8,10 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import Doctor from "../models/doctor.js";
+import Appointment from "../models/appointments.js";
 class DoctorRepository {
     findDoctorByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield Doctor.findOne({ email });
+        });
+    }
+    getAvailabilities(_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Appointment.find({ doctor: _id });
         });
     }
     findDoctorByEmailAndOtp(email, otp) {
@@ -74,7 +80,7 @@ class DoctorRepository {
     }
     addSlots(email, newSlots) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Doctor.updateOne({ email }, { $push: { availability: { $each: newSlots } } }, { new: true });
+            yield Appointment.insertMany(newSlots);
         });
     }
     deleteSlot(email, slotId) {

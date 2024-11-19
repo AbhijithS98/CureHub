@@ -214,6 +214,37 @@ class UserController {
        next(error)
      }
    }
+
+
+   async bookSlot(req:any, res: Response, next: NextFunction): Promise<void> {
+    
+     try {
+       await userService.bookAppointment(req);
+       res.status(200).json({ message: "user's slot booked successfully."});
+ 
+     } catch (error: any) {
+       console.error("user slot booking error: ", error.message);
+       next(error)
+     }
+   }
+
+
+
+   async getUserAppointments(req: Request, res: Response, next: NextFunction): Promise<void> {
+    
+    try {     
+      
+      
+      const userId = req.user?.Id
+      console.log("entered gua: ", userId);
+      const result = await userService.getAppointments(userId);
+      res.status(200).json(result)
+
+    } catch (error: any) {
+      console.error('fetching user appointments error: ', error);
+      next(error)
+    }
+  }
 }
 
 
