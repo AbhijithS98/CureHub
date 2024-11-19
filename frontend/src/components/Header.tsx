@@ -68,7 +68,12 @@ function Header() {
                         <Nav.Link className="mx-2">
                           <BsPersonFill />Profile
                         </Nav.Link>
-                      </LinkContainer>
+                    </LinkContainer>
+                    <LinkContainer to="/user/wallet">
+                      <Nav.Link className="mx-2">
+                        <BsPersonFill />My wallet
+                      </Nav.Link>
+                    </LinkContainer>
                     <Nav.Link className="mx-2" onClick={handleLogout}>
                       <FaSignOutAlt />
                       Logout</Nav.Link>

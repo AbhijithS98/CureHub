@@ -68,6 +68,7 @@ function UserHeader() {
                         <BsPersonFill />Profile
                       </Nav.Link>
                     </LinkContainer>
+                    
                     <Nav.Link className="mx-2" onClick={handleLogout}>
                       <FaSignOutAlt /> Logout
                     </Nav.Link>

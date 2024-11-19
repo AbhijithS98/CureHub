@@ -100,6 +100,19 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    userWalletRecharge: builder.mutation({
+      query: (data) => ({
+        url: `/users/wallet-recharge`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    userGetWallet: builder.query({
+      query: () => ({
+        url: `/users/get-wallet`,
+        method: "GET",
+      }),
+    }),
   })
 })
 
@@ -119,5 +132,7 @@ export const {
   useUserRefreshTokenMutation,
   useUserBookSlotMutation,
   useUserGetAppointmentsQuery,
+  useUserWalletRechargeMutation,
+  useUserGetWalletQuery,
 
 } = userApiSlice;

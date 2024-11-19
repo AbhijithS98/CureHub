@@ -40,18 +40,6 @@ export interface IDoc {
   password: string;
   pwResetToken?: string;
   pwTokenExpiresAt?: Date;
-  availability?: [
-    {
-      date: Date;
-      timeSlots: {
-        time: string; 
-        isBooked: boolean; 
-        user: ObjectId | null;
-        _id: ObjectId; 
-      }[];
-      _id: ObjectId
-    }
-  ];
   isVerified: boolean;
   isApproved: boolean;
   isBlocked: boolean;

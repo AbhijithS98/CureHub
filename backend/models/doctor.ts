@@ -40,16 +40,6 @@ export interface IDoctor extends Document {
   password: string;
   pwResetToken?: string;
   pwTokenExpiresAt?: Date;
-  availability?: [
-    {
-      date: Date;
-      timeSlots: {
-        time: string; 
-        isBooked: boolean; 
-        user: Types.ObjectId | null; 
-      }[];
-    }
-  ];
   isVerified: boolean;
   isApproved: boolean;
   isBlocked: boolean;
@@ -148,18 +138,6 @@ const doctorSchema: Schema<IDoctor> = new Schema(
       type: Date,
       default: null
     },
-    availability: [
-      {
-        date: { type: Date },
-        timeSlots: [
-          {
-            time: { type: String,}, 
-            isBooked: { type: Boolean, default: false },
-            user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, 
-          },
-        ],
-      }
-    ],
     isVerified: {
       type: Boolean,
       default: false,

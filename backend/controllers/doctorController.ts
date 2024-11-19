@@ -178,7 +178,6 @@ class DoctorController {
         return;
       }  
       
-      console.log("doctor's id is: ",_id);
       const availability = await doctorService.getAvailability(_id)
       res.status(200).json({availability});
 
@@ -218,7 +217,6 @@ class DoctorController {
    }
 
    async deleteSlot(req:any, res: Response, next: NextFunction): Promise<void> {
-    console.log('entered slot deletion');
      
      try {
 
@@ -233,7 +231,6 @@ class DoctorController {
 
 
    async deleteTimeSlot(req:any, res: Response, next: NextFunction): Promise<void> {
-    console.log('entered time slot deletion');
      
      try {
 
@@ -245,6 +242,23 @@ class DoctorController {
        next(error)
      }
    }
+
+
+
+
+   async getAppointments(req: Request, res: Response, next: NextFunction): Promise<void> {
+  
+    try {
+      const doc_id = req.doctor?.Id as string;   
+      const appointments = await doctorService.fetchAppointments(doc_id)
+      res.status(200).json({appointments});
+
+    } catch (error: any) {
+      console.error("Getting doctor appointments error: ", error.message);
+      next(error)
+    }
+  }
+
 }
 
 export default new DoctorController();

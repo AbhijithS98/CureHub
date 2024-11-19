@@ -1,29 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Container, Row, Col, Card, ListGroup, Form, Image } from 'react-bootstrap';
-import { ObjectId } from 'mongoose';
 import { useDoctorGetAvailabilityQuery } from '../../slices/doctorSlices/doctorApiSlice';
 import './style.css';
 
 interface Slot {
   _id: string,
-  doctor: ObjectId; 
+  doctor: string; 
   date: Date;
   timeSlots: {
-    time: string; 
-    user: ObjectId | null; 
-    status: 'Pending' | 'Booked' | 'Completed';
-    payment: ObjectId | null;
-    _id: string,
-  }[];
+    time: string;  
+    status: 'Available' | 'Booked' ;
+    _id: string; 
+  }[]; 
 }
 
 interface TimeSlot {
-    time: string; 
-    user: ObjectId | null; 
-    status: 'Pending' | 'Booked' | 'Completed';
-    payment: ObjectId | null;
-    _id: string,
+  time: string;  
+  status: 'Available' | 'Booked' ;
+  _id: string; 
 }
 
 const AppointmentBookingScreen: React.FC = () => {
@@ -31,13 +26,13 @@ const AppointmentBookingScreen: React.FC = () => {
   const location = useLocation();
   const { doctor } = location.state;
   const {data, refetch:availabilityRefetch} = useDoctorGetAvailabilityQuery(doctor._id);
-  const [selectedDate, setSelectedDate] = useState<Slot | null>(null); // Selected date
-  const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null); // Selected time slot
+  const [selectedDate, setSelectedDate] = useState<Slot | null>(null); 
+  const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null); 
   const [slots, setSlots] = useState<Slot[] | null>(data?.availability || []);
 
   const handleDateSelection = (slot: Slot) => {
     setSelectedDate(slot);
-    setSelectedSlot(null); // Reset slot selection when changing the date
+    setSelectedSlot(null); 
   };
 
   const handleSlotSelection = (timeSlot: TimeSlot) => {
@@ -120,7 +115,7 @@ const AppointmentBookingScreen: React.FC = () => {
                               cursor: timeSlot.status==='Booked' ? 'not-allowed' : 'pointer',
                             }}
                             onClick={() =>
-                              timeSlot.status==='Pending' && handleSlotSelection(timeSlot)
+                              timeSlot.status==='Available' && handleSlotSelection(timeSlot)
                             }
                           >
                             <span>{timeSlot.time}</span>

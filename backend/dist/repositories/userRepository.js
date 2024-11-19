@@ -10,7 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import User from "../models/user.js";
 import Doctor from "../models/doctor.js";
 import Payment from "../models/paymentSchema.js";
-import Appointment from "../models/appointments.js";
+import Availability from "../models/availability.js";
+import Appointment from "../models/appointment.js";
+import Wallet from "../models/walletSchema.js";
 class UserRepository {
     findUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -94,52 +96,33 @@ class UserRepository {
             return payment;
         });
     }
-    findAppointment(slotId, doctorId) {
+    createAppointment(appointmentDetails) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Appointment.findOne({ _id: slotId, doctor: doctorId });
+            const appointment = new Appointment(appointmentDetails);
+            yield appointment.save();
+            return appointment;
         });
     }
-    getUserAppointments(userId) {
+    createUserWallet(walletObject) {
         return __awaiter(this, void 0, void 0, function* () {
-            const pipeline = [
-                {
-                    $match: {
-                        "timeSlots.user": userId, // Match appointments with time slots booked by the user
-                    },
-                },
-                {
-                    $unwind: "$timeSlots", // Unwind time slots array
-                },
-                {
-                    $match: {
-                        "timeSlots.user": userId, // Filter relevant time slots after unwinding
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "doctors", // Name of the doctors collection
-                        localField: "doctor",
-                        foreignField: "_id",
-                        as: "doctorDetails", // Resulting doctor details
-                    },
-                },
-                {
-                    $unwind: "$doctorDetails", // Unwind doctor details array
-                },
-                {
-                    $project: {
-                        _id: 0, // Exclude appointment ID
-                        date: 1,
-                        time: "$timeSlots.time", // Include time slot time
-                        timeSlotId: "$timeSlots._id", // Include time slot ID
-                        status: "$timeSlots.status", // Include time slot status
-                        doctorName: { $concat: ["Dr. ", "$doctorDetails.name"] }, // Include doctor name
-                    },
-                },
-            ];
-            const results = yield Appointment.aggregate(pipeline);
-            console.log(results);
-            return results;
+            const wallet = new Wallet(walletObject);
+            return yield wallet.save();
+        });
+    }
+    findAvailability(slotId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Availability.findOne({ _id: slotId });
+        });
+    }
+    findUserWallet(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Wallet.findOne({ ownerId: userId });
+        });
+    }
+    getUserAppointments(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Appointment.find({ user: id }).populate('doctor', 'name');
+            ;
         });
     }
 }

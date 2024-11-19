@@ -10,14 +10,12 @@ import { RootState } from '../../store.js';
 import { useDoctorAddSlotsMutation } from '../../slices/doctorSlices/doctorApiSlice';
 import 'react-time-picker/dist/TimePicker.css';
 
-interface IAppointment {
+interface IAvailability {
   doctor: string; 
   date: Date;
   timeSlots: {
     time: string; 
-    user: string | null; 
-    status: 'Pending' | 'Booked' | 'Completed';
-    payment: string | null;
+    status: 'Available' | 'Booked';
   }[]; 
 }
 
@@ -33,10 +31,10 @@ const SetAvailability: React.FC = () => {
   const [startTime, setStartTime] = useState<string | null>(null);
   const [endTime, setEndTime] = useState<string | null>(null);
   const [slotDuration, setSlotDuration] = useState<number>(15);
-  const [generatedSlots, setGeneratedSlots] = useState<IAppointment[]>([]);
+  const [generatedSlots, setGeneratedSlots] = useState<IAvailability[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const [viewingDate, setViewingDate] = useState<IAppointment | null>(null);
+  const [viewingDate, setViewingDate] = useState<IAvailability | null>(null);
   const [addSlots,{isLoading}] = useDoctorAddSlotsMutation();
 
   const itemsPerPage = 10;
@@ -118,19 +116,15 @@ const SetAvailability: React.FC = () => {
         tSlots.push(time);
       }
 
-      const slotTimeObjects:{ time: string; 
-                              user: string | null; 
-                              status: 'Pending' | 'Booked' | 'Completed';
-                              payment: string | null;
+      const slotTimeObjects:{ time: string;                               
+                              status: 'Available' | 'Booked';                             
                             }[] = tSlots.map((time) => (
       {
         time,
-        user: null,
-        status: 'Pending',
-        payment: null
+        status: 'Available',
       }));
 
-      const FinalSlots: IAppointment[] = [];
+      const FinalSlots: IAvailability[] = [];
       dates.forEach((date) => {
         const formattedDate = new Date(date).toISOString().split('T')[0];
         FinalSlots.push({
@@ -150,7 +144,7 @@ const SetAvailability: React.FC = () => {
   };
 
 
-  const removeSlot = (viewingDate: IAppointment, timeSlotIndex: number) => {
+  const removeSlot = (viewingDate: IAvailability, timeSlotIndex: number) => {
     setGeneratedSlots((prevSlots) => {
       const updatedSlots = prevSlots.map((slot) => {
         if (slot.date.toISOString() === viewingDate.date.toISOString()) {

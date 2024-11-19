@@ -22,5 +22,7 @@ router.get('/get-profile', verifyUserToken, userController.getProfile);
 router.put('/update-profile', verifyUserToken, userController.updateProfile);
 router.put('/book-slot', verifyUserToken, userController.bookSlot);
 router.get('/get-appointments', verifyUserToken, userController.getUserAppointments);
+router.post('/wallet-recharge',verifyUserToken,userController.walletRecharge)
+router.get('/get-wallet',verifyUserToken,userController.getUserWallet)
 
 export default router;

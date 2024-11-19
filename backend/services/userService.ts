@@ -4,9 +4,11 @@ import crypto from 'crypto';
 import dotenv from 'dotenv';
 import User, { IUser } from "../models/user.js";
 import { IDoctor } from "../models/doctor.js";
-import { BookedSlot } from "../types/bookedSlotsInterface.js";
+import { IWallet } from "../models/walletSchema.js";
+import Appointment,{ IAppointment} from "../models/appointment.js";
 import sendEmail from "../utils/emailSender.js";
 import { Request, Response } from "express";
+import { IPayment } from "../models/paymentSchema.js";
 
 dotenv.config(); 
 
@@ -256,53 +258,58 @@ async updateUser(req: any): Promise<void> {
     
     const { slotId, timeSlotId, doctorId, amount } = req.body.bookingDetails;
     const UserId = req.user.Id;
-    
-    if(!UserId){
-      const error = Error('No UserId is provided.');
-      error.name = 'ValidationError';  
-      throw error;
-    }
 
-    const paymentObject = {
-      user:UserId,
-      amount,
-      method:'Razorpay',
-      status:'Completed'
-    }
+    // Find the availability
+    const availability = await userRepository.findAvailability(slotId);
 
-    const payment = await userRepository.createPayment(paymentObject);
-    console.log('Payment created:', payment);
-    
-    // Find the appointment and update the specific time slot
-    const appointment = await userRepository.findAppointment(slotId,doctorId);
-
-    if (!appointment) {
-      const error = Error('Appointment not found');
+    if (!availability) {
+      const error = Error('Slot has been removed or does not exist!');
       error.name = 'ValidationError';  
       throw error;
     }
 
     // Find the time slot to update by timeSlotId
-    const timeSlot = appointment.timeSlots.find((slot) => slot._id.toString() === timeSlotId);
+    const timeSlot = availability.timeSlots.find((slot) => slot._id.toString() === timeSlotId);
 
     if (!timeSlot) {
-      const error = Error('Time slot not found');
+      const error = Error('Time slot has been removed!');
       error.name = 'ValidationError';  
       throw error;
     }
 
-    // Update the time slot
-    timeSlot.status = 'Booked'; // Change status to 'Booked'
-    timeSlot.user = UserId;     // Assign user to this slot
-    timeSlot.payment = payment._id; // Set the payment ID
+    timeSlot.status = 'Booked'; 
 
-    // Save the updated appointment
-    await appointment.save();
+    await availability.save();
+
+    const paymentObject = {
+      user:UserId,
+      doctor:doctorId,
+      amount,
+      method:'Razorpay',
+      status:'Completed'
+    }
+    const payment = await userRepository.createPayment(paymentObject);
+    
+
+    //create appointment
+    const appointmentObject: Partial<IAppointment> = {
+      user: UserId,
+      doctor: doctorId,
+      date: availability.date,
+      time: timeSlot.time,
+      slotId,
+      timeSlotId,
+      payment: payment._id,
+      status: 'Booked'
+    }
+
+    const appointment = await userRepository.createAppointment(appointmentObject)
+    
   }
 
 
   
-  async getAppointments(userId:any): Promise<BookedSlot[] | null> {
+  async getAppointments(userId:string): Promise<IAppointment[] | null> {
  
     const Appointments = await userRepository.getUserAppointments(userId);
   
@@ -314,6 +321,53 @@ async updateUser(req: any): Promise<void> {
   
     return Appointments
   }
+
+
+   
+  async rechargeWallet(req: any): Promise<void> {
+    
+    const {amount} = req.body;
+    const UserId = req.user.Id;
+  
+    let Wallet = await userRepository.findUserWallet(UserId);
+
+    if(!Wallet){
+      const walletObject: Partial<IWallet> = {
+        ownerId: UserId,
+        ownerType: 'User',
+      }
+      Wallet = await userRepository.createUserWallet(walletObject)
+    }
+    
+    Wallet.balance += parseInt(amount)
+    await Wallet.save();
+
+    const paymentObject: Partial<IPayment> = {
+      user:UserId,
+      amount,
+      method:'Razorpay',
+      transactionType: 'Recharge',
+      status:'Completed'
+    }
+
+    await userRepository.createPayment(paymentObject);
+  }
+
+
+  async getWallet(req:any): Promise<IWallet | null> {
+    
+    const UserId = req.user.Id;
+    const wallet = await userRepository.findUserWallet(UserId);
+  
+    if(!wallet){
+      const error = Error('No wallet for this user');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+  
+    return wallet
+  }
+  
   
 }
 

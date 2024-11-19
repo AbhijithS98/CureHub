@@ -162,7 +162,6 @@ class DoctorController {
                     res.status(400).json({ message: "Doctor id is required" });
                     return;
                 }
-                console.log("doctor's id is: ", _id);
                 const availability = yield doctorService.getAvailability(_id);
                 res.status(200).json({ availability });
             }
@@ -200,7 +199,6 @@ class DoctorController {
     }
     deleteSlot(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('entered slot deletion');
             try {
                 yield doctorService.removeSlot(req);
                 res.status(200).json({ message: 'Slot deleted successfully.' });
@@ -213,13 +211,26 @@ class DoctorController {
     }
     deleteTimeSlot(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('entered time slot deletion');
             try {
                 yield doctorService.removeTimeSlot(req);
                 res.status(200).json({ message: 'Time Slot deleted successfully.' });
             }
             catch (error) {
                 console.error("deleting time slot error: ", error.message);
+                next(error);
+            }
+        });
+    }
+    getAppointments(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const doc_id = (_a = req.doctor) === null || _a === void 0 ? void 0 : _a.Id;
+                const appointments = yield doctorService.fetchAppointments(doc_id);
+                res.status(200).json({ appointments });
+            }
+            catch (error) {
+                console.error("Getting doctor appointments error: ", error.message);
                 next(error);
             }
         });

@@ -232,20 +232,47 @@ class UserController {
 
    async getUserAppointments(req: Request, res: Response, next: NextFunction): Promise<void> {
     
-    try {     
-      
-      
-      const userId = req.user?.Id
-      console.log("entered gua: ", userId);
+    try {           
+      const userId = req.user?.Id as string;
       const result = await userService.getAppointments(userId);
-      res.status(200).json(result)
+      res.status(200).json({result})
 
     } catch (error: any) {
       console.error('fetching user appointments error: ', error);
       next(error)
     }
   }
+
+
+  async walletRecharge(req: Request, res: Response, next: NextFunction): Promise<void> {
+   
+    try {
+
+      await userService.rechargeWallet(req);
+      res.status(200).json({ message: 'Wallet recharged successfully' });
+      
+    } catch (error: any) {
+      console.error('user wallet recharge error:', error);
+      next(error)
+    }
+  }
+
+
+  async getUserWallet(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const wallet = await userService.getWallet(req);
+      res.status(200).json({wallet})
+
+    } catch (error: any) {
+      console.error('fetching user wallet error:', error);
+      next(error)
+    }
+  }
 }
+
+
+
 
 
 export default new UserController();

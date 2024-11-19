@@ -8,7 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import Doctor from "../models/doctor.js";
-import Appointment from "../models/appointments.js";
+import Availability from "../models/availability.js";
+import Appointment from "../models/appointment.js";
 class DoctorRepository {
     findDoctorByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -17,7 +18,13 @@ class DoctorRepository {
     }
     getAvailabilities(_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Appointment.find({ doctor: _id });
+            return yield Availability.find({ doctor: _id });
+        });
+    }
+    getAppointments(_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Appointment.find({ doctor: _id }).populate('user', 'name');
+            ;
         });
     }
     findDoctorByEmailAndOtp(email, otp) {
@@ -80,17 +87,17 @@ class DoctorRepository {
     }
     addSlots(email, newSlots) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Appointment.insertMany(newSlots);
+            yield Availability.insertMany(newSlots);
         });
     }
-    deleteSlot(email, slotId) {
+    deleteSlot(slotId) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Doctor.updateOne({ email }, { $pull: { availability: { _id: slotId } } }, { new: true });
+            yield Availability.deleteOne({ _id: slotId });
         });
     }
-    deleteTimeSlot(email, slotId, timeSlotId) {
+    deleteTimeSlot(slotId, timeSlotId) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Doctor.updateOne({ email, "availability._id": slotId }, { $pull: { "availability.$.timeSlots": { _id: timeSlotId } } }, { new: true });
+            yield Availability.updateOne({ _id: slotId }, { $pull: { timeSlots: { _id: timeSlotId } } }, { new: true });
         });
     }
 }

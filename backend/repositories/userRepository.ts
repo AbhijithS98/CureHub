@@ -1,8 +1,10 @@
 import User,{ IUser} from "../models/user.js";
 import Doctor,{ IDoctor } from "../models/doctor.js";
 import Payment,{ IPayment } from "../models/paymentSchema.js";
-import Appointment,{ IAppointment } from "../models/appointments.js";
+import Availability,{ IAvailability } from "../models/availability.js";
 import { BookedSlot } from "../types/bookedSlotsInterface.js";
+import Appointment,{ IAppointment} from "../models/appointment.js";
+import Wallet,{ IWallet } from "../models/walletSchema.js";
 
 
 class UserRepository {
@@ -95,54 +97,30 @@ class UserRepository {
   }
 
 
+  async createAppointment(appointmentDetails: Partial<IAppointment>): Promise<IAppointment> {
+    const appointment = new Appointment(appointmentDetails);
+    await appointment.save();
+    return appointment;
+  }
 
-  async findAppointment(slotId:any, doctorId:any): Promise<IAppointment | null> {
-    return await Appointment.findOne({ _id:slotId, doctor:doctorId });
+  async createUserWallet(walletObject: Partial<IWallet>): Promise<IWallet> {
+    const wallet = new Wallet(walletObject);
+    return await wallet.save();
+  }
+
+  async findAvailability(slotId:any): Promise<IAvailability | null> {
+    return await Availability.findOne({ _id:slotId });
   }
 
 
-  async getUserAppointments(userId:any) : Promise<BookedSlot[] | null> {
-    const pipeline = [
-      {
-        $match: {
-          "timeSlots.user": userId, // Match appointments with time slots booked by the user
-        },
-      },
-      {
-        $unwind: "$timeSlots", // Unwind time slots array
-      },
-      {
-        $match: {
-          "timeSlots.user": userId, // Filter relevant time slots after unwinding
-        },
-      },
-      {
-        $lookup: {
-          from: "doctors", // Name of the doctors collection
-          localField: "doctor",
-          foreignField: "_id",
-          as: "doctorDetails", // Resulting doctor details
-        },
-      },
-      {
-        $unwind: "$doctorDetails", // Unwind doctor details array
-      },
-      {
-        $project: {
-          _id: 0, // Exclude appointment ID
-          date: 1,
-          time: "$timeSlots.time", // Include time slot time
-          timeSlotId: "$timeSlots._id", // Include time slot ID
-          status: "$timeSlots.status", // Include time slot status
-          doctorName: { $concat: ["Dr. ", "$doctorDetails.name"] }, // Include doctor name
-        },
-      },
-    ];
-
-    const results:BookedSlot[] | null = await Appointment.aggregate(pipeline);
-    console.log(results);
-    return results
+  async findUserWallet(userId:any): Promise<IWallet | null> {
+    return await Wallet.findOne({ ownerId: userId });
   }
+
+  async getUserAppointments(id: string): Promise<IAppointment[] | null> {
+    return await Appointment.find({ user: id }).populate('doctor', 'name');;
+  }
+  
 }
 
 export default new UserRepository();

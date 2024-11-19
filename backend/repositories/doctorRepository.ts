@@ -1,5 +1,6 @@
 import Doctor, { IDoctor } from "../models/doctor.js";
-import Appointment, { IAppointment } from "../models/appointments.js";
+import Availability, { IAvailability } from "../models/availability.js";
+import Appointment, { IAppointment } from "../models/appointment.js";
 
 class DoctorRepository { 
 
@@ -7,8 +8,12 @@ class DoctorRepository {
     return await Doctor.findOne({ email });
   }
 
-  async getAvailabilities(_id: string): Promise<IAppointment[] | null> {
-    return await Appointment.find({ doctor: _id });
+  async getAvailabilities(_id: string): Promise<IAvailability[] | null> {
+    return await Availability.find({ doctor: _id });
+  }
+
+  async getAppointments(_id: string): Promise<IAppointment[] | null> {
+    return await Appointment.find({ doctor: _id }).populate('user', 'name');;
   }
 
   async findDoctorByEmailAndOtp(email: string, otp:number): Promise<IDoctor| null> {
@@ -18,7 +23,6 @@ class DoctorRepository {
   async findDoctorByPwResetToken(token: string): Promise<IDoctor | null> {
     return await Doctor.findOne({ pwResetToken:token, pwTokenExpiresAt: { $gt: new Date() } });
   }
-
 
   async createDoctor(doctorData: Partial<IDoctor>): Promise<IDoctor> {
     const doctor = new Doctor(doctorData);
@@ -86,23 +90,19 @@ class DoctorRepository {
   }
   
   async addSlots(email: string, newSlots: any): Promise<void> {
-    await Appointment.insertMany(newSlots);
+    await Availability.insertMany(newSlots);
   }
 
 
-  async deleteSlot(email: string, slotId: string): Promise<void> {
-    await Doctor.updateOne(
-      { email }, 
-      { $pull: { availability: { _id: slotId } } },
-      { new: true }
-    );
+  async deleteSlot(slotId: string): Promise<void> {
+    await Availability.deleteOne({ _id: slotId });
   }
   
 
-  async deleteTimeSlot(email: string, slotId: string, timeSlotId: string): Promise<void> {
-    await Doctor.updateOne(
-      { email, "availability._id": slotId },
-      { $pull: { "availability.$.timeSlots": { _id: timeSlotId } } },
+  async deleteTimeSlot(slotId: string, timeSlotId: string): Promise<void> {
+    await Availability.updateOne(
+      { _id: slotId },
+      { $pull: { timeSlots: { _id: timeSlotId } } },
       { new: true }
     );
   }

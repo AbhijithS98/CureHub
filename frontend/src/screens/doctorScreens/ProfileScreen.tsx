@@ -11,7 +11,8 @@ import { useDoctorGetProfileQuery,
          useDoctorUpdateProfileMutation,
          useDoctorLogoutMutation, 
          useDoctorDeleteSlotMutation,
-         useDoctorDeleteTimeSlotMutation } from '../../slices/doctorSlices/doctorApiSlice';
+         useDoctorDeleteTimeSlotMutation,
+         useDoctorGetAppointmentsQuery } from '../../slices/doctorSlices/doctorApiSlice';
 import { clearDoctorCredentials } from "../../slices/doctorSlices/doctorAuthSlice.js";
 import { ObjectId } from 'mongoose';
 
@@ -20,12 +21,24 @@ interface AvailabilitySlot {
   doctor: ObjectId; 
   date: Date;
   timeSlots: {
-    time: string; 
-    user: ObjectId | null; 
-    status: 'Pending' | 'Booked' | 'Completed';
-    payment: ObjectId | null;
-    _id: ObjectId,
-  }[];
+    time: string;  
+    status: 'Available' | 'Booked' ;
+    _id: ObjectId; 
+  }[]; 
+}
+
+interface Appointment {
+  _id: ObjectId;
+  user: {name:string} 
+  doctor: ObjectId; 
+  date: Date; 
+  time: string; 
+  slotId: ObjectId; 
+  timeSlotId: ObjectId; 
+  payment: ObjectId | null; 
+  status: 'Booked' | 'Cancelled' | 'Completed'; 
+  createdAt: Date; 
+  updatedAt: Date;
 }
 
 const ProfileScreen: React.FC = () => { 
@@ -33,9 +46,11 @@ const ProfileScreen: React.FC = () => {
   const location = useLocation();
   const { email, _id } = location.state || {};
   const [selectedTab, setSelectedTab] = useState('overview');
-  const {data, error, isLoading, refetch} = useDoctorGetProfileQuery(email);
-  const {data:result, refetch:availabilityRefetch} = useDoctorGetAvailabilityQuery(_id);
-  const doctorInfo:IDoc = data?.doctor;
+  const {data:profileData, error, isLoading, refetch:profileRefetch} = useDoctorGetProfileQuery(email);
+  const doctorInfo:IDoc = profileData?.doctor;
+  const {data:availabilityData, refetch:availabilityRefetch} = useDoctorGetAvailabilityQuery(_id);
+  const {data:appointmentsData, refetch:appointmentsRefetch} = useDoctorGetAppointmentsQuery({});
+  
   const [updateDoctorProfile, {isLoading:updateLoading}] = useDoctorUpdateProfileMutation();
   const [removeSlot, {isLoading:deleteSlotLoading}] = useDoctorDeleteSlotMutation();
   const [removeTimeSlot, {isLoading:deleteTimeSlotLoading}] = useDoctorDeleteTimeSlotMutation();
@@ -80,11 +95,15 @@ const ProfileScreen: React.FC = () => {
         bio: doctorInfo?.bio || '',
       })
     }
-    if(result){
-      console.log("avls : ",result);
+    if(availabilityData){
+      console.log("avls : ",availabilityData);
+    }
+    if(appointmentsData){
+      console.log("apmts : ",appointmentsData);
     }
     
-  },[doctorInfo,result])
+  },[doctorInfo,availabilityData,appointmentsData])
+
 
   const handleLogout = async(e: React.FormEvent)=>{
     try{
@@ -104,12 +123,11 @@ const ProfileScreen: React.FC = () => {
   };
 
   const deleteSlot = async (slotId:ObjectId) => {
-      const docEmail = doctorInfo.email
-      
+     
       try{
-        await removeSlot({slotId, docEmail}).unwrap();
+        await removeSlot({slotId}).unwrap();
         toast.success("Slot deleted successfully!");
-        refetch();
+        availabilityRefetch();
 
       }catch (error:any) {
         console.error("Error deleting slot: ", error);
@@ -118,16 +136,29 @@ const ProfileScreen: React.FC = () => {
   }
 
   const deleteTimeSlot = async (slotId:ObjectId, timeSlotId:ObjectId) => {
-    const docEmail = doctorInfo.email
     
     try{
-      await removeTimeSlot({slotId, timeSlotId, docEmail}).unwrap();
+      await removeTimeSlot({slotId, timeSlotId}).unwrap();
       toast.success("Time Slot deleted successfully!");
-      refetch();
-
+      availabilityRefetch();
+      setViewingDate(null)
+      
     }catch (error:any) {
       console.error("Error deleting time slot: ", error);
       toast.error(error.message || "Error deleting time slot.")
+    }
+  }
+
+  const cancelAppointment = async (appointmentId:ObjectId) => {
+    
+    try{
+      // await cancelBooking({appointmentId}).unwrap();
+      toast.success("Booking cancelled successfully!");
+      appointmentsRefetch();
+      
+    }catch (error:any) {
+      console.error("Error cancelling appointment: ", error);
+      toast.error(error.message || "Error cancelling appointment")
     }
   }
 
@@ -203,7 +234,7 @@ const ProfileScreen: React.FC = () => {
       
       await updateDoctorProfile(updatedData).unwrap();
       toast.success("Profile updated successfully!");
-      refetch();
+      profileRefetch();
       setSelectedTab('overview')
     } catch (error:any) {
       console.error("Error updating profile:", error);
@@ -212,10 +243,11 @@ const ProfileScreen: React.FC = () => {
   };
 
 
+
   const renderContent = () => {
     if (isLoading) return <Spinner animation="border" />;
     if (error) return <Alert variant="danger">Failed to load profile.</Alert>;
-    if (!data) return <Alert variant="warning">Doctor profile not found.</Alert>;
+    if (!profileData) return <Alert variant="warning">Doctor profile not found.</Alert>;
 
     
     switch (selectedTab) {
@@ -259,7 +291,7 @@ const ProfileScreen: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {result.availability.map((slot:AvailabilitySlot, index:number) => {
+                {availabilityData.availability.map((slot:AvailabilitySlot, index:number) => {
                   const date = new Date(slot.date);
                   return (
                   <tr key={index}>
@@ -333,16 +365,28 @@ const ProfileScreen: React.FC = () => {
                 <th>Date</th>
                 <th>Time</th>
                 <th>Patient</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {/* {doctorInfo.appointments.map((appointment, index) => (
+              {appointmentsData.appointments.map((appointment: Appointment, index: number) => (
                 <tr key={index}>
-                  <td>{appointment.date}</td>
+                  <td>{new Date(appointment.date).toLocaleDateString('en-GB')}</td>
                   <td>{appointment.time}</td>
-                  <td>{appointment.patientName}</td>
+                  <td>{appointment.user.name}</td>
+                  <td>{appointment.status}</td>
+                  <td>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => cancelAppointment(appointment._id!)}
+                    >
+                      cancel
+                    </Button>
+                  </td>
                 </tr>
-              ))} */}
+              ))}
             </tbody>
           </Table>
         </div>

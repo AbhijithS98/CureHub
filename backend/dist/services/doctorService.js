@@ -181,7 +181,6 @@ class DoctorService {
                 error.name = 'ValidationError';
                 throw error;
             }
-            console.log("avl: ", availabilities);
             return availabilities;
         });
     }
@@ -213,28 +212,35 @@ class DoctorService {
     }
     removeSlot(req) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { slotId, docEmail } = req.body;
-            console.log("slotId: ", slotId, "docEmail: ", docEmail);
-            const Doctor = yield doctorRepository.findDoctorByEmail(docEmail);
-            if (!Doctor) {
-                const error = Error('No doctor with this email.');
+            const { slotId } = req.body;
+            if (!slotId) {
+                const error = Error('slot id must be provided');
                 error.name = 'ValidationError';
                 throw error;
             }
-            yield doctorRepository.deleteSlot(docEmail, slotId);
+            yield doctorRepository.deleteSlot(slotId);
         });
     }
     removeTimeSlot(req) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { slotId, timeSlotId, docEmail } = req.body;
-            console.log("slotId: ", slotId, "timeSlotId: ", timeSlotId, "docEmail: ", docEmail);
-            const Doctor = yield doctorRepository.findDoctorByEmail(docEmail);
-            if (!Doctor) {
-                const error = Error('No doctor with this email.');
+            const { slotId, timeSlotId } = req.body;
+            if (!slotId || !timeSlotId) {
+                const error = Error('SlotId and TimeSlotId must be provided');
                 error.name = 'ValidationError';
                 throw error;
             }
-            yield doctorRepository.deleteTimeSlot(docEmail, slotId, timeSlotId);
+            yield doctorRepository.deleteTimeSlot(slotId, timeSlotId);
+        });
+    }
+    fetchAppointments(_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const appointments = yield doctorRepository.getAppointments(_id);
+            if (!appointments) {
+                const error = Error('No appointments for this doctor.');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return appointments;
         });
     }
 }

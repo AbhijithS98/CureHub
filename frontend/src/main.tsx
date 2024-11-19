@@ -29,6 +29,7 @@ import ProfileScreen from './screens/userScreens/ProfileScreen';
 import AppointmentBookingScreen from './screens/userScreens/BookAppointmentScreen';
 import PaymentScreen from './screens/userScreens/PaymentScreen';
 import ThankyouScreen from './screens/userScreens/ThankYouScreen';
+import WalletScreen from './screens/userScreens/WalletScreen';
 
 {/* Doctor screens imports */}
 import DoctorRegisterScreen from './screens/doctorScreens/RegisterScreen';
@@ -69,6 +70,7 @@ const router = createBrowserRouter(
         <Route path="book-slot" element={<UserProtectedRoute><AppointmentBookingScreen /></UserProtectedRoute>}/>
         <Route path="payment" element={<UserProtectedRoute><PaymentScreen /></UserProtectedRoute>}/>
         <Route path="thank-you" element={<UserProtectedRoute><ThankyouScreen /></UserProtectedRoute>}/>
+        <Route path="wallet" element={<UserProtectedRoute><WalletScreen /></UserProtectedRoute>}/>
       </Route>
 
       {/* Doctor Routes */}

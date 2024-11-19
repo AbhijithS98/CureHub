@@ -1,11 +1,12 @@
 import { IDoctor } from "../models/doctor.js";
-import { IAppointment } from "../models/appointments.js";
+import { IAvailability } from "../models/availability.js";
 import doctorRepository from "../repositories/doctorRepository.js";
 import sendEmail from "../utils/emailSender.js";
 import bcrypt from "bcryptjs";
 import crypto from 'crypto';
 import { Request, Response } from "express";
 import { IRequestWithFiles } from "../types/fileReqInterface.js";
+import { IAppointment } from "../models/appointment.js";
 
 
 
@@ -210,7 +211,7 @@ async getDoctor(email:string): Promise<IDoctor | null> {
 }
 
 
-async getAvailability(_id:string): Promise<IAppointment[] | null> {
+async getAvailability(_id:string): Promise<IAvailability[] | null> {
  
   const availabilities = await doctorRepository.getAvailabilities(_id);
 
@@ -219,7 +220,6 @@ async getAvailability(_id:string): Promise<IAppointment[] | null> {
     error.name = 'ValidationError';  
     throw error;
   }
-  console.log("avl: ",availabilities);
   
   return availabilities
 }
@@ -262,37 +262,46 @@ async updateSlots(req: any): Promise<void> {
 
   async removeSlot(req: any): Promise<void> {
     
-    const { slotId, docEmail } = req.body;
-    console.log("slotId: ",slotId, "docEmail: ", docEmail);
-    
+    const { slotId } = req.body;
 
-    const Doctor = await doctorRepository.findDoctorByEmail(docEmail);
-
-    if(!Doctor){
-      const error = Error('No doctor with this email.');
+    if(!slotId){
+      const error = Error('slot id must be provided');
       error.name = 'ValidationError';  
       throw error;
     }
 
-    await doctorRepository.deleteSlot(docEmail,slotId);
+    await doctorRepository.deleteSlot(slotId);
   }
 
 
   async removeTimeSlot(req: any): Promise<void> {
     
-    const { slotId, timeSlotId, docEmail } = req.body;
-    console.log("slotId: ",slotId, "timeSlotId: ",timeSlotId, "docEmail: ", docEmail);
-  
-    const Doctor = await doctorRepository.findDoctorByEmail(docEmail);
+    const { slotId, timeSlotId } = req.body;
 
-    if(!Doctor){
-      const error = Error('No doctor with this email.');
+    if(!slotId || !timeSlotId){
+      const error = Error('SlotId and TimeSlotId must be provided');
       error.name = 'ValidationError';  
       throw error;
     }
 
-    await doctorRepository.deleteTimeSlot(docEmail,slotId,timeSlotId);
+    await doctorRepository.deleteTimeSlot(slotId,timeSlotId);
   }
+
+
+
+  
+async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
+ 
+  const appointments = await doctorRepository.getAppointments(_id);
+
+  if(!appointments){
+    const error = Error('No appointments for this doctor.');
+    error.name = 'ValidationError';  
+    throw error;
+  }
+  
+  return appointments
+}
 }
 
 export default new DoctorService();

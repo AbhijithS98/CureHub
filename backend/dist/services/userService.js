@@ -206,39 +206,42 @@ class UserService {
         return __awaiter(this, void 0, void 0, function* () {
             const { slotId, timeSlotId, doctorId, amount } = req.body.bookingDetails;
             const UserId = req.user.Id;
-            if (!UserId) {
-                const error = Error('No UserId is provided.');
+            // Find the availability
+            const availability = yield userRepository.findAvailability(slotId);
+            if (!availability) {
+                const error = Error('Slot has been removed or does not exist!');
                 error.name = 'ValidationError';
                 throw error;
             }
+            // Find the time slot to update by timeSlotId
+            const timeSlot = availability.timeSlots.find((slot) => slot._id.toString() === timeSlotId);
+            if (!timeSlot) {
+                const error = Error('Time slot has been removed!');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            timeSlot.status = 'Booked';
+            yield availability.save();
             const paymentObject = {
                 user: UserId,
+                doctor: doctorId,
                 amount,
                 method: 'Razorpay',
                 status: 'Completed'
             };
             const payment = yield userRepository.createPayment(paymentObject);
-            console.log('Payment created:', payment);
-            // Find the appointment and update the specific time slot
-            const appointment = yield userRepository.findAppointment(slotId, doctorId);
-            if (!appointment) {
-                const error = Error('Appointment not found');
-                error.name = 'ValidationError';
-                throw error;
-            }
-            // Find the time slot to update by timeSlotId
-            const timeSlot = appointment.timeSlots.find((slot) => slot._id.toString() === timeSlotId);
-            if (!timeSlot) {
-                const error = Error('Time slot not found');
-                error.name = 'ValidationError';
-                throw error;
-            }
-            // Update the time slot
-            timeSlot.status = 'Booked'; // Change status to 'Booked'
-            timeSlot.user = UserId; // Assign user to this slot
-            timeSlot.payment = payment._id; // Set the payment ID
-            // Save the updated appointment
-            yield appointment.save();
+            //create appointment
+            const appointmentObject = {
+                user: UserId,
+                doctor: doctorId,
+                date: availability.date,
+                time: timeSlot.time,
+                slotId,
+                timeSlotId,
+                payment: payment._id,
+                status: 'Booked'
+            };
+            const appointment = yield userRepository.createAppointment(appointmentObject);
         });
     }
     getAppointments(userId) {
@@ -250,6 +253,42 @@ class UserService {
                 throw error;
             }
             return Appointments;
+        });
+    }
+    rechargeWallet(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { amount } = req.body;
+            const UserId = req.user.Id;
+            let Wallet = yield userRepository.findUserWallet(UserId);
+            if (!Wallet) {
+                const walletObject = {
+                    ownerId: UserId,
+                    ownerType: 'User',
+                };
+                Wallet = yield userRepository.createUserWallet(walletObject);
+            }
+            Wallet.balance += parseInt(amount);
+            yield Wallet.save();
+            const paymentObject = {
+                user: UserId,
+                amount,
+                method: 'Razorpay',
+                transactionType: 'Recharge',
+                status: 'Completed'
+            };
+            yield userRepository.createPayment(paymentObject);
+        });
+    }
+    getWallet(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const UserId = req.user.Id;
+            const wallet = yield userRepository.findUserWallet(UserId);
+            if (!wallet) {
+                const error = Error('No wallet for this user');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return wallet;
         });
     }
 }

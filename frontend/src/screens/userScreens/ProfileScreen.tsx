@@ -9,8 +9,22 @@ import { useUserGetProfileQuery,
          useUserUpdateProfileMutation } from '../../slices/userSlices/userApiSlice.js';
 import { Iuser } from '../../../../shared/user.interface.js';
 import { clearCredentials } from "../../slices/userSlices/userAuthSlice.js";
+import { ObjectId } from 'mongoose';
 import './style.css';
 
+interface Ibooking {
+  _id: ObjectId;
+  user: ObjectId;
+  doctor: {name:string}; 
+  date: Date; 
+  time: string; 
+  slotId: ObjectId; 
+  timeSlotId: ObjectId; 
+  payment: ObjectId | null; 
+  status: 'Booked' | 'Cancelled' | 'Completed'; 
+  createdAt: Date; 
+  updatedAt: Date;
+}
 
 
 const ProfileScreen: React.FC = () => {
@@ -19,7 +33,7 @@ const ProfileScreen: React.FC = () => {
   const { email } = location.state || {};
   const [selectedTab, setSelectedTab] = useState('bookings');
   const {data, error, isLoading, refetch} = useUserGetProfileQuery(email);
-  const {data:result, refetch:appointmentsRefetch} = useUserGetAppointmentsQuery({});
+  const {data:bookings, refetch:bookingsRefetch} = useUserGetAppointmentsQuery({});
   const userInfo:Iuser = data?.user;
   
   const [updateProfile, {isLoading:updateLoading}] = useUserUpdateProfileMutation();
@@ -47,15 +61,27 @@ const ProfileScreen: React.FC = () => {
         dob: userInfo?.dob ? new Date(userInfo.dob).toISOString().split('T')[0] : ''
       })
     }
-    if(result){
-     console.log("res: ", result);
+    if(bookings){
+     console.log("res: ", bookings);
      
     }
-  },[userInfo,result]);
+  },[userInfo,bookings]);
 
   const handleTabChange = (tab: string) => {
     setSelectedTab(tab);
   };
+
+  const cancelBooking = async (bookingId:ObjectId) => {  
+    try{
+      // await cancelBooking({bookingId}).unwrap();
+      toast.success("Booking cancelled successfully!");
+      bookingsRefetch();
+      
+    }catch (error:any) {
+      console.error("Error cancelling booking: ", error);
+      toast.error(error.message || "Error cancelling booking")
+    }
+  }
 
   const handleLogout = async(e: React.FormEvent)=>{
     try{
@@ -138,25 +164,31 @@ if (!data) return <Alert variant="warning">User profile not found.</Alert>;
                 <thead>
                   <tr>
                     <th>Date</th>
-                    <th>Doctor</th>
                     <th>Time</th>
+                    <th>Doctor</th>
                     <th>Status</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody>                 
+                  {bookings?.result.map((booking: Ibooking, index: number) => (
+                  <tr key={index}>
+                    <td>{new Date(booking.date).toLocaleDateString('en-GB')}</td>
+                    <td>{booking.time}</td>
+                    <td>Dr.{booking.doctor.name}</td>
+                    <td>{booking.status}</td>
+                    <td>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => cancelBooking(booking._id!)}
+                      >
+                        cancel
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
                   
-                  <tr>
-                    <td>2024-11-01</td>
-                    <td>Dr. Smith</td>
-                    <td>10:00 AM</td>
-                    <td>Confirmed</td>
-                  </tr>
-                  <tr>
-                    <td>2024-11-10</td>
-                    <td>Dr. Lee</td>
-                    <td>3:00 PM</td>
-                    <td>Pending</td>
-                  </tr>
                 </tbody>
               </Table>
             </Card>
