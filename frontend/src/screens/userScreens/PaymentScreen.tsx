@@ -1,75 +1,114 @@
-import React from 'react';
+import React,{ useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store.js';
-import { Button, Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
+import { Button, Container, Row, Col, Card, ListGroup} from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import { useUserBookSlotMutation } from '../../slices/userSlices/userApiSlice.js';
+import { useUserBookSlotMutation,
+         useUserGetWalletQuery,
+       } from '../../slices/userSlices/userApiSlice.js';
+import { IWallet } from '../../types/walletInterface';
 import './style.css';
 
 
 const PaymentScreen: React.FC = () => {
   const { userInfo } = useSelector((state: RootState) => state.userAuth);
+  const { data, error, isLoading:walletLoading } = useUserGetWalletQuery({});
+  const wallet: IWallet | null = data?.wallet;
   const [bookSlot,isLoading] = useUserBookSlotMutation();
   const location = useLocation();
   const navigate = useNavigate();
 
+  type PaymentMethod = 'Razorpay' | 'Wallet';
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('Razorpay');
   const { doctor, selectedDate, selectedSlot } = location.state;
 
   
   const doctorFee = doctor.consultationFee; 
   const applicationCharge = 100; 
-  const gst = (doctorFee + applicationCharge) * 0.18; 
+  const gst = (doctorFee + applicationCharge) * 0.12; 
   const finalAmount:number = doctorFee + applicationCharge + gst;
 
   // Payment handler (Razorpay integration)
   const handlePayment = async () => {
-    const response = await fetch('http://localhost:5000/api/payment/create-order', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ amount: finalAmount, currency: 'INR' }),
-    });
 
-    const data = await response.json();
-    if(data.success){
-      const options = {
-        key: 'rzp_test_SLWTHwkkbKB9bv',
-        amount: finalAmount * 100, 
-        currency: 'INR',
-        name: 'CURE HUB',
-        description: `Payment for appointment with Dr. ${doctor.name}`,
-        order_id: data.order.id,
-        handler: async function (response: any) {
-          
-          const bookingDetails = { slotId: selectedDate._id,
-                                   timeSlotId: selectedSlot._id, 
-                                   doctorId: doctor._id,
-                                   amount: finalAmount
-                                 }
-                                 console.log("bd: ",bookingDetails);
-          await bookSlot({bookingDetails}).unwrap();
-          toast.success('Payment successful!');
-          navigate("/user/thank-you")
-        
-        },
-        prefill: {
-          name: userInfo?.name, 
-          email: userInfo?.email,
-          contact: userInfo?.phone,
-        },
-        theme: {
-          color: '#0d6efd',
-        },
-      };
+    if(paymentMethod === 'Wallet'){
+      //WALLET PAYMENT
+
+        if (!wallet || wallet.balance < finalAmount) {
+          toast.error('Insufficient wallet balance!');
+          return;
+        }
   
-      const paymentObject = new window.Razorpay(options);
-      paymentObject.open();
+      try {
+        const bookingDetails = {
+          userEmail: userInfo?.email,
+          slotId: selectedDate._id,
+          timeSlotId: selectedSlot._id,
+          doctorId: doctor._id,
+          paymentMethod,
+          amount: finalAmount,
+        };
+
+        // Deduct amount from wallet and book the slot
+        await bookSlot({bookingDetails}).unwrap();
+        toast.success('Payment successful via wallet!');
+        navigate('/user/thank-you');
+      } catch (error:any) {
+        toast.error(error.data.message || 'Failed to complete payment!');
+      }
+
+    }else{
+      //RAZORPAY PAYMENT
+      const response = await fetch('http://localhost:5000/api/payment/create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ amount: finalAmount, currency: 'INR' }),
+      });
+  
+      const data = await response.json();
+      if(data.success){
+        const options = {
+          key: 'rzp_test_SLWTHwkkbKB9bv',
+          amount: finalAmount * 100, 
+          currency: 'INR',
+          name: 'CURE HUB',
+          description: `Payment for appointment with Dr. ${doctor.name}`,
+          order_id: data.order.id,
+          handler: async function (response: any) {
+            
+            const bookingDetails = { userEmail: userInfo?.email,
+                                     slotId: selectedDate._id,
+                                     timeSlotId: selectedSlot._id, 
+                                     doctorId: doctor._id,
+                                     paymentMethod,
+                                     amount: finalAmount
+                                   }
+                                   console.log("bd: ",bookingDetails);
+            await bookSlot({bookingDetails}).unwrap();
+            toast.success('Payment successful!');
+            navigate("/user/thank-you")
+          
+          },
+          prefill: {
+            name: userInfo?.name, 
+            email: userInfo?.email,
+            contact: userInfo?.phone,
+          },
+          theme: {
+            color: '#0d6efd',
+          },
+        };
     
-    }else {
-      toast.error('Failed to create Razorpay order');
-    }
+        const paymentObject = new window.Razorpay(options);
+        paymentObject.open();
+      
+      }else {
+        toast.error('Failed to create Razorpay order');
+      }
+    }   
   };
 
   return (
@@ -95,7 +134,7 @@ const PaymentScreen: React.FC = () => {
                   <strong>Application Fee:</strong> ₹{applicationCharge.toFixed(2)}
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <strong>GST (18%):</strong> ₹{gst.toFixed(2)}
+                  <strong>GST (12%):</strong> ₹{gst.toFixed(2)}
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <h4><strong>Total Amount:</strong> ₹{finalAmount.toFixed(2)}</h4>
@@ -103,6 +142,25 @@ const PaymentScreen: React.FC = () => {
               </ListGroup>
             </Card.Body>
           </Card>
+        </Col>
+      </Row>
+
+      <Row className="mb-4">
+        <Col>
+          <div>
+            <label htmlFor="paymentMethod" className="form-label">
+              Select Payment Method
+            </label>
+            <select
+              id="paymentMethod"
+              className="form-select"
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
+            >
+              <option value="Razorpay">Razorpay</option>
+              <option value="Wallet">Wallet</option>
+            </select>
+          </div>
         </Col>
       </Row>
 

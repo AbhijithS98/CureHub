@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Col, Container, Row, Table, Form, Card, Spinner, Alert } from 'react-bootstrap';
-import { toast } from 'react-toastify';
+import { Button, Col, Container, Row, Table, Form, Card, Spinner, Alert, Modal  } from 'react-bootstrap';
+import { toast, Id, ToastPosition } from 'react-toastify';
 import { useUserGetProfileQuery, 
          useUserGetAppointmentsQuery, 
          useLogoutMutation, 
-         useUserUpdateProfileMutation } from '../../slices/userSlices/userApiSlice.js';
+         useUserUpdateProfileMutation,
+         useUserCancelBookingMutation } from '../../slices/userSlices/userApiSlice.js';
 import { Iuser } from '../../../../shared/user.interface.js';
 import { clearCredentials } from "../../slices/userSlices/userAuthSlice.js";
 import { ObjectId } from 'mongoose';
@@ -34,9 +35,10 @@ const ProfileScreen: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState('bookings');
   const {data, error, isLoading, refetch} = useUserGetProfileQuery(email);
   const {data:bookings, refetch:bookingsRefetch} = useUserGetAppointmentsQuery({});
-  const userInfo:Iuser = data?.user;
+  const userData:Iuser = data?.user;
   
-  const [updateProfile, {isLoading:updateLoading}] = useUserUpdateProfileMutation();
+  const [updateProfile] = useUserUpdateProfileMutation();
+  const [cancelAppointment,{isLoading:cancelLoading}] = useUserCancelBookingMutation();
   const [logout] = useLogoutMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -52,28 +54,67 @@ const ProfileScreen: React.FC = () => {
   
   useEffect(()=>{
 
-    if(userInfo){
+    if(userData){
       setProfileData({
-        name: userInfo?.name || '',
-        email: userInfo?.email || '',
-        phone: userInfo?.phone || '',
-        address: userInfo?.address || '',
-        dob: userInfo?.dob ? new Date(userInfo.dob).toISOString().split('T')[0] : ''
+        name: userData?.name || '',
+        email: userData?.email || '',
+        phone: userData?.phone || '',
+        address: userData?.address || '',
+        dob: userData?.dob ? new Date(userData.dob).toISOString().split('T')[0] : ''
       })
     }
     if(bookings){
      console.log("res: ", bookings);
      
     }
-  },[userInfo,bookings]);
+  },[userData,bookings]);
+
+  const confirmAndCancelBooking = (bookingId: ObjectId) => {
+    const toastId: Id = toast.info(
+      <span>
+        Are you sure you want to cancel this appointment?
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => {
+            cancelBooking(bookingId);
+            toast.dismiss(toastId);
+          }}
+          className="ms-3"
+        >
+          Confirm
+        </Button>
+      </span>,
+      {
+        autoClose: false,
+        closeOnClick: false,
+        draggable: false,
+        position: "top-center" as ToastPosition,
+      }
+    );
+  };
 
   const handleTabChange = (tab: string) => {
     setSelectedTab(tab);
   };
 
-  const cancelBooking = async (bookingId:ObjectId) => {  
+    const cancelBooking = async (bookingId:ObjectId) => {  
+      const booking = bookings.result.find((b: Ibooking) => b._id === bookingId);
+      if (!booking) return;
+
+      const bookingDate = new Date(booking.date);
+      const cancellationDeadline = new Date(bookingDate);
+      const currentDate = new Date();
+      cancellationDeadline.setDate(bookingDate.getDate() - 1); 
+      cancellationDeadline.setHours(23, 59, 59, 999); 
+      
+      if (currentDate > cancellationDeadline) {
+        toast.error('Cancellation period has passed. You cannot cancel anymore.');
+        return;
+      }
+
     try{
-      // await cancelBooking({bookingId}).unwrap();
+      await cancelAppointment({bookingId}).unwrap();
       toast.success("Booking cancelled successfully!");
       bookingsRefetch();
       
@@ -131,9 +172,9 @@ if (!data) return <Alert variant="warning">User profile not found.</Alert>;
                 alt="User Profile"
                 className="profile-photo mb-3"
               /> */}
-              <h5 className="fw-bold">{userInfo?.name}</h5>
-              <p className="text-muted">{userInfo?.email}</p>
-              <p className="text-muted">{userInfo?.phone}</p>
+              <h5 className="fw-bold">{userData?.name}</h5>
+              <p className="text-muted">{userData?.email}</p>
+              <p className="text-muted">{userData?.phone}</p>
               <Button variant="danger" className="mt-4 w-100" onClick={handleLogout}>Logout</Button>
             </div>
           </Card>
@@ -170,7 +211,8 @@ if (!data) return <Alert variant="warning">User profile not found.</Alert>;
                     <th>Action</th>
                   </tr>
                 </thead>
-                <tbody>                 
+                <tbody>  
+                  {cancelLoading && <Spinner animation="border" />}               
                   {bookings?.result.map((booking: Ibooking, index: number) => (
                   <tr key={index}>
                     <td>{new Date(booking.date).toLocaleDateString('en-GB')}</td>
@@ -181,7 +223,8 @@ if (!data) return <Alert variant="warning">User profile not found.</Alert>;
                       <Button
                         variant="danger"
                         size="sm"
-                        onClick={() => cancelBooking(booking._id!)}
+                        onClick={() => confirmAndCancelBooking(booking._id)}
+                        disabled={booking.status==='Cancelled'}
                       >
                         cancel
                       </Button>

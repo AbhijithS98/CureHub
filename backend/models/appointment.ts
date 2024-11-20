@@ -1,15 +1,25 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
+import { IPayment } from './paymentSchema';
+
+
+export enum CancellationReason {
+  MedicalEmergency = 'Medical Emergency',
+  HealthIssues = 'Health Issues',
+  OperationalIssues = 'Operational Issues',
+}
 
 // Appointment interface
 export interface IAppointment extends Document {
+  _id: Types.ObjectId;
   user: Types.ObjectId; 
   doctor: Types.ObjectId; 
   date: Date; 
   time: string; 
   slotId: Types.ObjectId; 
   timeSlotId: Types.ObjectId; 
-  payment: Types.ObjectId | null; 
+  payment: IPayment | Types.ObjectId | null; 
   status: 'Booked' | 'Cancelled' | 'Completed'; 
+  cancellationReason?: string;
   createdAt: Date; 
   updatedAt: Date;
 }
@@ -29,6 +39,15 @@ const appointmentSchema = new Schema<IAppointment>(
       enum: ['Booked', 'Cancelled', 'Completed'],
       default: 'Booked',
       required: true,
+    },
+    cancellationReason: {
+      type: String,
+      enum: [
+        'Medical Emergency',
+        'Health Issues',
+        'Operational Issues',
+      ], 
+      required: false, 
     },
   },
   { timestamps: true }

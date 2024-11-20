@@ -30,7 +30,7 @@ const OtpScreen: React.FC = () => {
           toast.error('Please Enter OTP');
       } else {
           await verifyOtp({ otp, email }).unwrap(); 
-          toast.success('OTP Verified, Please Login');
+          toast.success('You have Successfully registered, Please Login');
           navigate('/user/login');
       }
     } catch (error:any) {

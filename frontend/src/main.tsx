@@ -50,6 +50,8 @@ import AdminResetPassScreen from './screens/adminScreens/ResetPassScreen';
 import AdminDoctorDetailsScreen from './screens/adminScreens/DoctorDetails';
 import AdminManageUsers from './screens/adminScreens/ManageUsers';
 import AdminManageDoctors from './screens/adminScreens/ManageDoctors';
+import AllDoctorsAppointments from './screens/adminScreens/AllDoctorsAppointments';
+
 
 
 const router = createBrowserRouter(
@@ -104,6 +106,8 @@ const router = createBrowserRouter(
           <Route path="doctor-details" element={<AdminDoctorDetailsScreen />} />
           <Route path="list-users" element={<AdminManageUsers />} />
           <Route path="list-doctors" element={<AdminManageDoctors />} />
+          <Route path="doctors-appointments" element={<AllDoctorsAppointments />} />
+          
         </Route>
 
       </Route>

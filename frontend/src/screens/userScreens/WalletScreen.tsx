@@ -1,18 +1,30 @@
-import React, { useState } from 'react';
-import { useUserGetWalletQuery,useUserWalletRechargeMutation } from '../../slices/userSlices/userApiSlice';
+import React, { useEffect, useState } from 'react';
+import { useUserGetWalletQuery,
+         useUserWalletRechargeMutation, 
+         useUserGetWalletTransactionsQuery } from '../../slices/userSlices/userApiSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store.js';
 import { toast } from 'react-toastify';
 import { IWallet } from '../../types/walletInterface';
+import { Itransaction } from '../../types/transactionInterface';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 const WalletScreen: React.FC = () => {
-  const { data, isLoading } = useUserGetWalletQuery({});
-  const wallet: IWallet= data?.wallet;
+  const { data, isLoading, refetch } = useUserGetWalletQuery({});
+  const wallet: IWallet | null = data?.wallet;
+  const { data:transactionsData, refetch:transactionsRefetch } = useUserGetWalletTransactionsQuery({});
+  const transactions: Itransaction[] | [] = transactionsData?.result;
   const { userInfo } = useSelector((state: RootState) => state.userAuth);
   const [rechargeWallet] = useUserWalletRechargeMutation();
   const [rechargeAmount, setRechargeAmount] = useState('');
+
+  useEffect(()=>{
+    if(transactions){
+      console.log("txns: ",transactions);
+      
+    }
+  },[transactions])
 
   const handleRecharge = async () => {
     if (parseInt(rechargeAmount) > 0) {
@@ -38,6 +50,8 @@ const WalletScreen: React.FC = () => {
             try{
               await rechargeWallet({ amount: rechargeAmount }).unwrap();
               setRechargeAmount('');
+              refetch();
+              transactionsRefetch();
               toast.success('Recharge successful!'); 
             } catch(err:any){
               toast.error(err.data.message || 'Recharge failed')
@@ -75,7 +89,7 @@ const WalletScreen: React.FC = () => {
           <div className="card shadow">
             <div className="card-body text-center">
               <h2 className="card-title mb-3">My Wallet</h2>
-              <p className="display-6 text-success">₹<strong>{wallet.balance}</strong></p>
+              <p className="display-6 text-success">₹<strong>{wallet?.balance || 0}</strong></p>
               <div className="mt-4">
                 <input
                   type="number"
@@ -108,22 +122,23 @@ const WalletScreen: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {/* {wallet?.transactions?.length > 0 ? (
-                      wallet.transactions.map((txn, index) => (
+                    {transactions?.length > 0 ? (
+                      transactions.map((txn: Itransaction, index: number) => (
                         <tr key={index}>
-                          <td>{new Date(txn.date).toLocaleDateString()}</td>
+                          <td>{new Date(txn.createdAt).toLocaleDateString()}</td>
                           <td>₹{txn.amount}</td>
-                          <td>{txn.type}</td>
+                          <td>{txn.transactionType}</td>
                           <td>{txn.status}</td>
                         </tr>
                       ))
-                    ) : ( */}
+                    ) : (
                     <tr>
                       <td colSpan={4} className="text-center">
                         No transactions found
                       </td>
                     </tr>
-                    {/* )} */}
+                    )
+                  }
                   </tbody>
                 </table>
               </div>

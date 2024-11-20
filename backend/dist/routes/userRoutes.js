@@ -20,4 +20,6 @@ router.put('/book-slot', verifyUserToken, userController.bookSlot);
 router.get('/get-appointments', verifyUserToken, userController.getUserAppointments);
 router.post('/wallet-recharge', verifyUserToken, userController.walletRecharge);
 router.get('/get-wallet', verifyUserToken, userController.getUserWallet);
+router.get('/get-wallet-payments', verifyUserToken, userController.getUserWalletTransactions);
+router.put('/cancel-booking', verifyUserToken, userController.cancelBooking);
 export default router;

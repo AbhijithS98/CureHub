@@ -256,8 +256,9 @@ async updateUser(req: any): Promise<void> {
 
   async bookAppointment(req: any): Promise<void> {
     
-    const { slotId, timeSlotId, doctorId, amount } = req.body.bookingDetails;
+    const { userEmail, slotId, timeSlotId, doctorId, paymentMethod, amount } = req.body.bookingDetails;
     const UserId = req.user.Id;
+    const Doctor = await userRepository.findDoctorById(doctorId)
 
     // Find the availability
     const availability = await userRepository.findAvailability(slotId);
@@ -280,12 +281,19 @@ async updateUser(req: any): Promise<void> {
     timeSlot.status = 'Booked'; 
 
     await availability.save();
-
-    const paymentObject = {
+    
+    if(paymentMethod === 'Wallet'){
+      let Wallet = await userRepository.findUserWallet(UserId);
+      Wallet!.balance -= parseInt(amount);
+      await Wallet!.save();
+    }
+     
+    const paymentObject: Partial<IPayment> = {
       user:UserId,
       doctor:doctorId,
       amount,
-      method:'Razorpay',
+      method:paymentMethod,
+      transactionType:'Booking',
       status:'Completed'
     }
     const payment = await userRepository.createPayment(paymentObject);
@@ -303,10 +311,65 @@ async updateUser(req: any): Promise<void> {
       status: 'Booked'
     }
 
-    const appointment = await userRepository.createAppointment(appointmentObject)
+    await userRepository.createAppointment(appointmentObject) 
     
+    //Send booking details to user
+    await sendEmail({
+      to: userEmail,
+      subject: 'Appointment Details',
+      html: `<h3>Your Appointment is Confirmed</h3>
+            <p><strong>Doctor:</strong> Dr. ${Doctor?.name}</p>
+            <p><strong>Date:</strong> ${availability.date.toLocaleDateString('en-GB')}</p>
+            <p><strong>Time:</strong> ${timeSlot.time}</p>
+            <p><strong>Payment:</strong> ₹${amount} via ${paymentMethod}</p>
+            <p>Thank you for choosing us!</p>
+            <p>Best Regards,</p>
+            <p>${Doctor?.address?.clinicName}</p>`
+    });
   }
 
+
+  async cancelAppointment(req: any): Promise<void> {
+  
+    const { bookingId } = req.body;
+    const UserId = req.user.Id;
+  
+    console.log("at service: ",bookingId,UserId);
+
+    const appointment = await userRepository.findAppointment(bookingId);
+    if(!appointment){
+      const error = Error('No appointment with the provided bookingId');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+
+    
+    //change the slot status to available
+    const updatedStatus = "Available";
+    await userRepository.updateTimeSlot(appointment.timeSlotId, updatedStatus);
+    
+    //do the refund and add new payment document
+    const paymentAmount = (appointment.payment as IPayment)?.amount;
+    const Wallet = await userRepository.findUserWallet(UserId);
+    Wallet!.balance += paymentAmount;
+    await Wallet!.save();
+  
+    const paymentObject: Partial<IPayment> = {
+      user:UserId,
+      doctor:appointment.doctor,
+      amount:paymentAmount,
+      method:'Wallet',
+      transactionType:'Refund',
+      status:'Completed'
+    }
+    const payment = await userRepository.createPayment(paymentObject);
+
+    //update appointment document and save
+    appointment.status = 'Cancelled'
+    appointment.payment = payment._id
+    await appointment.save()
+  
+  }
 
   
   async getAppointments(userId:string): Promise<IAppointment[] | null> {
@@ -366,6 +429,15 @@ async updateUser(req: any): Promise<void> {
     }
   
     return wallet
+  }
+
+
+  async getWalletTransactions(req:any): Promise<IPayment[] | null> {
+    
+    const UserId = req.user.Id;
+    const transactions = await userRepository.getUserWalletPayments(UserId);
+  
+    return transactions
   }
   
   

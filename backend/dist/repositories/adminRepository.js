@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import Admin from "../models/admin.js";
+import Appointment from "../models/appointment.js";
 import Doctor from "../models/doctor.js";
 import User from "../models/user.js";
 class AdminRepository {
@@ -87,6 +88,11 @@ class AdminRepository {
     unblockDoctor(email) {
         return __awaiter(this, void 0, void 0, function* () {
             yield Doctor.updateOne({ email }, { isBlocked: false });
+        });
+    }
+    getAllAppointments() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Appointment.find().populate('doctor', 'name').populate('user', 'name').exec();
         });
     }
 }

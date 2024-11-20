@@ -1,6 +1,6 @@
 import React from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
-import { FaUserMd, FaUser, FaClipboardList } from "react-icons/fa";
+import { FaUserMd, FaUser, FaClipboardList, FaCalendarAlt } from "react-icons/fa";
 import "./style.css"; 
 
 const AdminDashboard: React.FC = () => {
@@ -46,6 +46,22 @@ const AdminDashboard: React.FC = () => {
             </Card.Body>
           </Card> 
         </Col>
+
+
+        <Col md={3}>
+          <Card className="dashboard-card shadow-sm">
+            <Card.Body>
+              <FaCalendarAlt className="dashboard-icon text-primary" />
+              <Card.Title className="mt-3">Doctor's Appointments</Card.Title>
+              <Card.Text>View and manage doctor appointments.</Card.Text>
+              <Card.Link href="/admin/doctors-appointments" className="btn btn-primary">
+                View Appointments
+              </Card.Link>
+            </Card.Body>
+          </Card>
+        </Col>
+
+
       </Row>
     </Container>
   );

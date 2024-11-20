@@ -250,5 +250,30 @@ class UserController {
             }
         });
     }
+    getUserWalletTransactions(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield userService.getWalletTransactions(req);
+                res.status(200).json({ result });
+            }
+            catch (error) {
+                console.error('fetching user wallet transactions error:', error);
+                next(error);
+            }
+        });
+    }
+    cancelBooking(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log("at controller");
+                yield userService.cancelAppointment(req);
+                res.status(200).json({ message: "booking cancelled successfully." });
+            }
+            catch (error) {
+                console.error("user cancel booking error: ", error.message);
+                next(error);
+            }
+        });
+    }
 }
 export default new UserController();

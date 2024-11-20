@@ -5,11 +5,16 @@ import Availability,{ IAvailability } from "../models/availability.js";
 import { BookedSlot } from "../types/bookedSlotsInterface.js";
 import Appointment,{ IAppointment} from "../models/appointment.js";
 import Wallet,{ IWallet } from "../models/walletSchema.js";
+import { Types } from "mongoose";
 
 
 class UserRepository {
   async findUserByEmail(email: string): Promise<IUser | null> {
     return await User.findOne({ email });
+  }
+
+  async findDoctorById(_id: string): Promise<IDoctor | null> {
+    return await Doctor.findOne({ _id });
   }
 
   async findUserById(_id: string): Promise<IUser | null> {
@@ -121,6 +126,29 @@ class UserRepository {
     return await Appointment.find({ user: id }).populate('doctor', 'name');;
   }
   
+
+  async findAppointment(bookingId: string): Promise<IAppointment | null> {
+    return await Appointment.findOne({ _id:bookingId }).populate('payment');
+  }
+
+
+  async updateTimeSlot(timeslotId: Types.ObjectId, updatedStatus: string): Promise<void> {
+    await Availability.updateOne(
+      { "timeSlots._id": timeslotId }, 
+      { $set: { "timeSlots.$.status": updatedStatus } } 
+    );
+  }
+
+
+  async getUserWalletPayments(id: string): Promise<IPayment[] | null> {
+    return await Payment.find({
+      user: id,
+      $or: [
+        { transactionType: "Recharge" },
+        { method: "Wallet" }
+      ]
+    });
+  }
 }
 
 export default new UserRepository();

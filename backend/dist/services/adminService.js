@@ -176,5 +176,11 @@ class AdminService {
             yield adminRepository.unblockDoctor(email);
         });
     }
+    getAppointments() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const Appointments = yield adminRepository.getAllAppointments();
+            return Appointments;
+        });
+    }
 }
 export default new AdminService();

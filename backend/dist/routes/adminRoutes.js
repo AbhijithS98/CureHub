@@ -17,4 +17,5 @@ router.post('/block-user', verifyAdminToken, adminController.blockUser);
 router.post('/unblock-user', verifyAdminToken, adminController.unblockUser);
 router.post('/block-doctor', verifyAdminToken, adminController.blockDoctor);
 router.post('/unblock-doctor', verifyAdminToken, adminController.unblockDoctor);
+router.get('/list-appointments', verifyAdminToken, adminController.listAppointments);
 export default router;

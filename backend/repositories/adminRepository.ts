@@ -1,4 +1,5 @@
 import Admin,{ IAdmin } from "../models/admin.js";
+import Appointment, { IAppointment } from "../models/appointment.js";
 import Doctor,{ IDoctor } from "../models/doctor.js";
 import User,{IUser} from "../models/user.js";
 
@@ -83,6 +84,11 @@ class AdminRepository{
     await Doctor.updateOne(
       { email }, 
       { isBlocked: false });
+  }
+
+
+  async getAllAppointments(): Promise<IAppointment[] | null> {
+    return await Appointment.find().populate('doctor', 'name').populate('user', 'name').exec();
   }
 }
 

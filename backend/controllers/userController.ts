@@ -269,6 +269,34 @@ class UserController {
       next(error)
     }
   }
+
+
+  async getUserWalletTransactions(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const result = await userService.getWalletTransactions(req);
+      res.status(200).json({result})
+
+    } catch (error: any) {
+      console.error('fetching user wallet transactions error:', error);
+      next(error)
+    }
+  }
+
+
+  async cancelBooking(req:any, res: Response, next: NextFunction): Promise<void> {
+    
+    try {
+      console.log("at controller");
+      
+      await userService.cancelAppointment(req);
+      res.status(200).json({ message: "booking cancelled successfully."});
+
+    } catch (error: any) {
+      console.error("user cancel booking error: ", error.message);
+      next(error)
+    }
+  }
 }
 
 

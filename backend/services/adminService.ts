@@ -6,6 +6,7 @@ import adminRepository from "../repositories/adminRepository.js";
 import sendEmail from "../utils/emailSender.js";
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto';
+import { IAppointment } from "../models/appointment.js";
 
 
 class AdminService{
@@ -203,6 +204,14 @@ class AdminService{
 
     await adminRepository.unblockDoctor(email); 
   }
+
+
+  async getAppointments(): Promise<IAppointment[] | null> {
+
+    const Appointments = await adminRepository.getAllAppointments();
+       
+    return Appointments;
+   }
 }
 
 

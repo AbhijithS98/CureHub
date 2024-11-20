@@ -19,6 +19,11 @@ class UserRepository {
             return yield User.findOne({ email });
         });
     }
+    findDoctorById(_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Doctor.findOne({ _id });
+        });
+    }
     findUserById(_id) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield User.findOne({ _id });
@@ -123,6 +128,27 @@ class UserRepository {
         return __awaiter(this, void 0, void 0, function* () {
             return yield Appointment.find({ user: id }).populate('doctor', 'name');
             ;
+        });
+    }
+    findAppointment(bookingId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Appointment.findOne({ _id: bookingId }).populate('payment');
+        });
+    }
+    updateTimeSlot(timeslotId, updatedStatus) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Availability.updateOne({ "timeSlots._id": timeslotId }, { $set: { "timeSlots.$.status": updatedStatus } });
+        });
+    }
+    getUserWalletPayments(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Payment.find({
+                user: id,
+                $or: [
+                    { transactionType: "Recharge" },
+                    { method: "Wallet" }
+                ]
+            });
         });
     }
 }

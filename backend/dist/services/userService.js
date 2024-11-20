@@ -204,8 +204,10 @@ class UserService {
     }
     bookAppointment(req) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { slotId, timeSlotId, doctorId, amount } = req.body.bookingDetails;
+            var _a;
+            const { userEmail, slotId, timeSlotId, doctorId, paymentMethod, amount } = req.body.bookingDetails;
             const UserId = req.user.Id;
+            const Doctor = yield userRepository.findDoctorById(doctorId);
             // Find the availability
             const availability = yield userRepository.findAvailability(slotId);
             if (!availability) {
@@ -222,11 +224,17 @@ class UserService {
             }
             timeSlot.status = 'Booked';
             yield availability.save();
+            if (paymentMethod === 'Wallet') {
+                let Wallet = yield userRepository.findUserWallet(UserId);
+                Wallet.balance -= parseInt(amount);
+                yield Wallet.save();
+            }
             const paymentObject = {
                 user: UserId,
                 doctor: doctorId,
                 amount,
-                method: 'Razorpay',
+                method: paymentMethod,
+                transactionType: 'Booking',
                 status: 'Completed'
             };
             const payment = yield userRepository.createPayment(paymentObject);
@@ -241,7 +249,55 @@ class UserService {
                 payment: payment._id,
                 status: 'Booked'
             };
-            const appointment = yield userRepository.createAppointment(appointmentObject);
+            yield userRepository.createAppointment(appointmentObject);
+            //Send booking details to user
+            yield sendEmail({
+                to: userEmail,
+                subject: 'Appointment Details',
+                html: `<h3>Your Appointment is Confirmed</h3>
+            <p><strong>Doctor:</strong> Dr. ${Doctor === null || Doctor === void 0 ? void 0 : Doctor.name}</p>
+            <p><strong>Date:</strong> ${availability.date.toLocaleDateString('en-GB')}</p>
+            <p><strong>Time:</strong> ${timeSlot.time}</p>
+            <p><strong>Payment:</strong> ₹${amount} via ${paymentMethod}</p>
+            <p>Thank you for choosing us!</p>
+            <p>Best Regards,</p>
+            <p>${(_a = Doctor === null || Doctor === void 0 ? void 0 : Doctor.address) === null || _a === void 0 ? void 0 : _a.clinicName}</p>`
+            });
+        });
+    }
+    cancelAppointment(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const { bookingId } = req.body;
+            const UserId = req.user.Id;
+            console.log("at service: ", bookingId, UserId);
+            const appointment = yield userRepository.findAppointment(bookingId);
+            if (!appointment) {
+                const error = Error('No appointment with the provided bookingId');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            //change the slot status to available
+            const updatedStatus = "Available";
+            yield userRepository.updateTimeSlot(appointment.timeSlotId, updatedStatus);
+            //do the refund and add new payment document
+            const paymentAmount = (_a = appointment.payment) === null || _a === void 0 ? void 0 : _a.amount;
+            const Wallet = yield userRepository.findUserWallet(UserId);
+            Wallet.balance += paymentAmount;
+            yield Wallet.save();
+            const paymentObject = {
+                user: UserId,
+                doctor: appointment.doctor,
+                amount: paymentAmount,
+                method: 'Wallet',
+                transactionType: 'Refund',
+                status: 'Completed'
+            };
+            const payment = yield userRepository.createPayment(paymentObject);
+            //update appointment document and save
+            appointment.status = 'Cancelled';
+            appointment.payment = payment._id;
+            yield appointment.save();
         });
     }
     getAppointments(userId) {
@@ -289,6 +345,13 @@ class UserService {
                 throw error;
             }
             return wallet;
+        });
+    }
+    getWalletTransactions(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const UserId = req.user.Id;
+            const transactions = yield userRepository.getUserWalletPayments(UserId);
+            return transactions;
         });
     }
 }

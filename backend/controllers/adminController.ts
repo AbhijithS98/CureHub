@@ -205,6 +205,19 @@ class AdminController{
     }
   };
 
+
+  async listAppointments(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const result = await adminService.getAppointments();
+      res.status(200).json(result)
+
+    } catch (error: any) {
+      console.error('fetching doctor appointments from admin error:', error);
+      next(error)
+    }
+  }
+
 }
 
 export default new AdminController();

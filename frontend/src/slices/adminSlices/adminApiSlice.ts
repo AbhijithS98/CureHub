@@ -96,6 +96,12 @@ export const adminApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
       }),
     }),
+    adminListAppointments: builder.query({
+      query: () => ({
+        url: `/admin/list-appointments`,
+        method: "GET",
+      }),
+    }),
   })
 })
 
@@ -113,7 +119,8 @@ export const {
   useAdminUnblockUserMutation,
   useAdminBlockDoctorMutation,
   useAdminUnblockDoctorMutation,
-  useAdminRefreshTokenMutation
+  useAdminRefreshTokenMutation,
+  useAdminListAppointmentsQuery
   
 } = adminApiSlice;
 

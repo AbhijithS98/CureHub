@@ -94,6 +94,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: bookingDetails,
       }),
     }),
+    userCancelBooking: builder.mutation({
+      query: (data) => ({
+        url: `/users/cancel-booking`,  
+        method: "PUT",
+        body: data,
+      }),
+    }),
     userGetAppointments: builder.query({
       query: () => ({
         url: `/users/get-appointments`,
@@ -110,6 +117,12 @@ export const userApiSlice = apiSlice.injectEndpoints({
     userGetWallet: builder.query({
       query: () => ({
         url: `/users/get-wallet`,
+        method: "GET",
+      }),
+    }),
+    userGetWalletTransactions: builder.query({
+      query: () => ({
+        url: `/users/get-wallet-payments`,
         method: "GET",
       }),
     }),
@@ -131,8 +144,10 @@ export const {
   useUserUpdateProfileMutation,
   useUserRefreshTokenMutation,
   useUserBookSlotMutation,
+  useUserCancelBookingMutation,
   useUserGetAppointmentsQuery,
   useUserWalletRechargeMutation,
   useUserGetWalletQuery,
+  useUserGetWalletTransactionsQuery
 
 } = userApiSlice;

@@ -199,5 +199,17 @@ class AdminController {
         });
     }
     ;
+    listAppointments(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield adminService.getAppointments();
+                res.status(200).json(result);
+            }
+            catch (error) {
+                console.error('fetching doctor appointments from admin error:', error);
+                next(error);
+            }
+        });
+    }
 }
 export default new AdminController();

@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { IDoc } from '../../../../shared/doctor.interface';
 import { toast } from 'react-toastify';
+import Swal from "sweetalert2"; 
 import IconLoader from "../../components/Spinner";
 import { FaTrash } from 'react-icons/fa';
 import { useDoctorGetProfileQuery,
@@ -15,6 +16,7 @@ import { useDoctorGetProfileQuery,
          useDoctorGetAppointmentsQuery } from '../../slices/doctorSlices/doctorApiSlice';
 import { clearDoctorCredentials } from "../../slices/doctorSlices/doctorAuthSlice.js";
 import { ObjectId } from 'mongoose';
+import CancelAppointmentModal from '../../components/doctorComponents/CancelAppointmentModal';
 
 interface AvailabilitySlot {
   _id: ObjectId,
@@ -42,6 +44,9 @@ interface Appointment {
 }
 
 const ProfileScreen: React.FC = () => { 
+
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string>('');
 
   const location = useLocation();
   const { email, _id } = location.state || {};
@@ -123,37 +128,60 @@ const ProfileScreen: React.FC = () => {
   };
 
   const deleteSlot = async (slotId:ObjectId) => {
-     
       try{
-        await removeSlot({slotId}).unwrap();
-        toast.success("Slot deleted successfully!");
-        availabilityRefetch();
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "Do you really want to delete this slot? This action cannot be undone.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, delete it!",
+          cancelButtonText: "Cancel",
+        });
 
+        if(result.isConfirmed){
+          await removeSlot({slotId}).unwrap();
+          toast.success("Slot deleted successfully!");
+          availabilityRefetch();
+        }
       }catch (error:any) {
         console.error("Error deleting slot: ", error);
         toast.error(error.message || "Error deleting slot.")
       }
   }
 
-  const deleteTimeSlot = async (slotId:ObjectId, timeSlotId:ObjectId) => {
-    
+  const deleteTimeSlot = async (slotId:ObjectId, timeSlotId:ObjectId) => {  
+
     try{
-      await removeTimeSlot({slotId, timeSlotId}).unwrap();
-      toast.success("Time Slot deleted successfully!");
-      availabilityRefetch();
-      setViewingDate(null)
-      
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Do you really want to delete this Time slot? This action cannot be undone.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "Cancel",
+      });
+
+      if(result.isConfirmed){
+        await removeTimeSlot({slotId, timeSlotId}).unwrap();
+        toast.success("Time Slot deleted successfully!");
+        availabilityRefetch();
+        setViewingDate(null)
+      }
     }catch (error:any) {
       console.error("Error deleting time slot: ", error);
       toast.error(error.message || "Error deleting time slot.")
     }
   }
 
-  const cancelAppointment = async (appointmentId:ObjectId) => {
-    
+  const cancelAppointment = async (appointmentId:string, reason: string) => {
+      
     try{
-      // await cancelBooking({appointmentId}).unwrap();
-      toast.success("Booking cancelled successfully!");
+      // await cancelBooking({appointmentId, reason}).unwrap();
+      // toast.success("Booking cancelled successfully!");
       appointmentsRefetch();
       
     }catch (error:any) {
@@ -161,6 +189,11 @@ const ProfileScreen: React.FC = () => {
       toast.error(error.message || "Error cancelling appointment")
     }
   }
+
+  const handleCancelButtonClick = (appointmentId: ObjectId) => {
+    setSelectedAppointmentId(appointmentId.toString());
+    setShowModal(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -306,8 +339,12 @@ const ProfileScreen: React.FC = () => {
                           View Slots
                         </Button>
                       </td>
-                    <td><Button className="btn btn-danger" onClick={()=>deleteSlot(slot._id)}>
-                            <FaTrash />
+                    <td><Button 
+                          className="btn btn-danger" 
+                          onClick={()=>deleteSlot(slot._id)}
+                          disabled={slot.timeSlots.some((timeSlot: any) => timeSlot.status === 'Booked')}
+                        >
+                          <FaTrash />
                         </Button>
                     </td>
                   </tr>
@@ -338,6 +375,7 @@ const ProfileScreen: React.FC = () => {
                             <Button
                               variant="danger"
                               size="sm"
+                              disabled={timeSlot.status==='Booked'}
                               onClick={() => deleteTimeSlot(viewingDate._id!, timeSlot._id)}
                             >
                               <FaTrash />
@@ -380,7 +418,8 @@ const ProfileScreen: React.FC = () => {
                     <Button
                       variant="danger"
                       size="sm"
-                      onClick={() => cancelAppointment(appointment._id!)}
+                      onClick={() => handleCancelButtonClick(appointment._id!)}
+                      disabled={appointment.status==='Cancelled'}
                     >
                       cancel
                     </Button>
@@ -389,6 +428,13 @@ const ProfileScreen: React.FC = () => {
               ))}
             </tbody>
           </Table>
+          {/* Show the CancelAppointmentModal when needed */}
+          <CancelAppointmentModal
+            appointmentId={selectedAppointmentId}
+            onCancelConfirm={cancelAppointment}
+            showModal={showModal}
+            onHide={() => setShowModal(false)} // Hide modal on cancel
+          />
         </div>
       );
       case 'profile':
