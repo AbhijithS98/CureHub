@@ -2,7 +2,7 @@ import React, { useState,useEffect } from 'react';
 import FormContainer from '../../components/FormContainer';
 import Loader from '../../components/userComponents/Loader';
 import { Form, Button, Col, Row } from 'react-bootstrap';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate,useLocation, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store.js';
 import { toast } from 'react-toastify';
@@ -18,24 +18,27 @@ const LoginScreen: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-  
 
+  
   const { userInfo } = useSelector((state : RootState) => state.userAuth);
   const [login, {isLoading:loginLoading}] = useLoginMutation();
   const [resendOtp, {isLoading:resendLoading}] = useResendOtpMutation();
 
-  let message = location.state?.message;
+
   
   useEffect(() => {
-    if (message) {
-      toast.error(message);
-      navigate(location.pathname, { replace: true });
-    }
-
     if (userInfo) {
       navigate("/");
     }
-  }, [navigate, userInfo, message]);
+  }, [navigate, userInfo]);
+
+  useEffect(()=>{
+    const queryParams = new URLSearchParams(location.search);
+    const message = queryParams.get('message');
+    if (message) {
+      toast.error(decodeURIComponent(message)); 
+    }
+  },[location]);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);

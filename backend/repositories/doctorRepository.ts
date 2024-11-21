@@ -1,11 +1,22 @@
 import Doctor, { IDoctor } from "../models/doctor.js";
+import User, { IUser} from "../models/user.js";
 import Availability, { IAvailability } from "../models/availability.js";
 import Appointment, { IAppointment } from "../models/appointment.js";
+import Wallet, { IWallet } from "../models/walletSchema.js";
+import Payment, { IPayment} from "../models/paymentSchema.js";
 
 class DoctorRepository { 
 
   async findDoctorByEmail(email: string): Promise<IDoctor | null> {
     return await Doctor.findOne({ email });
+  }
+
+  async findDoctorById(_id: any): Promise<IDoctor | null> {
+    return await Doctor.findOne({ _id });
+  }
+
+  async findUserById(_id: any): Promise<IUser | null> {
+    return await User.findOne({ _id });
   }
 
   async getAvailabilities(_id: string): Promise<IAvailability[] | null> {
@@ -107,6 +118,20 @@ class DoctorRepository {
     );
   }
 
+  async findAppointment(appointmentId: string): Promise<IAppointment | null> {
+    return await Appointment.findOne({ _id: appointmentId }).populate('payment');
+  }
+
+  async findUserWallet(userId:any): Promise<IWallet | null> {
+    return await Wallet.findOne({ ownerId: userId });
+  }
+
+
+  async createPayment(paymentData: any): Promise<IPayment> {
+    const payment = new Payment(paymentData);
+    await payment.save();
+    return payment;
+  }
 }
 
 export default new DoctorRepository();

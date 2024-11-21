@@ -8,12 +8,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import Doctor from "../models/doctor.js";
+import User from "../models/user.js";
 import Availability from "../models/availability.js";
 import Appointment from "../models/appointment.js";
+import Wallet from "../models/walletSchema.js";
+import Payment from "../models/paymentSchema.js";
 class DoctorRepository {
     findDoctorByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield Doctor.findOne({ email });
+        });
+    }
+    findDoctorById(_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Doctor.findOne({ _id });
+        });
+    }
+    findUserById(_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield User.findOne({ _id });
         });
     }
     getAvailabilities(_id) {
@@ -98,6 +111,23 @@ class DoctorRepository {
     deleteTimeSlot(slotId, timeSlotId) {
         return __awaiter(this, void 0, void 0, function* () {
             yield Availability.updateOne({ _id: slotId }, { $pull: { timeSlots: { _id: timeSlotId } } }, { new: true });
+        });
+    }
+    findAppointment(appointmentId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Appointment.findOne({ _id: appointmentId }).populate('payment');
+        });
+    }
+    findUserWallet(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Wallet.findOne({ ownerId: userId });
+        });
+    }
+    createPayment(paymentData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const payment = new Payment(paymentData);
+            yield payment.save();
+            return payment;
         });
     }
 }

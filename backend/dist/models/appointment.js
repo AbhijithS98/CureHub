@@ -1,4 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
+export var CancellationReason;
+(function (CancellationReason) {
+    CancellationReason["MedicalEmergency"] = "Medical Emergency";
+    CancellationReason["HealthIssues"] = "Health Issues";
+    CancellationReason["OperationalIssues"] = "Operational Issues";
+})(CancellationReason || (CancellationReason = {}));
 // Appointment Schema
 const appointmentSchema = new Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -13,6 +19,15 @@ const appointmentSchema = new Schema({
         enum: ['Booked', 'Cancelled', 'Completed'],
         default: 'Booked',
         required: true,
+    },
+    cancellationReason: {
+        type: String,
+        enum: [
+            'Medical Emergency',
+            'Health Issues',
+            'Operational Issues',
+        ],
+        required: false,
     },
 }, { timestamps: true });
 const Appointment = mongoose.model('Appointment', appointmentSchema);

@@ -102,6 +102,13 @@ export const doctorApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    doctorCancelAppointment: builder.mutation({
+      query: (data) => ({
+        url: `/doctors/cancel-appointment`,  
+        method: "PUT",
+        body: data,
+      }),
+    }),
   })
 })
 
@@ -121,6 +128,7 @@ export const {
   useDoctorDeleteTimeSlotMutation,
   useDoctorRefreshTokenMutation,
   useDoctorGetAppointmentsQuery,
+  useDoctorCancelAppointmentMutation,
   
 
 } = doctorApiSlice;

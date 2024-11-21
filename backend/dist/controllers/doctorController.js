@@ -235,5 +235,18 @@ class DoctorController {
             }
         });
     }
+    cancelAppointment(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log("at doc controller");
+                yield doctorService.cancelBooking(req);
+                res.status(200).json({ message: "booking cancelled successfully." });
+            }
+            catch (error) {
+                console.error("doctor cancel booking error: ", error.message);
+                next(error);
+            }
+        });
+    }
 }
 export default new DoctorController();

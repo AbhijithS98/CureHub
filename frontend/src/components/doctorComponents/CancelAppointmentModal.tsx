@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Modal, Button, Form } from "react-bootstrap"; // Assuming you're using react-bootstrap for modal
-import { toast } from "react-toastify"; // For showing notifications
+import { Modal, Button, Form } from "react-bootstrap"; 
+import { toast } from "react-toastify"; 
 
 interface ICancelAppointmentProps {
   appointmentId: string;
@@ -18,7 +18,7 @@ const CancelAppointmentModal: React.FC<ICancelAppointmentProps> = ({ appointment
       return;
     }
     onCancelConfirm(appointmentId, cancellationReason);
-    onHide(); // Close modal
+    onHide();
   };
 
   return (
@@ -27,11 +27,12 @@ const CancelAppointmentModal: React.FC<ICancelAppointmentProps> = ({ appointment
         <Modal.Title>Cancel Appointment</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form>
-          <Form.Group controlId="cancellationReason">
-            <Form.Label>Reason for Cancellation</Form.Label>
-            <Form.Control
-              as="select"
+        <form>
+          <div className="form-group">
+            <label htmlFor="cancellationReason">Reason for Cancellation</label>
+            <select
+              id="cancellationReason"
+              className="form-control"
               value={cancellationReason}
               onChange={(e) => setCancellationReason(e.target.value)}
             >
@@ -39,10 +40,9 @@ const CancelAppointmentModal: React.FC<ICancelAppointmentProps> = ({ appointment
               <option value="Medical Emergency">Medical Emergency</option>
               <option value="Personal Reasons">Personal Reasons</option>
               <option value="Operational Issues">Operational Issues</option>
-              
-            </Form.Control>
-          </Form.Group>
-        </Form>
+            </select>
+          </div>
+        </form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>

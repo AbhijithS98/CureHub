@@ -19,4 +19,5 @@ router.put('/add-slots', verifyDoctorToken, doctorController.addNewSlots);
 router.delete('/delete-slot', verifyDoctorToken, doctorController.deleteSlot);
 router.delete('/delete-timeSlot', verifyDoctorToken, doctorController.deleteTimeSlot);
 router.get('/get-appointments', verifyDoctorToken, doctorController.getAppointments);
+router.put('/cancel-appointment', verifyDoctorToken, doctorController.cancelAppointment);
 export default router;

@@ -243,5 +243,60 @@ class DoctorService {
             return appointments;
         });
     }
+    cancelBooking(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const { appointmentId, reason } = req.body;
+            console.log("apnt id :", appointmentId, "rs: ", reason);
+            const appointment = yield doctorRepository.findAppointment(appointmentId);
+            if (!appointment) {
+                const error = Error('No appointment with the provided bookingId');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            //delete the time slot from availability
+            const slotId = appointment.slotId.toString();
+            const timeSlotId = appointment.timeSlotId.toString();
+            yield doctorRepository.deleteTimeSlot(slotId, timeSlotId);
+            //do the refund and add new payment document
+            const paymentAmount = (_a = appointment.payment) === null || _a === void 0 ? void 0 : _a.amount;
+            const Wallet = yield doctorRepository.findUserWallet(appointment.user);
+            Wallet.balance += paymentAmount;
+            yield Wallet.save();
+            const paymentObject = {
+                user: appointment.user,
+                doctor: appointment.doctor,
+                amount: paymentAmount,
+                method: 'Wallet',
+                transactionType: 'Refund',
+                status: 'Completed'
+            };
+            const payment = yield doctorRepository.createPayment(paymentObject);
+            //update appointment document and save
+            appointment.status = 'Cancelled';
+            appointment.payment = payment._id;
+            appointment.cancellationReason = reason;
+            yield appointment.save();
+            //Send notification mail
+            const user = yield doctorRepository.findUserById(appointment.user);
+            const Doctor = yield doctorRepository.findDoctorById(appointment.doctor);
+            yield sendEmail({
+                to: user.email,
+                subject: 'Appointment Cancellation Notification',
+                html: `<h3>Your Appointment Has Been Cancelled</h3>
+        <p>Dear ${user.name},</p>
+        <p>We regret to inform you that your appointment has been cancelled. Below are the details:</p>
+        <p><strong>Doctor:</strong> Dr. ${Doctor.name}</p>
+        <p><strong>Date:</strong> ${appointment.date.toLocaleDateString('en-GB')}</p>
+        <p><strong>Time:</strong> ${appointment.time}</p>
+        <p><strong>Cancellation Reason:</strong> ${reason}</p>
+        <p><strong>Refund:</strong> ₹${paymentAmount} has been refunded to your wallet.</p>
+        <p>You can use the wallet balance for future bookings or other services.</p>
+        <p>We apologize for any inconvenience caused and appreciate your understanding.</p>
+        <p>Best Regards,</p>
+        <p>${Doctor.address.clinicName}</p>`
+            });
+        });
+    }
 }
 export default new DoctorService();

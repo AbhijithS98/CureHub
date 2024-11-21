@@ -3,6 +3,7 @@ import { apiSlice } from "./slices/apiSlice";
 import userAuthReducer from './slices/userSlices/userAuthSlice.js'
 import adminAuthReducer from './slices/adminSlices/adminAuthSlice.js'
 import doctorAuthReducer from './slices/doctorSlices/doctorAuthSlice.js'
+import notificationReducer from './slices/globalSlices/notificationSlice.js'
 
 
 const store = configureStore({
@@ -10,6 +11,7 @@ const store = configureStore({
     userAuth : userAuthReducer,
     adminAuth : adminAuthReducer,
     doctorAuth : doctorAuthReducer,
+    notification : notificationReducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>

@@ -259,6 +259,21 @@ class DoctorController {
     }
   }
 
+
+  async cancelAppointment(req:any, res: Response, next: NextFunction): Promise<void> {
+    
+    try {
+      console.log("at doc controller");
+      
+      await doctorService.cancelBooking(req);
+      res.status(200).json({ message: "booking cancelled successfully."});
+
+    } catch (error: any) {
+      console.error("doctor cancel booking error: ", error.message);
+      next(error)
+    }
+  }
+
 }
 
 export default new DoctorController();

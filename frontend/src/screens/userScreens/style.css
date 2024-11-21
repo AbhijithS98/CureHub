@@ -229,3 +229,7 @@
   opacity: 0.6;
 }
 
+
+.status-cancelled {
+  color: red;
+}

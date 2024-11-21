@@ -4,6 +4,8 @@ import { Mutex } from "async-mutex";
 import { setToken, clearCredentials } from "./userSlices/userAuthSlice.js";
 import { setDoctorToken, clearDoctorCredentials } from "./doctorSlices/doctorAuthSlice.js";
 import { setAdminToken, clearAdminCredentials } from "./adminSlices/adminAuthSlice.js";
+import { setNotification } from "./globalSlices/notificationSlice.js";
+import { NavigateFunction } from "react-router-dom";
 import { toast } from "react-toastify";
 const mutex = new Mutex();
 
@@ -118,14 +120,12 @@ const baseQueryWithReauth: typeof baseQuery = async (
   } else if(error && error.status === 403){
     const errMsg = error.data?.message || error.data?.error;
     if(errMsg === 'Your account has been blocked. Please contact support.'){
-      if (url.startsWith("/users")) {
-     
+      if (url.startsWith("/users")) {  
         api.dispatch(clearCredentials())
-        window.location.href =  `/user/login?message=${encodeURIComponent(errMsg)}`;
-
+        window.location.href = `/user/login?message=${encodeURIComponent(errMsg)}`;
       } else if(url.startsWith("/doctors")){
         api.dispatch(clearDoctorCredentials())
-        toast.error(errMsg);
+        api.dispatch(setNotification(errMsg))
         window.location.href = "/doctor/login";
       }
     } 

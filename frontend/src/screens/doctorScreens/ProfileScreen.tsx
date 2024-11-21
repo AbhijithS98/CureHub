@@ -13,7 +13,8 @@ import { useDoctorGetProfileQuery,
          useDoctorLogoutMutation, 
          useDoctorDeleteSlotMutation,
          useDoctorDeleteTimeSlotMutation,
-         useDoctorGetAppointmentsQuery } from '../../slices/doctorSlices/doctorApiSlice';
+         useDoctorGetAppointmentsQuery,
+         useDoctorCancelAppointmentMutation } from '../../slices/doctorSlices/doctorApiSlice';
 import { clearDoctorCredentials } from "../../slices/doctorSlices/doctorAuthSlice.js";
 import { ObjectId } from 'mongoose';
 import CancelAppointmentModal from '../../components/doctorComponents/CancelAppointmentModal';
@@ -57,8 +58,9 @@ const ProfileScreen: React.FC = () => {
   const {data:appointmentsData, refetch:appointmentsRefetch} = useDoctorGetAppointmentsQuery({});
   
   const [updateDoctorProfile, {isLoading:updateLoading}] = useDoctorUpdateProfileMutation();
-  const [removeSlot, {isLoading:deleteSlotLoading}] = useDoctorDeleteSlotMutation();
-  const [removeTimeSlot, {isLoading:deleteTimeSlotLoading}] = useDoctorDeleteTimeSlotMutation();
+  const [removeSlot] = useDoctorDeleteSlotMutation();
+  const [removeTimeSlot] = useDoctorDeleteTimeSlotMutation();
+  const [cancelBooking] = useDoctorCancelAppointmentMutation();
   const [logout] = useDoctorLogoutMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -151,6 +153,7 @@ const ProfileScreen: React.FC = () => {
       }
   }
 
+  
   const deleteTimeSlot = async (slotId:ObjectId, timeSlotId:ObjectId) => {  
 
     try{
@@ -180,8 +183,8 @@ const ProfileScreen: React.FC = () => {
   const cancelAppointment = async (appointmentId:string, reason: string) => {
       
     try{
-      // await cancelBooking({appointmentId, reason}).unwrap();
-      // toast.success("Booking cancelled successfully!");
+      await cancelBooking({appointmentId, reason}).unwrap();
+      toast.success("Booking cancelled successfully!");
       appointmentsRefetch();
       
     }catch (error:any) {
@@ -433,7 +436,7 @@ const ProfileScreen: React.FC = () => {
             appointmentId={selectedAppointmentId}
             onCancelConfirm={cancelAppointment}
             showModal={showModal}
-            onHide={() => setShowModal(false)} // Hide modal on cancel
+            onHide={() => setShowModal(false)} 
           />
         </div>
       );

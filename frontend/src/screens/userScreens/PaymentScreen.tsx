@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store.js';
 import { Button, Container, Row, Col, Card, ListGroup} from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import Swal from "sweetalert2"; 
 import { useUserBookSlotMutation,
          useUserGetWalletQuery,
        } from '../../slices/userSlices/userApiSlice.js';
@@ -25,8 +26,8 @@ const PaymentScreen: React.FC = () => {
 
   
   const doctorFee = doctor.consultationFee; 
-  const applicationCharge = 100; 
-  const gst = (doctorFee + applicationCharge) * 0.12; 
+  const applicationCharge = 70; 
+  const gst = (doctorFee + applicationCharge) * 0.10; 
   const finalAmount:number = doctorFee + applicationCharge + gst;
 
   // Payment handler (Razorpay integration)
@@ -34,26 +35,37 @@ const PaymentScreen: React.FC = () => {
 
     if(paymentMethod === 'Wallet'){
       //WALLET PAYMENT
-
         if (!wallet || wallet.balance < finalAmount) {
           toast.error('Insufficient wallet balance!');
           return;
         }
-  
+        
       try {
-        const bookingDetails = {
-          userEmail: userInfo?.email,
-          slotId: selectedDate._id,
-          timeSlotId: selectedSlot._id,
-          doctorId: doctor._id,
-          paymentMethod,
-          amount: finalAmount,
-        };
+        const result = await Swal.fire({
+          title: "Confirmation on booking!",
+          text: `You are about to pay Rs.${finalAmount} from your wallet.`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, I confirm!",
+          cancelButtonText: "Cancel",
+        });
 
-        // Deduct amount from wallet and book the slot
-        await bookSlot({bookingDetails}).unwrap();
-        toast.success('Payment successful via wallet!');
-        navigate('/user/thank-you');
+        if(result.isConfirmed){
+          const bookingDetails = {
+            userEmail: userInfo?.email,
+            slotId: selectedDate._id,
+            timeSlotId: selectedSlot._id,
+            doctorId: doctor._id,
+            paymentMethod,
+            amount: finalAmount,
+          };
+  
+          await bookSlot({bookingDetails}).unwrap();
+          toast.success('Payment successful via wallet!');
+          navigate('/user/thank-you');
+        }       
       } catch (error:any) {
         toast.error(error.data.message || 'Failed to complete payment!');
       }
@@ -134,7 +146,7 @@ const PaymentScreen: React.FC = () => {
                   <strong>Application Fee:</strong> ₹{applicationCharge.toFixed(2)}
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <strong>GST (12%):</strong> ₹{gst.toFixed(2)}
+                  <strong>GST (10%):</strong> ₹{gst.toFixed(2)}
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <h4><strong>Total Amount:</strong> ₹{finalAmount.toFixed(2)}</h4>

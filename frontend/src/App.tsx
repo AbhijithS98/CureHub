@@ -9,6 +9,7 @@ import { Container } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import { RootState } from './store.js';
 import { useSelector } from "react-redux";
+import NotificationHandler from './components/NotificationHandler';
 
 const App: React.FC = () => {
   let location = useLocation();
@@ -31,6 +32,7 @@ const App: React.FC = () => {
         <Header />
       )}
      <ToastContainer />
+     <NotificationHandler />
      <Container className="my-2">
         <Outlet />
       </Container>

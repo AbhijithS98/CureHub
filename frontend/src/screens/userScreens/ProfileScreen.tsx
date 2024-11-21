@@ -23,6 +23,7 @@ interface Ibooking {
   timeSlotId: ObjectId; 
   payment: ObjectId | null; 
   status: 'Booked' | 'Cancelled' | 'Completed'; 
+  cancellationReason?: string;
   createdAt: Date; 
   updatedAt: Date;
 }
@@ -218,7 +219,11 @@ if (!data) return <Alert variant="warning">User profile not found.</Alert>;
                     <td>{new Date(booking.date).toLocaleDateString('en-GB')}</td>
                     <td>{booking.time}</td>
                     <td>Dr.{booking.doctor.name}</td>
-                    <td>{booking.status}</td>
+                    <td className={booking.status === 'Cancelled' ? 'status-cancelled' : ''}>
+                      {booking.status === 'Cancelled' && booking.cancellationReason
+                        ? `Cancelled by Doctor: ${booking.cancellationReason}`
+                        : booking.status}
+                    </td>
                     <td>
                       <Button
                         variant="danger"
