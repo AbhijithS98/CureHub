@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface DoctorInfo {
+interface doctorInfo {
   _id: string;
   name: string;
   email: string;
@@ -15,7 +15,7 @@ interface DoctorInfo {
 }
 
 interface DoctorAuthState {
-  doctorInfo: DoctorInfo | null;
+  doctorInfo: doctorInfo | null;
 }
 
 const initialState: DoctorAuthState = {
@@ -28,7 +28,7 @@ const doctorAuthSlice = createSlice({
   name: "doctorAuth",
   initialState,
   reducers: {
-    setDoctorCredentials: (state, action: PayloadAction<DoctorInfo>) => {
+    setDoctorCredentials: (state, action: PayloadAction<doctorInfo>) => {
       state.doctorInfo = action.payload;
       localStorage.setItem("doctorInfo", JSON.stringify(action.payload));
     },

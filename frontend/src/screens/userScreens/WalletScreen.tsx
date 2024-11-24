@@ -7,6 +7,7 @@ import { RootState } from '../../store.js';
 import { toast } from 'react-toastify';
 import { IWallet } from '../../types/walletInterface';
 import { Itransaction } from '../../types/transactionInterface';
+import TableWithPagination,{ Column } from '../../components/PaginatedTable';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -19,16 +20,15 @@ const WalletScreen: React.FC = () => {
   const [rechargeWallet] = useUserWalletRechargeMutation();
   const [rechargeAmount, setRechargeAmount] = useState('');
 
+
   useEffect(()=>{
     if(transactions){
-      console.log("txns: ",transactions);
-      
+      console.log("txns: ",transactions); 
     }
   },[transactions])
 
   const handleRecharge = async () => {
     if (parseInt(rechargeAmount) > 0) {
-
       const response = await fetch('http://localhost:5000/api/payment/create-order', {
         method: 'POST',
         headers: {
@@ -79,6 +79,26 @@ const WalletScreen: React.FC = () => {
     }
   };
 
+  
+
+  const columns: Column<Itransaction>[] = [
+    {
+      key: 'createdAt',
+      label: 'Date',
+      render: (value: string) => new Date(value).toLocaleDateString(),
+    },
+    {
+      key: 'createdAt',
+      label: 'Time',
+      render: (value: string) =>
+        new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    },
+    { key: 'amount', label: 'Amount' },
+    { key: 'transactionType', label: 'Type' },
+    { key: 'status', label: 'Status' },
+  ];
+
+
   if (isLoading) return <p>Loading...</p>;
 
   return (
@@ -110,38 +130,12 @@ const WalletScreen: React.FC = () => {
         <div className="col-md-8">
           <div className="card shadow">
             <div className="card-body">
+
               <h3 className="card-title mb-4">Transaction History</h3>
               <div className="table-responsive">
-                <table className="table table-hover table-bordered">
-                  <thead className="table-secondary">
-                    <tr>
-                      <th>Date</th>
-                      <th>Amount</th>
-                      <th>Type</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {transactions?.length > 0 ? (
-                      transactions.map((txn: Itransaction, index: number) => (
-                        <tr key={index}>
-                          <td>{new Date(txn.createdAt).toLocaleDateString()}</td>
-                          <td>₹{txn.amount}</td>
-                          <td>{txn.transactionType}</td>
-                          <td>{txn.status}</td>
-                        </tr>
-                      ))
-                    ) : (
-                    <tr>
-                      <td colSpan={4} className="text-center">
-                        No transactions found
-                      </td>
-                    </tr>
-                    )
-                  }
-                  </tbody>
-                </table>
+                <TableWithPagination data={transactions} columns={columns} rowsPerPage={5} />
               </div>
+
             </div>
           </div>
         </div>

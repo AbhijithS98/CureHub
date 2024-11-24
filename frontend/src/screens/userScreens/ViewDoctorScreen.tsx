@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, } from 'react-router-dom';
 import { Container, Card, Button, Spinner, Row, Col } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store.js';
 import { IDoc } from '../../../../shared/doctor.interface';
 import { useUserViewDoctorQuery } from '../../slices/userSlices/userApiSlice';
 
 import './style.css';
 
 const ViewDoctorScreen: React.FC = () => {
+  const { doctorInfo } = useSelector((state: RootState) => state.doctorAuth);
   const location = useLocation();
   const navigate = useNavigate();
   const email = location.state?.email;
@@ -60,24 +63,7 @@ const ViewDoctorScreen: React.FC = () => {
                     </section>
 
                     {/* About */}
-                    <section className="doctor-details mb-4">
-                      <h4>About</h4>
-                      <p>{doctor.bio}</p>
-                    </section>
-
-                    {/* Educational Certificates */}
-                    <section className="doctor-details mb-4">
-                      <h4>Educational Certificates</h4>
-                      {doctor.documents.medicalDegree ? (
-                        <img
-                          src={`http://localhost:5000/${doctor.documents.medicalDegree}`}
-                          alt="Degree Certificate"
-                          className="degree-certificate-img"
-                        />
-                      ) : (
-                        <p>No certificate available</p>
-                      )}
-                    </section>
+                   
                 </Col>
                 
             {/* Right section - Ticket Price & Time Slots */}
@@ -93,6 +79,7 @@ const ViewDoctorScreen: React.FC = () => {
                   <Button 
                     variant="primary" 
                     className="w-100 py-2 shadow rounded-pill"
+                    disabled={doctorInfo !== null}
                     onClick={() => navigate("/user/book-slot", { state: { doctor } })}>
                     <i className="bi bi-calendar-plus me-2"></i> Book an Appointment
                   </Button>
@@ -101,6 +88,29 @@ const ViewDoctorScreen: React.FC = () => {
           </Row>
          </Col>
            
+          </Row>
+          <Row>
+          <section className="doctor-details mb-4">
+                      <h4>About</h4>
+                      <p>{doctor.bio}</p>
+                    </section>
+
+                   
+          </Row>
+          <Row>
+             {/* Educational Certificates */}
+             <section className="doctor-details mb-4">
+                      <h4>Educational Certificates</h4>
+                      {doctor.documents.medicalDegree ? (
+                        <img
+                          src={`http://localhost:5000/${doctor.documents.medicalDegree}`}
+                          alt="Degree Certificate"
+                          className="degree-certificate-img"
+                        />
+                      ) : (
+                        <p>No certificate available</p>
+                      )}
+                    </section>
           </Row>
         </Card>
       )}

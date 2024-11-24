@@ -148,7 +148,7 @@ class UserRepository {
                     { transactionType: "Recharge" },
                     { method: "Wallet" }
                 ]
-            });
+            }).sort({ createdAt: -1 });
         });
     }
 }

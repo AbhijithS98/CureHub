@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Col, Container, Row, Table, Form, Card, Spinner, Alert, Modal  } from 'react-bootstrap';
+import { Button, Col, Container, Row, Table, Form, Card, Spinner, Alert } from 'react-bootstrap';
 import { toast, Id, ToastPosition } from 'react-toastify';
 import { useUserGetProfileQuery, 
          useUserGetAppointmentsQuery, 
@@ -10,23 +10,10 @@ import { useUserGetProfileQuery,
          useUserCancelBookingMutation } from '../../slices/userSlices/userApiSlice.js';
 import { Iuser } from '../../../../shared/user.interface.js';
 import { clearCredentials } from "../../slices/userSlices/userAuthSlice.js";
+import { Ibooking } from '../../types/bookingInterface.js';
+import TableWithPagination,{ Column } from '../../components/PaginatedTable';
 import { ObjectId } from 'mongoose';
 import './style.css';
-
-interface Ibooking {
-  _id: ObjectId;
-  user: ObjectId;
-  doctor: {name:string}; 
-  date: Date; 
-  time: string; 
-  slotId: ObjectId; 
-  timeSlotId: ObjectId; 
-  payment: ObjectId | null; 
-  status: 'Booked' | 'Cancelled' | 'Completed'; 
-  cancellationReason?: string;
-  createdAt: Date; 
-  updatedAt: Date;
-}
 
 
 const ProfileScreen: React.FC = () => {
@@ -35,26 +22,21 @@ const ProfileScreen: React.FC = () => {
   const { email } = location.state || {};
   const [selectedTab, setSelectedTab] = useState('bookings');
   const {data, error, isLoading, refetch} = useUserGetProfileQuery(email);
-  const {data:bookings, refetch:bookingsRefetch} = useUserGetAppointmentsQuery({});
+  const {data:bookingsData, refetch:bookingsRefetch} = useUserGetAppointmentsQuery({});
+  const bookings: Ibooking[] | [] = bookingsData?.result;
   const userData:Iuser = data?.user;
-  
   const [updateProfile] = useUserUpdateProfileMutation();
   const [cancelAppointment,{isLoading:cancelLoading}] = useUserCancelBookingMutation();
   const [logout] = useLogoutMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [profileData, setProfileData] = useState({name: '',
+                                                  email: '',
+                                                  phone: '',
+                                                  address: '',
+                                                  dob: ''});
 
-  const [profileData, setProfileData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    dob: ''
-  });
-  
-  
   useEffect(()=>{
-
     if(userData){
       setProfileData({
         name: userData?.name || '',
@@ -64,11 +46,14 @@ const ProfileScreen: React.FC = () => {
         dob: userData?.dob ? new Date(userData.dob).toISOString().split('T')[0] : ''
       })
     }
-    if(bookings){
-     console.log("res: ", bookings);
-     
+    if(bookingsData){
+     console.log("res: ", bookingsData);
     }
-  },[userData,bookings]);
+  },[userData,bookingsData]);
+  
+  const handleTabChange = (tab: string) => {
+    setSelectedTab(tab);
+  };
 
   const confirmAndCancelBooking = (bookingId: ObjectId) => {
     const toastId: Id = toast.info(
@@ -95,12 +80,9 @@ const ProfileScreen: React.FC = () => {
     );
   };
 
-  const handleTabChange = (tab: string) => {
-    setSelectedTab(tab);
-  };
-
+ 
     const cancelBooking = async (bookingId:ObjectId) => {  
-      const booking = bookings.result.find((b: Ibooking) => b._id === bookingId);
+      const booking = bookings.find((b: Ibooking) => b._id === bookingId);
       if (!booking) return;
 
       const bookingDate = new Date(booking.date);
@@ -140,7 +122,7 @@ const ProfileScreen: React.FC = () => {
    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setProfileData((prevData) => ({ ...prevData, [name]: value }));
-  };
+   };
 
    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -157,9 +139,50 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
+  const columns: Column<Ibooking>[] = [
+    {
+      key: 'date',
+      label: 'Date',
+      render: (value: string) => new Date(value).toLocaleDateString('en-GB'),
+    },
+    {
+      key: 'time',
+      label: 'Time',
+    },
+    {
+      key: 'doctor',
+      label: 'Doctor',
+      render: (_: any, row: Ibooking) => `Dr. ${row.doctor.name}`,
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (value: string, row: Ibooking) =>
+        value === 'Cancelled' && row.cancellationReason
+          ? `Cancelled by Doctor: ${row.cancellationReason}`
+          : value,
+    },
+    {
+      key: 'actions',
+      label: 'Action',
+      render: (_: any, row: Ibooking) => (
+        <Button
+          variant="danger"
+          size="sm"
+          onClick={() => confirmAndCancelBooking(row._id)}
+          disabled={row.status === 'Cancelled'}
+        >
+          Cancel
+        </Button>
+      ),
+    },
+  ];
+  
+ 
 if (isLoading) return <Spinner animation="border" />;
 if (error) return <Alert variant="danger">Failed to load profile.</Alert>;
 if (!data) return <Alert variant="warning">User profile not found.</Alert>;
+
   return (
     
     <Container className="profile-screen my-5">
@@ -202,43 +225,7 @@ if (!data) return <Alert variant="warning">User profile not found.</Alert>;
           {selectedTab === 'bookings' ? (
             <Card className="p-4 shadow-sm">
               <h5 className="fw-bold mb-3">My Bookings</h5>
-              <Table striped bordered hover responsive>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Doctor</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>  
-                  {cancelLoading && <Spinner animation="border" />}               
-                  {bookings?.result.map((booking: Ibooking, index: number) => (
-                  <tr key={index}>
-                    <td>{new Date(booking.date).toLocaleDateString('en-GB')}</td>
-                    <td>{booking.time}</td>
-                    <td>Dr.{booking.doctor.name}</td>
-                    <td className={booking.status === 'Cancelled' ? 'status-cancelled' : ''}>
-                      {booking.status === 'Cancelled' && booking.cancellationReason
-                        ? `Cancelled by Doctor: ${booking.cancellationReason}`
-                        : booking.status}
-                    </td>
-                    <td>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => confirmAndCancelBooking(booking._id)}
-                        disabled={booking.status==='Cancelled'}
-                      >
-                        cancel
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-                  
-                </tbody>
-              </Table>
+              <TableWithPagination data={bookings} columns={columns} rowsPerPage={5}/>
             </Card>
           ) : (
             <Card className="p-4 shadow-sm">
