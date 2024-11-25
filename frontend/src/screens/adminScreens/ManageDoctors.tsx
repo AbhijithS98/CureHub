@@ -6,7 +6,7 @@ import { useAdminListDoctorsQuery,
          useAdminBlockDoctorMutation,
          useAdminUnblockDoctorMutation
        } from "../../slices/adminSlices/adminApiSlice";
-import { IDoc } from '../../../../shared/doctor.interface'
+import { IDoc } from '../../types/doctorInterface'
 
 
 const ManageDoctors: React.FC = () => {

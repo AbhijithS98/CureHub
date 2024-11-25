@@ -4,7 +4,7 @@ import { Container, Card, Row, Col, ListGroup, Badge, Image, Button, ListGroupIt
 import { toast, ToastPosition, Id } from "react-toastify";
 import { useAdminApproveDoctorMutation, useAdminRejectDoctorMutation } from "../../slices/adminSlices/adminApiSlice";
 import Spinner from '../../components/Spinner'
-import { IDoc } from '../../../../shared/doctor.interface';
+import { IDoc } from '../../types/doctorInterface';
 
 
 const DoctorDetails: React.FC = () => {

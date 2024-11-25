@@ -3,7 +3,7 @@ import { useLocation, useNavigate, } from 'react-router-dom';
 import { Container, Card, Button, Spinner, Row, Col } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store.js';
-import { IDoc } from '../../../../shared/doctor.interface';
+import { IDoc } from '../../types/doctorInterface'
 import { useUserViewDoctorQuery } from '../../slices/userSlices/userApiSlice';
 
 import './style.css';

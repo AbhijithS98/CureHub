@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Form, Button, Row, Col, Container } from 'react-bootstrap';
 import { FaArrowRight } from 'react-icons/fa';
-import { IDoc } from '../../../../shared/doctor.interface';
+import { IDoc } from '../../types/doctorInterface';
 import { useUserListDoctorsQuery,
          useUserGetDocSpecializationsQuery
        } from '../../slices/userSlices/userApiSlice';

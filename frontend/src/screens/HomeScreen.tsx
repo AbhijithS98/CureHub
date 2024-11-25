@@ -4,7 +4,7 @@ import { useUserListDoctorsQuery,
   useUserGetDocSpecializationsQuery
 } from '../slices/userSlices/userApiSlice';
 import './userScreens/style.css';
-import { IDoc } from '../../../shared/doctor.interface';
+import { IDoc } from '../types/doctorInterface';
 import { useNavigate } from 'react-router-dom';
 
 const HomeScreen: React.FC = () => {

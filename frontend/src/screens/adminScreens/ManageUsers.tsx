@@ -4,7 +4,7 @@ import { useAdminListUsersQuery,
          useAdminUnblockUserMutation } from '../../slices/adminSlices/adminApiSlice';
 import { toast, ToastPosition, Id } from 'react-toastify';
 import { Table, Button, Container } from "react-bootstrap";
-import { Iuser } from '.  ./../../../shared/user.interface'
+import { Iuser } from '../../types/userInterface';
 
 
 const ManageUsers: React.FC = () => {

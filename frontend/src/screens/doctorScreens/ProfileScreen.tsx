@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Button, Image, Table, Form, Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { IDoc } from '../../../../shared/doctor.interface';
+import { IDoc } from '../../types/doctorInterface'
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2"; 
 import IconLoader from "../../components/Spinner";

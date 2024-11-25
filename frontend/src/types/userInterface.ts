@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+import { Document } from "mongoose";
 
 
 export interface Iuser extends Document{

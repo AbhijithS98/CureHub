@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Table, Button, Container } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useAdminListUnapprovedDoctorsQuery } from "../../slices/adminSlices/adminApiSlice";
-import { IDoc } from '../../../../shared/doctor.interface'
+import { IDoc } from '../../types/doctorInterface';
 
 
 const ManageDoctorRequests: React.FC = () => {

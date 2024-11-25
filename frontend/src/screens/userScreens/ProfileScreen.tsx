@@ -8,7 +8,7 @@ import { useUserGetProfileQuery,
          useLogoutMutation, 
          useUserUpdateProfileMutation,
          useUserCancelBookingMutation } from '../../slices/userSlices/userApiSlice.js';
-import { Iuser } from '../../../../shared/user.interface.js';
+import { Iuser } from '../../types/userInterface';
 import { clearCredentials } from "../../slices/userSlices/userAuthSlice.js";
 import { Ibooking } from '../../types/bookingInterface.js';
 import TableWithPagination,{ Column } from '../../components/PaginatedTable';
