@@ -14,19 +14,22 @@ import dotenv from 'dotenv';
 import sendEmail from "../utils/emailSender.js";
 dotenv.config();
 class UserService {
-    registerUser(userData) {
+    registerUser(req) {
         return __awaiter(this, void 0, void 0, function* () {
-            const existingUser = yield userRepository.findUserByEmail(userData.email);
+            var _a, _b;
+            const formData = req.body;
+            const existingUser = yield userRepository.findUserByEmail(formData.email);
             if (existingUser) {
                 const error = Error("User already exists");
                 error.name = 'ValidationError';
                 throw error;
             }
+            const profilePicturePath = (_b = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path.replace(/\\/g, "/").replace(/^public\//, "")) !== null && _b !== void 0 ? _b : null;
             const salt = yield bcrypt.genSalt(10);
-            const hashedPassword = yield bcrypt.hash(userData.password, salt);
+            const hashedPassword = yield bcrypt.hash(formData.password, salt);
             const otpCode = Math.floor(100000 + Math.random() * 900000);
             const otpExpiresAt = new Date(Date.now() + 3 * 60 * 1000);
-            const newUserData = Object.assign(Object.assign({}, userData), { password: hashedPassword, otp: {
+            const newUserData = Object.assign(Object.assign({}, formData), { profilePicture: profilePicturePath, password: hashedPassword, otp: {
                     code: otpCode,
                     expiresAt: otpExpiresAt
                 }, isVerified: false });
@@ -37,6 +40,23 @@ class UserService {
                 text: `Your OTP for registration is ${otpCode}`,
             });
             return user;
+        });
+    }
+    updateUser(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            const formData = req.body;
+            const User = yield userRepository.findUserByEmail(formData.email);
+            if (!User) {
+                const error = Error('No User with this email.');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            const profilePicturePath = (_b = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path.replace(/\\/g, "/").replace(/^public\//, "")) !== null && _b !== void 0 ? _b : null;
+            if (profilePicturePath) {
+                formData.profilePicture = profilePicturePath;
+            }
+            yield userRepository.updateUserDetails(formData);
         });
     }
     verifyOtp(email, otp) {
@@ -190,18 +210,6 @@ class UserService {
             return User;
         });
     }
-    updateUser(req) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { email } = req.body;
-            const User = yield userRepository.findUserByEmail(email);
-            if (!User) {
-                const error = Error('No User with this email.');
-                error.name = 'ValidationError';
-                throw error;
-            }
-            yield userRepository.updateUserDetails(req);
-        });
-    }
     bookAppointment(req) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
@@ -352,6 +360,38 @@ class UserService {
             const UserId = req.user.Id;
             const transactions = yield userRepository.getUserWalletPayments(UserId);
             return transactions;
+        });
+    }
+    addDoctorReview(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { doctorId, rating, comment } = req.body;
+            const UserId = req.user.Id;
+            if (!doctorId || !UserId || !rating || !comment) {
+                const error = Error('All fields are required.');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            const newReview = {
+                doctorId,
+                patientId: UserId,
+                comment,
+                rating,
+            };
+            yield userRepository.createReview(newReview);
+        });
+    }
+    getDoctorReviews(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { docId } = req.query;
+            console.log("doc id is: ", docId);
+            const Reviews = yield userRepository.getReviews(docId);
+            console.log("rev: ", Reviews);
+            if (!Reviews) {
+                const error = Error('No reviews for this doctor');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return Reviews;
         });
     }
 }

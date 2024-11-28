@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema, Types } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 
 
 export interface IDoctor extends Document {
@@ -30,13 +30,6 @@ export interface IDoctor extends Document {
     average: number; 
     count: number;  
   };
-  reviews?: [
-    {
-      patientId: string; 
-      comment: string;     
-      createdAt: Date;    
-    }
-  ];
   password: string;
   pwResetToken?: string;
   pwTokenExpiresAt?: Date;
@@ -108,24 +101,9 @@ const doctorSchema: Schema<IDoctor> = new Schema(
       expiresAt: { type: Date, default: null },
     },
     ratingInfo: {
-      average: {
-        type: Number,
-        default: 0,
-        min: 0,
-        max: 5,
-      },
-      count: {
-        type: Number,
-        default: 0,
-      },
+      average: { type: Number, default: 0, min: 0, max: 5 },
+      count: { type: Number, default: 0 },
     },
-    reviews: [
-      {
-        patientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        comment: { type: String },
-        createdAt: { type: Date, default: Date.now },
-      },
-    ],
     password: {
       type: String,
       required: true,

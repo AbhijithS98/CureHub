@@ -13,7 +13,7 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
-    profileImageName: {
+    profilePicture: {
         type: String,
     },
     phone: {

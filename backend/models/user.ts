@@ -4,7 +4,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  profileImageName?: string;
+  profilePicture?: string;
   phone: string;
   isVerified: boolean;
   isBlocked: boolean;
@@ -33,7 +33,7 @@ const userSchema: Schema<IUser> = new Schema(
       type: String,
       required: true,
     },
-    profileImageName: {
+    profilePicture: {
       type: String,
     },
     phone: {

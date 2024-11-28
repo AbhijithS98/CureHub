@@ -5,6 +5,7 @@ import Availability,{ IAvailability } from "../models/availability.js";
 import { BookedSlot } from "../types/bookedSlotsInterface.js";
 import Appointment,{ IAppointment} from "../models/appointment.js";
 import Wallet,{ IWallet } from "../models/walletSchema.js";
+import Review,{ IReview} from "../models/reviewSchema.js";
 import { Types } from "mongoose";
 
 
@@ -78,20 +79,12 @@ class UserRepository {
   }
 
 
-  async updateUserDetails(req:any): Promise<void> {
-    const { 
-      name, email, phone, 
-      dob, address
-    } = req.body;
+  async updateUserDetails(updatedData:any): Promise<void> {
+    const { email } = updatedData;
 
     await User.updateOne(
       { email },
-      { name,
-        email,
-        phone,
-        dob,
-        address
-      }
+      { $set: updatedData }
     )
   }
 
@@ -123,7 +116,9 @@ class UserRepository {
   }
 
   async getUserAppointments(id: string): Promise<IAppointment[] | null> {
-    return await Appointment.find({ user: id }).populate('doctor', 'name');;
+    return await Appointment.find({ user: id })
+    .populate('doctor', 'name')
+    .sort({ createdAt: -1 });
   }
   
 
@@ -148,6 +143,16 @@ class UserRepository {
         { method: "Wallet" }
       ]
     }).sort({ createdAt: -1 });
+  }
+
+  async createReview(newReview: Partial<IReview>): Promise<void> {
+    const review = new Review(newReview);
+    await review.save();
+  }
+
+
+  async getReviews(doctorId: any): Promise<IReview[] | null> {
+    return await Review.find({ doctorId }).populate('patientId', 'name profilePicture')
   }
 }
 

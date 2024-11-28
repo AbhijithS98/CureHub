@@ -5,7 +5,8 @@ import dotenv from 'dotenv';
 import User, { IUser } from "../models/user.js";
 import { IDoctor } from "../models/doctor.js";
 import { IWallet } from "../models/walletSchema.js";
-import Appointment,{ IAppointment} from "../models/appointment.js";
+import { IAppointment} from "../models/appointment.js";
+import { IReview } from "../models/reviewSchema.js";
 import sendEmail from "../utils/emailSender.js";
 import { Request, Response } from "express";
 import { IPayment } from "../models/paymentSchema.js";
@@ -14,28 +15,27 @@ dotenv.config();
 
 class UserService {
   
-  async registerUser(userData: {
-    name: string;
-    email: string;
-    phone: string;
-    password: string;
-  }): Promise<IUser> {
+  async registerUser(req:Request): Promise<IUser> {
 
-    const existingUser = await userRepository.findUserByEmail(userData.email);
+    const formData = req.body;
+    const existingUser = await userRepository.findUserByEmail(formData.email);
     if (existingUser) {
         const error = Error("User already exists");
         error.name = 'ValidationError';  
         throw error;
     }
+  
+    const profilePicturePath = req.file?.path.replace(/\\/g, "/").replace(/^public\//, "") ?? null;
 
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(userData.password, salt);
+    const hashedPassword = await bcrypt.hash(formData.password, salt);
 
     const otpCode = Math.floor(100000 + Math.random() * 900000);
     const otpExpiresAt = new Date(Date.now() + 3 * 60 * 1000);
 
     const newUserData = {
-      ...userData,
+      ...formData,
+      profilePicture: profilePicturePath,
       password: hashedPassword,
       otp: {
         code: otpCode,
@@ -52,6 +52,29 @@ class UserService {
     });
 
     return user;
+  }
+
+
+  async updateUser(req: any): Promise<void> {
+  
+    const formData = req.body;
+  
+    const User = await userRepository.findUserByEmail(formData.email);
+  
+    if(!User){
+      const error = Error('No User with this email.');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+
+    const profilePicturePath = req.file?.path.replace(/\\/g, "/").replace(/^public\//, "") ?? null;
+    
+    if(profilePicturePath){
+      formData.profilePicture = profilePicturePath
+    }
+  
+    await userRepository.updateUserDetails(formData);
+  
   }
 
 
@@ -233,25 +256,6 @@ class UserService {
   
     return User
   }
-
-
-  
-async updateUser(req: any): Promise<void> {
-  
-  const { email } = req.body;
-
-  const User = await userRepository.findUserByEmail(email);
-
-  if(!User){
-    const error = Error('No User with this email.');
-    error.name = 'ValidationError';  
-    throw error;
-  }
-
-  await userRepository.updateUserDetails(req);
-
-}
-
 
 
   async bookAppointment(req: any): Promise<void> {
@@ -441,6 +445,47 @@ async updateUser(req: any): Promise<void> {
   }
   
   
+  async addDoctorReview(req:any): Promise<void> {
+    
+    const { doctorId, rating, comment } = req.body;
+    const UserId = req.user.Id;
+    
+    if (!doctorId || !UserId || !rating || !comment) {
+      const error = Error('All fields are required.');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+  
+    const newReview: Partial<IReview> = {
+      doctorId,
+      patientId:UserId,
+      comment,
+      rating,
+    };
+
+    await userRepository.createReview(newReview)
+  }
+
+
+
+  async getDoctorReviews(req: Request): Promise<IReview[] | null> {
+
+    const { docId } = req.query;
+    console.log("doc id is: ",docId);
+    
+ 
+    const Reviews = await userRepository.getReviews(docId);
+    console.log("rev: ",Reviews);
+    
+  
+    if(!Reviews){
+      const error = Error('No reviews for this doctor');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+  
+    return Reviews
+  }
 }
 
 export default new UserService();

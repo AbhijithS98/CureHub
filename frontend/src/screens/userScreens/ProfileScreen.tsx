@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Col, Container, Row, Table, Form, Card, Spinner, Alert } from 'react-bootstrap';
-import { toast, Id, ToastPosition } from 'react-toastify';
+import { Button, Col, Container, Row, Form, Card, Spinner, Alert } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+import Swal from "sweetalert2";
 import { useUserGetProfileQuery, 
          useUserGetAppointmentsQuery, 
          useLogoutMutation, 
@@ -11,6 +12,7 @@ import { useUserGetProfileQuery,
 import { Iuser } from '../../types/userInterface';
 import { clearCredentials } from "../../slices/userSlices/userAuthSlice.js";
 import { Ibooking } from '../../types/bookingInterface.js';
+import { isCancelAllowed } from '../../utils/IsCancelAllowed.js';
 import TableWithPagination,{ Column } from '../../components/PaginatedTable';
 import { ObjectId } from 'mongoose';
 import './style.css';
@@ -26,7 +28,7 @@ const ProfileScreen: React.FC = () => {
   const bookings: Ibooking[] | [] = bookingsData?.result;
   const userData:Iuser = data?.user;
   const [updateProfile] = useUserUpdateProfileMutation();
-  const [cancelAppointment,{isLoading:cancelLoading}] = useUserCancelBookingMutation();
+  const [cancelAppointment] = useUserCancelBookingMutation();
   const [logout] = useLogoutMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -34,7 +36,8 @@ const ProfileScreen: React.FC = () => {
                                                   email: '',
                                                   phone: '',
                                                   address: '',
-                                                  dob: ''});
+                                                  dob: '',
+                                                  profilePicture: null as File | null,});
 
   useEffect(()=>{
     if(userData){
@@ -43,7 +46,8 @@ const ProfileScreen: React.FC = () => {
         email: userData?.email || '',
         phone: userData?.phone || '',
         address: userData?.address || '',
-        dob: userData?.dob ? new Date(userData.dob).toISOString().split('T')[0] : ''
+        dob: userData?.dob ? new Date(userData.dob).toISOString().split('T')[0] : '',
+        profilePicture: null,
       })
     }
     if(bookingsData){
@@ -51,56 +55,35 @@ const ProfileScreen: React.FC = () => {
     }
   },[userData,bookingsData]);
   
-  const handleTabChange = (tab: string) => {
-    setSelectedTab(tab);
-  };
-
-  const confirmAndCancelBooking = (bookingId: ObjectId) => {
-    const toastId: Id = toast.info(
-      <span>
-        Are you sure you want to cancel this appointment?
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={() => {
-            cancelBooking(bookingId);
-            toast.dismiss(toastId);
-          }}
-          className="ms-3"
-        >
-          Confirm
-        </Button>
-      </span>,
-      {
-        autoClose: false,
-        closeOnClick: false,
-        draggable: false,
-        position: "top-center" as ToastPosition,
-      }
-    );
-  };
-
+    const handleTabChange = (tab: string) => {
+      setSelectedTab(tab);
+    };
  
     const cancelBooking = async (bookingId:ObjectId) => {  
       const booking = bookings.find((b: Ibooking) => b._id === bookingId);
       if (!booking) return;
-
-      const bookingDate = new Date(booking.date);
-      const cancellationDeadline = new Date(bookingDate);
-      const currentDate = new Date();
-      cancellationDeadline.setDate(bookingDate.getDate() - 1); 
-      cancellationDeadline.setHours(23, 59, 59, 999); 
       
-      if (currentDate > cancellationDeadline) {
+      if (!isCancelAllowed(booking)) {
         toast.error('Cancellation period has passed. You cannot cancel anymore.');
         return;
       }
 
     try{
-      await cancelAppointment({bookingId}).unwrap();
-      toast.success("Booking cancelled successfully!");
-      bookingsRefetch();
-      
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Do you really want to cancel this booking? This action cannot be undone.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, cancel it!",
+        cancelButtonText: "Cancel",
+      });
+      if(result.isConfirmed){
+        await cancelAppointment({bookingId}).unwrap();
+        toast.success("Booking cancelled successfully!");
+        bookingsRefetch();
+      }
     }catch (error:any) {
       console.error("Error cancelling booking: ", error);
       toast.error(error.message || "Error cancelling booking")
@@ -124,12 +107,27 @@ const ProfileScreen: React.FC = () => {
     setProfileData((prevData) => ({ ...prevData, [name]: value }));
    };
 
+   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setProfileData((prevData) => ({ ...prevData, profilePicture: file }));
+  };
+
    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const updatedData = { ...profileData };
+    const { profilePicture, ...updatedData } = profileData;
     try {
 
-      await updateProfile(updatedData).unwrap(); 
+      const formData = new FormData();
+      formData.append("name", updatedData.name);
+      formData.append("email", updatedData.email);
+      formData.append("phone", updatedData.phone);
+      formData.append("address", updatedData.address);
+      formData.append("dob", updatedData.dob);
+      if (profilePicture) {
+        formData.append("profilePicture", profilePicture);
+      }
+
+      await updateProfile(formData).unwrap(); 
       toast.success('Profile updated successfully!');
       refetch();
       setSelectedTab('bookings')
@@ -169,7 +167,7 @@ const ProfileScreen: React.FC = () => {
         <Button
           variant="danger"
           size="sm"
-          onClick={() => confirmAndCancelBooking(row._id)}
+          onClick={() => cancelBooking(row._id)}
           disabled={row.status === 'Cancelled'}
         >
           Cancel
@@ -191,11 +189,11 @@ if (!data) return <Alert variant="warning">User profile not found.</Alert>;
         <Col md={4}>
           <Card className="p-4 shadow-sm">
             <div className="text-center">
-              {/* <img
-                src={'/default-profile.png'}
+              <img
+                src={`http://localhost:5000/${userData?.profilePicture}`}
                 alt="User Profile"
                 className="profile-photo mb-3"
-              /> */}
+              />
               <h5 className="fw-bold">{userData?.name}</h5>
               <p className="text-muted">{userData?.email}</p>
               <p className="text-muted">{userData?.phone}</p>
@@ -281,6 +279,15 @@ if (!data) return <Alert variant="warning">User profile not found.</Alert>;
                     name="dob"
                     value={profileData.dob}
                     onChange={handleInputChange}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Change Profile Picture</Form.Label>
+                  <Form.Control
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
                   />
                 </Form.Group>
 

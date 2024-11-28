@@ -198,6 +198,17 @@ const ProfileScreen: React.FC = () => {
     setShowModal(true);
   };
 
+  const handleClick = () => {  
+    if (!doctorInfo.consultationFee || !doctorInfo.address || !doctorInfo.bio) {
+      toast.error("You need to complete your profile before setting availability.");
+      return; 
+    }
+  
+    navigate("/doctor/availabilities", {
+      state: { docEmail: doctorInfo.email },
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -311,7 +322,7 @@ const ProfileScreen: React.FC = () => {
               <h3>Manage availabilities</h3>
               <Button 
                 className="btn btn-success"
-                onClick={() => navigate("/doctor/availabilities", {state : { docEmail: doctorInfo.email }} )} 
+                onClick={handleClick} 
               >
                 Set New Slots
               </Button>

@@ -5,7 +5,7 @@ export interface Iuser extends Document{
   name: string;
   email: string;
   password: string;
-  profileImageName?: string;
+  profilePicture?: string;
   phone: string;
   isVerified: boolean;
   isBlocked: boolean;

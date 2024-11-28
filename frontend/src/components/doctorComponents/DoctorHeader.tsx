@@ -70,11 +70,7 @@ function DoctorHeader() {
                   </Nav.Link>
                 </LinkContainer>
 
-                <LinkContainer to="/doctor/availabilities" state={{ docEmail: doctorInfo.email }}>
-                  <Nav.Link>
-                    <BsPersonFill />Set Avalilability
-                  </Nav.Link>
-                </LinkContainer>
+                
 
                 <Nav.Link onClick={handleLogout}>
                   <FaSignOutAlt />

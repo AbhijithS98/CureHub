@@ -13,6 +13,7 @@ import Payment from "../models/paymentSchema.js";
 import Availability from "../models/availability.js";
 import Appointment from "../models/appointment.js";
 import Wallet from "../models/walletSchema.js";
+import Review from "../models/reviewSchema.js";
 class UserRepository {
     findUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -83,15 +84,10 @@ class UserRepository {
             return yield Doctor.findOne({ email });
         });
     }
-    updateUserDetails(req) {
+    updateUserDetails(updatedData) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { name, email, phone, dob, address } = req.body;
-            yield User.updateOne({ email }, { name,
-                email,
-                phone,
-                dob,
-                address
-            });
+            const { email } = updatedData;
+            yield User.updateOne({ email }, { $set: updatedData });
         });
     }
     createPayment(paymentData) {
@@ -126,8 +122,9 @@ class UserRepository {
     }
     getUserAppointments(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Appointment.find({ user: id }).populate('doctor', 'name');
-            ;
+            return yield Appointment.find({ user: id })
+                .populate('doctor', 'name')
+                .sort({ createdAt: -1 });
         });
     }
     findAppointment(bookingId) {
@@ -149,6 +146,17 @@ class UserRepository {
                     { method: "Wallet" }
                 ]
             }).sort({ createdAt: -1 });
+        });
+    }
+    createReview(newReview) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const review = new Review(newReview);
+            yield review.save();
+        });
+    }
+    getReviews(doctorId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Review.find({ doctorId }).populate('patientId', 'name profilePicture');
         });
     }
 }

@@ -9,7 +9,7 @@ class UserController {
     try {     
       const { name, email, phone, password } = req.body;
 
-      const user = await userService.registerUser({ name, email, phone, password });
+      const user = await userService.registerUser(req);
 
       res.status(201).json({
         message: "User registered successfully. Please verify your email.",
@@ -294,6 +294,32 @@ class UserController {
 
     } catch (error: any) {
       console.error("user cancel booking error: ", error.message);
+      next(error)
+    }
+  }
+
+
+  async addReview(req:any, res: Response, next: NextFunction): Promise<void> {
+    
+    try {
+      await userService.addDoctorReview(req);
+      res.status(200).json({ message: "review added successfully."});
+
+    } catch (error: any) {
+      console.error("user adding review error: ", error.message);
+      next(error)
+    }
+  }
+
+
+  async getReviews(req: Request, res: Response, next: NextFunction): Promise<void> {
+    
+    try {    
+      const result = await userService.getDoctorReviews(req);
+      res.status(200).json({result})
+
+    } catch (error: any) {
+      console.error('fetching doctor reviews: ', error);
       next(error)
     }
   }

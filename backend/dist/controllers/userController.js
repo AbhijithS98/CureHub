@@ -15,7 +15,7 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { name, email, phone, password } = req.body;
-                const user = yield userService.registerUser({ name, email, phone, password });
+                const user = yield userService.registerUser(req);
                 res.status(201).json({
                     message: "User registered successfully. Please verify your email.",
                     userId: user._id,
@@ -271,6 +271,30 @@ class UserController {
             }
             catch (error) {
                 console.error("user cancel booking error: ", error.message);
+                next(error);
+            }
+        });
+    }
+    addReview(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield userService.addDoctorReview(req);
+                res.status(200).json({ message: "review added successfully." });
+            }
+            catch (error) {
+                console.error("user adding review error: ", error.message);
+                next(error);
+            }
+        });
+    }
+    getReviews(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield userService.getDoctorReviews(req);
+                res.status(200).json({ result });
+            }
+            catch (error) {
+                console.error('fetching doctor reviews: ', error);
                 next(error);
             }
         });

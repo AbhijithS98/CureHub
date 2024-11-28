@@ -1,6 +1,22 @@
 import multer from "multer";
 import path from "path";
-const storage = multer.diskStorage({
+import fs from "fs";
+const ensureDirectoryExists = (dir) => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+};
+const userProfileStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const dir = "public/userProfilePictures";
+        ensureDirectoryExists(dir);
+        cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname));
+    },
+});
+const doctorProfileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "public/doctorDocuments");
     },
@@ -16,8 +32,13 @@ const fileFilter = (req, file, cb) => {
         cb(new Error("Only images are allowed!"), false);
     }
 };
+export const uploadUserProfilePicture = multer({
+    storage: userProfileStorage,
+    fileFilter: fileFilter,
+    limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
+}).single("profilePicture");
 export const uploadDoctorDocuments = multer({
-    storage: storage,
+    storage: doctorProfileStorage,
     fileFilter: fileFilter,
     limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
 }).fields([

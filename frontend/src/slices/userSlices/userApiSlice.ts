@@ -10,10 +10,10 @@ export const userApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     register: builder.mutation({
-      query: (data) => ({
+      query: (formData) => ({
         url: `/users/register`,
         method: "POST",
-        body: data,
+        body: formData,
       }),
     }),
     verifyOtp: builder.mutation({
@@ -75,10 +75,10 @@ export const userApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     userUpdateProfile: builder.mutation({
-      query: (updatedData) => ({
+      query: (formData) => ({
         url: `/users/update-profile`,  
         method: "PUT",
-        body: updatedData,
+        body: formData,
       }),
     }),
     userRefreshToken: builder.mutation({
@@ -126,6 +126,19 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    userFetchDoctorReviews: builder.query({
+      query: (doctorId: string) => ({
+        url: `/users/get-doctor-reviews?docId=${doctorId}`,
+        method: "GET",
+      }),
+    }),
+    userAddDoctorReview: builder.mutation({
+      query: (data) => ({
+        url: `/users/add-review`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   })
 })
 
@@ -148,6 +161,8 @@ export const {
   useUserGetAppointmentsQuery,
   useUserWalletRechargeMutation,
   useUserGetWalletQuery,
-  useUserGetWalletTransactionsQuery
+  useUserGetWalletTransactionsQuery,
+  useUserFetchDoctorReviewsQuery,
+  useUserAddDoctorReviewMutation,
 
 } = userApiSlice;

@@ -60,24 +60,9 @@ const doctorSchema = new Schema({
         expiresAt: { type: Date, default: null },
     },
     ratingInfo: {
-        average: {
-            type: Number,
-            default: 0,
-            min: 0,
-            max: 5,
-        },
-        count: {
-            type: Number,
-            default: 0,
-        },
+        average: { type: Number, default: 0, min: 0, max: 5 },
+        count: { type: Number, default: 0 },
     },
-    reviews: [
-        {
-            patientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-            comment: { type: String },
-            createdAt: { type: Date, default: Date.now },
-        },
-    ],
     password: {
         type: String,
         required: true,

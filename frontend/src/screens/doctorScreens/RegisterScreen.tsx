@@ -72,6 +72,7 @@ const RegisterScreen: React.FC = () => {
     }
   };
 
+  
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); 
