@@ -40,6 +40,8 @@ import DoctorForgotPassScreen from './screens/doctorScreens/ForgotPassScreen'
 import DoctorResetPassScreen from './screens/doctorScreens/ResetPassScreen';
 import DoctorProfileScreen from './screens/doctorScreens/ProfileScreen';
 import DoctorAvailabilityScreen from './screens/doctorScreens/SetAvailabilityScreen';
+import AddPrescription from './screens/doctorScreens/AddPrescription';
+import ViewPrescription from './screens/doctorScreens/ViewPrescription';
 
 {/* Admin screens imports */}
 import AdminLoginScreen from './screens/adminScreens/LoginScreen';
@@ -83,14 +85,10 @@ const router = createBrowserRouter(
         <Route path="login" element={<DoctorLoginScreen />}></Route>
         <Route path="forgot-password" element={<DoctorForgotPassScreen />}></Route>
         <Route path="reset-password" element={<DoctorResetPassScreen />}></Route>
-        <Route
-          path="profile"
-          element={<DoctorProtectedRoute><DoctorProfileScreen /></DoctorProtectedRoute>}
-        />
-        <Route
-          path="availabilities"
-          element={<DoctorProtectedRoute><DoctorAvailabilityScreen /></DoctorProtectedRoute>}
-        />
+        <Route path="profile" element={<DoctorProtectedRoute><DoctorProfileScreen /></DoctorProtectedRoute>}/>
+        <Route path="availabilities" element={<DoctorProtectedRoute><DoctorAvailabilityScreen /></DoctorProtectedRoute>}/>
+        <Route path="add-prescription" element={<DoctorProtectedRoute><AddPrescription /></DoctorProtectedRoute>}/>
+        <Route path="view-prescription/:prescriptionId" element={<DoctorProtectedRoute><ViewPrescription /></DoctorProtectedRoute>}/>
       </Route>
 
       {/* Admin Routes */}

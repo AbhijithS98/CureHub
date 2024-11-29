@@ -20,4 +20,7 @@ router.delete('/delete-slot', verifyDoctorToken, doctorController.deleteSlot);
 router.delete('/delete-timeSlot', verifyDoctorToken, doctorController.deleteTimeSlot);
 router.get('/get-appointments', verifyDoctorToken, doctorController.getAppointments);
 router.put('/cancel-appointment', verifyDoctorToken, doctorController.cancelAppointment);
+router.post('/add-prescription', verifyDoctorToken, doctorController.addPrescription);
+router.get('/get-prescription', verifyDoctorToken, doctorController.viewPrescription);
+router.put('/update-prescription:id', verifyDoctorToken, doctorController.updatePrescription);
 export default router;

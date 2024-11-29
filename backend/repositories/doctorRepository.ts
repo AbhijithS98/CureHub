@@ -4,6 +4,7 @@ import Availability, { IAvailability } from "../models/availability.js";
 import Appointment, { IAppointment } from "../models/appointment.js";
 import Wallet, { IWallet } from "../models/walletSchema.js";
 import Payment, { IPayment} from "../models/paymentSchema.js";
+import Prescription, { IPrescription } from "../models/prescriptionSchema.js";
 
 class DoctorRepository { 
 
@@ -132,6 +133,23 @@ class DoctorRepository {
     await payment.save();
     return payment;
   }
-}
+
+  async createPrescription(prescriptionData: IPrescription): Promise<IPrescription> {
+    const prescription = new Prescription(prescriptionData);
+    await prescription.save();
+    return prescription;
+  }
+
+  async findPrescription(prescriptionId: any): Promise<IPrescription | null> {
+    return await Prescription.findOne({ _id: prescriptionId });
+  }
+
+  async updateUserPrescription(_id:any, updateFields:Partial<IPrescription>): Promise<void> {
+    await Prescription.findByIdAndUpdate(
+      _id, 
+      { $set: updateFields }
+    );
+  }
+} 
 
 export default new DoctorRepository();

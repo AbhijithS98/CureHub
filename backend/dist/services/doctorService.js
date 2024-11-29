@@ -298,5 +298,49 @@ class DoctorService {
             });
         });
     }
+    addPatientPrescription(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const doc_id = (_a = req.doctor) === null || _a === void 0 ? void 0 : _a.Id;
+            const { prescriptionData } = req.body;
+            console.log("prescription is: ", prescriptionData);
+            prescriptionData.doctor = doc_id;
+            const response = yield doctorRepository.createPrescription(prescriptionData);
+            if (response) {
+                console.log("prescription created: ", response);
+            }
+            const Appointment = yield doctorRepository.findAppointment(prescriptionData.appointment);
+            if (Appointment) {
+                Appointment.prescription = response._id;
+                Appointment.status = 'Completed';
+                yield Appointment.save();
+            }
+        });
+    }
+    getPrescription(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { Pr_Id } = req.query;
+            const prescription = yield doctorRepository.findPrescription(Pr_Id);
+            if (!prescription) {
+                const error = Error('No prescription found with this id');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return prescription;
+        });
+    }
+    updatePrescription(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const updateFields = req.body;
+            const Prescription = yield doctorRepository.findPrescription(id);
+            if (!Prescription) {
+                const error = Error('No Prescription with this id');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            yield doctorRepository.updateUserPrescription(id, updateFields);
+        });
+    }
 }
 export default new DoctorService();

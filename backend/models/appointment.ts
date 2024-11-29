@@ -19,6 +19,7 @@ export interface IAppointment extends Document {
   timeSlotId: Types.ObjectId; 
   payment: IPayment | Types.ObjectId | null; 
   status: 'Booked' | 'Cancelled' | 'Completed'; 
+  prescription: Types.ObjectId | null;
   cancellationReason?: string;
   createdAt: Date; 
   updatedAt: Date;
@@ -40,6 +41,7 @@ const appointmentSchema = new Schema<IAppointment>(
       default: 'Booked',
       required: true,
     },
+    prescription: { type: mongoose.Schema.Types.ObjectId, ref: 'Prescription', default: null },
     cancellationReason: {
       type: String,
       enum: [

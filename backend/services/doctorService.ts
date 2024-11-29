@@ -7,6 +7,7 @@ import crypto from 'crypto';
 import { Request, Response } from "express";
 import { IPayment } from "../models/paymentSchema.js";
 import { IAppointment } from "../models/appointment.js";
+import { IPrescription } from "../models/prescriptionSchema.js";
 
 
 
@@ -362,6 +363,60 @@ async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
         <p>Best Regards,</p>
         <p>${Doctor!.address!.clinicName}</p>`
     });
+  }
+
+
+  async addPatientPrescription(req: Request): Promise<void> {
+  
+    const doc_id = req.doctor?.Id as string;
+    const { prescriptionData } = req.body;
+    console.log("prescription is: ", prescriptionData);
+    
+    prescriptionData.doctor = doc_id;
+    const response = await doctorRepository.createPrescription(prescriptionData);
+    if(response){
+      console.log("prescription created: ", response);    
+    }
+    
+    const Appointment = await doctorRepository.findAppointment(prescriptionData.appointment);
+    if(Appointment){
+      Appointment.prescription = response._id;
+      Appointment.status = 'Completed'
+      await Appointment.save();
+    }
+    
+  }
+
+
+  async getPrescription(req: Request): Promise<IPrescription | null> {  
+
+    const { Pr_Id } = req.query;
+    const prescription = await doctorRepository.findPrescription(Pr_Id);
+  
+    if(!prescription){
+      const error = Error('No prescription found with this id');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+    
+    return prescription
+  }
+
+
+  async updatePrescription(req: Request): Promise<void> {
+    
+    const { id } = req.params;
+    const updateFields = req.body;
+
+    const Prescription = await doctorRepository.findPrescription(id);
+
+    if(!Prescription){
+      const error = Error('No Prescription with this id');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+  
+    await doctorRepository.updateUserPrescription(id,updateFields);
   }
 }
 

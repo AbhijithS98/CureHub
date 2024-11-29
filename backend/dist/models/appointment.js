@@ -20,6 +20,7 @@ const appointmentSchema = new Schema({
         default: 'Booked',
         required: true,
     },
+    prescription: { type: mongoose.Schema.Types.ObjectId, ref: 'Prescription', default: null },
     cancellationReason: {
         type: String,
         enum: [

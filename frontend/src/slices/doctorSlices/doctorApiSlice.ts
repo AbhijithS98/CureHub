@@ -109,6 +109,26 @@ export const doctorApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    doctorAddPrescription: builder.mutation({
+      query: (data) => ({
+        url: 'doctors/add-prescription',
+        method: "POST",
+        body: data
+      })
+    }),
+    doctorGetPrescription: builder.query({
+      query: (prescriptionId:string) => ({
+        url: `/doctors/get-prescription?Pr_Id=${prescriptionId}`,
+        method: "GET",
+      }),
+    }),
+    doctorUpdatePrescription: builder.mutation({
+      query: ({ id, updatedPrescription }) => ({
+        url: `/doctors/update-prescription${id}`,  
+        method: "PUT",
+        body: updatedPrescription,
+      }),
+    }),
   })
 })
 
@@ -129,6 +149,8 @@ export const {
   useDoctorRefreshTokenMutation,
   useDoctorGetAppointmentsQuery,
   useDoctorCancelAppointmentMutation,
-  
+  useDoctorAddPrescriptionMutation,
+  useDoctorGetPrescriptionQuery,
+  useDoctorUpdatePrescriptionMutation,
 
 } = doctorApiSlice;

@@ -274,6 +274,47 @@ class DoctorController {
     }
   }
 
+
+  async addPrescription(req: Request, res: Response, next: NextFunction): Promise<void> {
+  
+    try {
+         
+      await doctorService.addPatientPrescription(req)
+      res.status(200).json({ message: "prescription added successfully."});
+
+    } catch (error: any) {
+      console.error("adding prescription error: ", error.message);
+      next(error)
+    }
+  }
+
+
+  async viewPrescription(req: Request, res: Response, next: NextFunction): Promise<void> {
+  
+    try {
+        
+      const result = await doctorService.getPrescription(req)
+      res.status(200).json({result});
+
+    } catch (error: any) {
+      console.error("Getting single prescription error: ", error.message);
+      next(error)
+    }
+  }
+
+
+  async updatePrescription(req:Request, res: Response, next: NextFunction): Promise<void> {
+  
+     try {
+       await doctorService.updatePrescription(req);
+       res.status(200).json({ message: 'Prescription updated successfully.'});
+ 
+     } catch (error: any) {
+       console.error("Updating prescription error: ", error.message);
+       next(error)
+     }
+   }
+
 }
 
 export default new DoctorController();

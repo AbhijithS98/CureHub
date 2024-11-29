@@ -23,6 +23,8 @@ export interface IAppointmentPd extends Document {
   timeSlotId: Types.ObjectId;
   payment: Types.ObjectId | null;
   status: "Booked" | "Cancelled" | "Completed";
+  prescription: Types.ObjectId | null;
+  cancellationReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }

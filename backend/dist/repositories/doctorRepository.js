@@ -13,6 +13,7 @@ import Availability from "../models/availability.js";
 import Appointment from "../models/appointment.js";
 import Wallet from "../models/walletSchema.js";
 import Payment from "../models/paymentSchema.js";
+import Prescription from "../models/prescriptionSchema.js";
 class DoctorRepository {
     findDoctorByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -128,6 +129,23 @@ class DoctorRepository {
             const payment = new Payment(paymentData);
             yield payment.save();
             return payment;
+        });
+    }
+    createPrescription(prescriptionData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const prescription = new Prescription(prescriptionData);
+            yield prescription.save();
+            return prescription;
+        });
+    }
+    findPrescription(prescriptionId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Prescription.findOne({ _id: prescriptionId });
+        });
+    }
+    updateUserPrescription(_id, updateFields) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Prescription.findByIdAndUpdate(_id, { $set: updateFields });
         });
     }
 }

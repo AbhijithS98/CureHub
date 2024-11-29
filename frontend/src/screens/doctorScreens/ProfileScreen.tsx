@@ -16,8 +16,11 @@ import { useDoctorGetProfileQuery,
          useDoctorGetAppointmentsQuery,
          useDoctorCancelAppointmentMutation } from '../../slices/doctorSlices/doctorApiSlice';
 import { clearDoctorCredentials } from "../../slices/doctorSlices/doctorAuthSlice.js";
-import { ObjectId } from 'mongoose';
+import { ObjectId, Types } from 'mongoose';
 import CancelAppointmentModal from '../../components/doctorComponents/CancelAppointmentModal';
+import TableWithPagination,{ Column } from '../../components/PaginatedTable';
+import { IAppointmentPd } from '../../types/IAppointmentPd';
+import { IPrescription } from '../../types/prescriptionInterface';
 
 interface AvailabilitySlot {
   _id: ObjectId,
@@ -193,7 +196,7 @@ const ProfileScreen: React.FC = () => {
     }
   }
 
-  const handleCancelButtonClick = (appointmentId: ObjectId) => {
+  const handleCancelButtonClick = (appointmentId: Types.ObjectId) => {
     setSelectedAppointmentId(appointmentId.toString());
     setShowModal(true);
   };
@@ -207,6 +210,14 @@ const ProfileScreen: React.FC = () => {
     navigate("/doctor/availabilities", {
       state: { docEmail: doctorInfo.email },
     });
+  };
+
+  const addPrescription = (appointmentId: Types.ObjectId, patientId: Types.ObjectId) => {
+    navigate('/doctor/add-prescription', { state: { appointmentId, patientId } });
+  };
+  
+  const viewPrescription = (prescriptionId: Types.ObjectId) => {
+    navigate(`/doctor/view-prescription/${prescriptionId}`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -289,6 +300,70 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
+  const ApmntsColumns: Column<IAppointmentPd>[] = [
+    {
+      key: 'date',
+      label: 'Date',
+      render: (value: string) => new Date(value).toLocaleDateString('en-GB'),
+    },
+    {
+      key: 'time',
+      label: 'Time',
+    },
+    {
+      key: 'user',
+      label: 'Patient',
+      render: (_: any, row: IAppointmentPd) => {
+        if(typeof row.user === 'object' && 'name' in row.user){
+          return row.user.name
+        }
+      }
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (value: string, row: IAppointmentPd) =>
+        value === 'Cancelled' && row.cancellationReason
+          ? `Cancelled Myself: ${row.cancellationReason}`
+          : value,
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (_: any, row: IAppointmentPd) => (
+        <div className="d-flex gap-2">
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={() => handleCancelButtonClick(row._id!)}
+            disabled={row.status === 'Cancelled'}
+          >
+            Cancel
+          </Button>
+          
+          {row.status === 'Completed' ? 
+            <Button
+            variant="primary"
+            size="sm"
+            onClick={() => viewPrescription(row.prescription!)}
+            >
+            View Prescription
+            </Button>
+           :  
+           <Button
+            variant="primary"
+            size="sm"
+            onClick={() => addPrescription(row._id,row.user._id)}
+            disabled={row.status !== 'Booked'} 
+           >
+            Add Prescription
+           </Button>          
+          }
+          
+        </div>
+      ),
+    },
+  ];
 
 
   const renderContent = () => {
@@ -411,37 +486,8 @@ const ProfileScreen: React.FC = () => {
       return (
         <div>
           <h3>Appointments</h3>
-          <Table striped bordered hover responsive className="mt-3">
-            <thead>
-              <tr>      
-                <th>Date</th>
-                <th>Time</th>
-                <th>Patient</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {appointmentsData.appointments.map((appointment: Appointment, index: number) => (
-                <tr key={index}>
-                  <td>{new Date(appointment.date).toLocaleDateString('en-GB')}</td>
-                  <td>{appointment.time}</td>
-                  <td>{appointment.user.name}</td>
-                  <td>{appointment.status}</td>
-                  <td>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleCancelButtonClick(appointment._id!)}
-                      disabled={appointment.status==='Cancelled'}
-                    >
-                      cancel
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+          <TableWithPagination data={appointmentsData.appointments} columns={ApmntsColumns} rowsPerPage={5}/>
+          
           {/* Show the CancelAppointmentModal when needed */}
           <CancelAppointmentModal
             appointmentId={selectedAppointmentId}

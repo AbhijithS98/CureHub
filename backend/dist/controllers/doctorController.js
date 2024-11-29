@@ -248,5 +248,41 @@ class DoctorController {
             }
         });
     }
+    addPrescription(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield doctorService.addPatientPrescription(req);
+                res.status(200).json({ message: "prescription added successfully." });
+            }
+            catch (error) {
+                console.error("adding prescription error: ", error.message);
+                next(error);
+            }
+        });
+    }
+    viewPrescription(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield doctorService.getPrescription(req);
+                res.status(200).json({ result });
+            }
+            catch (error) {
+                console.error("Getting single prescription error: ", error.message);
+                next(error);
+            }
+        });
+    }
+    updatePrescription(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield doctorService.updatePrescription(req);
+                res.status(200).json({ message: 'Prescription updated successfully.' });
+            }
+            catch (error) {
+                console.error("Updating prescription error: ", error.message);
+                next(error);
+            }
+        });
+    }
 }
 export default new DoctorController();
