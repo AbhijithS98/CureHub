@@ -394,5 +394,17 @@ class UserService {
             return Reviews;
         });
     }
+    getPrescription(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { Pr_Id } = req.query;
+            const prescription = yield userRepository.findPrescription(Pr_Id);
+            if (!prescription) {
+                const error = Error('No prescription found with this id');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return prescription;
+        });
+    }
 }
 export default new UserService();

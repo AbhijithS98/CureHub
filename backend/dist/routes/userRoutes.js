@@ -25,4 +25,5 @@ router.get('/get-wallet-payments', verifyUserToken, userController.getUserWallet
 router.put('/cancel-booking', verifyUserToken, userController.cancelBooking);
 router.post('/add-review', verifyUserToken, userController.addReview);
 router.get('/get-doctor-reviews', userController.getReviews);
+router.get('/get-prescription', verifyUserToken, userController.viewPrescription);
 export default router;

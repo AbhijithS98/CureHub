@@ -14,6 +14,7 @@ import Availability from "../models/availability.js";
 import Appointment from "../models/appointment.js";
 import Wallet from "../models/walletSchema.js";
 import Review from "../models/reviewSchema.js";
+import Prescription from "../models/prescriptionSchema.js";
 class UserRepository {
     findUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -157,6 +158,15 @@ class UserRepository {
     getReviews(doctorId) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield Review.find({ doctorId }).populate('patientId', 'name profilePicture');
+        });
+    }
+    findPrescription(prescriptionId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Prescription.findOne({ _id: prescriptionId })
+                .populate('appointment', 'date time')
+                .populate('doctor', 'name specialization address')
+                .populate('patient', 'name phone')
+                .lean();
         });
     }
 }

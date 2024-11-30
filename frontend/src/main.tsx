@@ -30,6 +30,7 @@ import AppointmentBookingScreen from './screens/userScreens/BookAppointmentScree
 import PaymentScreen from './screens/userScreens/PaymentScreen';
 import ThankyouScreen from './screens/userScreens/ThankYouScreen';
 import WalletScreen from './screens/userScreens/WalletScreen';
+import UserViewPrescription from './screens/userScreens/ViewPrescriptionScreen';
 
 {/* Doctor screens imports */}
 import DoctorRegisterScreen from './screens/doctorScreens/RegisterScreen';
@@ -75,6 +76,7 @@ const router = createBrowserRouter(
         <Route path="payment" element={<UserProtectedRoute><PaymentScreen /></UserProtectedRoute>}/>
         <Route path="thank-you" element={<UserProtectedRoute><ThankyouScreen /></UserProtectedRoute>}/>
         <Route path="wallet" element={<UserProtectedRoute><WalletScreen /></UserProtectedRoute>}/>
+        <Route path="view-prescription/:preId" element={<UserProtectedRoute><UserViewPrescription /></UserProtectedRoute>}/>
       </Route>
 
       {/* Doctor Routes */}
@@ -88,7 +90,7 @@ const router = createBrowserRouter(
         <Route path="profile" element={<DoctorProtectedRoute><DoctorProfileScreen /></DoctorProtectedRoute>}/>
         <Route path="availabilities" element={<DoctorProtectedRoute><DoctorAvailabilityScreen /></DoctorProtectedRoute>}/>
         <Route path="add-prescription" element={<DoctorProtectedRoute><AddPrescription /></DoctorProtectedRoute>}/>
-        <Route path="view-prescription/:prescriptionId" element={<DoctorProtectedRoute><ViewPrescription /></DoctorProtectedRoute>}/>
+        <Route path="view-prescription/:preId" element={<DoctorProtectedRoute><ViewPrescription /></DoctorProtectedRoute>}/>
       </Route>
 
       {/* Admin Routes */}

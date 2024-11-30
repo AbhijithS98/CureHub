@@ -299,5 +299,17 @@ class UserController {
             }
         });
     }
+    viewPrescription(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield userService.getPrescription(req);
+                res.status(200).json({ result });
+            }
+            catch (error) {
+                console.error("Getting user single prescription error: ", error.message);
+                next(error);
+            }
+        });
+    }
 }
 export default new UserController();

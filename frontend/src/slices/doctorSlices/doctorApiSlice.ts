@@ -129,6 +129,12 @@ export const doctorApiSlice = apiSlice.injectEndpoints({
         body: updatedPrescription,
       }),
     }),
+    doctorGetSingleAppointment: builder.query({
+      query: () => ({
+        url: '/doctors/get-single-appointment',
+        method: "GET",
+      }),
+    }),
   })
 })
 
@@ -152,5 +158,6 @@ export const {
   useDoctorAddPrescriptionMutation,
   useDoctorGetPrescriptionQuery,
   useDoctorUpdatePrescriptionMutation,
+  useDoctorGetSingleAppointmentQuery
 
 } = doctorApiSlice;

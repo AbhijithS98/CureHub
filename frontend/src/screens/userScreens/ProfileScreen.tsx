@@ -25,7 +25,8 @@ const ProfileScreen: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState('bookings');
   const {data, error, isLoading, refetch} = useUserGetProfileQuery(email);
   const {data:bookingsData, refetch:bookingsRefetch} = useUserGetAppointmentsQuery({});
-  const bookings: Ibooking[] | [] = bookingsData?.result;
+  const [Bookings,setBookings] = useState<Ibooking[] | []>([]);
+  const [completedBookings,setCompletedBookings] = useState<Ibooking[] | []>([]);
   const userData:Iuser = data?.user;
   const [updateProfile] = useUserUpdateProfileMutation();
   const [cancelAppointment] = useUserCancelBookingMutation();
@@ -52,6 +53,10 @@ const ProfileScreen: React.FC = () => {
     }
     if(bookingsData){
      console.log("res: ", bookingsData);
+     const pendingAndCancelled = bookingsData.result.filter((booking:Ibooking) => booking.status!=='Completed');
+     const completed = bookingsData.result.filter((booking:Ibooking) => booking.status==='Completed');
+     setBookings(pendingAndCancelled);
+     setCompletedBookings(completed);
     }
   },[userData,bookingsData]);
   
@@ -60,7 +65,7 @@ const ProfileScreen: React.FC = () => {
     };
  
     const cancelBooking = async (bookingId:ObjectId) => {  
-      const booking = bookings.find((b: Ibooking) => b._id === bookingId);
+      const booking = Bookings.find((b: Ibooking) => b._id === bookingId);
       if (!booking) return;
       
       if (!isCancelAllowed(booking)) {
@@ -137,6 +142,11 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
+
+  const viewPrescription = (preId: ObjectId) => {
+    navigate(`/user/view-prescription/${preId}`);
+  };
+
   const columns: Column<Ibooking>[] = [
     {
       key: 'date',
@@ -164,19 +174,53 @@ const ProfileScreen: React.FC = () => {
       key: 'actions',
       label: 'Action',
       render: (_: any, row: Ibooking) => (
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => cancelBooking(row._id)}
+              disabled={row.status === 'Cancelled'}
+            >
+              Cancel
+            </Button>
+          )  
+    },
+  ];
+  
+
+  const CBcolumns: Column<Ibooking>[] = [
+    {
+      key: 'date',
+      label: 'Date',
+      render: (value: string) => new Date(value).toLocaleDateString('en-GB'),
+    },
+    {
+      key: 'time',
+      label: 'Time',
+    },
+    {
+      key: 'doctor',
+      label: 'Doctor',
+      render: (_: any, row: Ibooking) => `Dr. ${row.doctor.name}`,
+    },
+    {
+      key: 'status',
+      label: 'Status',
+    },
+    {
+      key: 'actions',
+      label: 'Action',
+      render: (_: any, row: Ibooking) => (
         <Button
-          variant="danger"
+          variant="info"
           size="sm"
-          onClick={() => cancelBooking(row._id)}
-          disabled={row.status === 'Cancelled'}
+          onClick={() => viewPrescription(row.prescription!)}
         >
-          Cancel
+          View Prescription
         </Button>
         
       ),
     },
   ];
-  
  
 if (isLoading) return <Spinner animation="border" />;
 if (error) return <Alert variant="danger">Failed to load profile.</Alert>;
@@ -205,12 +249,18 @@ if (!data) return <Alert variant="warning">User profile not found.</Alert>;
 
         {/* Right Section: Tabs and Content */}
         <Col md={8}>
-          <div className="d-flex justify-content-between mb-3">
+          <div className="d-flex justify-content-start gap-2 mb-3">
             <Button
               variant={selectedTab === 'bookings' ? 'primary' : 'outline-primary'}
               onClick={() => handleTabChange('bookings')}
             >
               My Bookings
+            </Button>
+            <Button
+              variant={selectedTab === 'completed' ? 'primary' : 'outline-primary'}
+              onClick={() => handleTabChange('completed')}
+            >
+              Completed Appointments
             </Button>
             <Button
               variant={selectedTab === 'settings' ? 'primary' : 'outline-primary'}
@@ -224,9 +274,15 @@ if (!data) return <Alert variant="warning">User profile not found.</Alert>;
           {selectedTab === 'bookings' ? (
             <Card className="p-4 shadow-sm">
               <h5 className="fw-bold mb-3">My Bookings</h5>
-              <TableWithPagination data={bookings} columns={columns} rowsPerPage={5}/>
+              <TableWithPagination data={Bookings} columns={columns} rowsPerPage={5}/>
             </Card>
-          ) : (
+          ) : selectedTab === 'completed' ? (
+            <Card className="p-4 shadow-sm">
+              <h5 className="fw-bold mb-3">My completed appointments</h5>
+              <TableWithPagination data={completedBookings} columns={CBcolumns} rowsPerPage={5}/>
+            </Card>
+          ) :
+           (
             <Card className="p-4 shadow-sm">
               <h5 className="fw-bold mb-3">Update Profile</h5>
               <Form onSubmit={handleSubmit}>

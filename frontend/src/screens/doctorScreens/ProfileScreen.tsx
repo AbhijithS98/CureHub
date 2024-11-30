@@ -216,8 +216,8 @@ const ProfileScreen: React.FC = () => {
     navigate('/doctor/add-prescription', { state: { appointmentId, patientId } });
   };
   
-  const viewPrescription = (prescriptionId: Types.ObjectId) => {
-    navigate(`/doctor/view-prescription/${prescriptionId}`);
+  const viewPrescription = (preId: Types.ObjectId) => {
+    navigate(`/doctor/view-prescription/${preId}`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -343,7 +343,7 @@ const ProfileScreen: React.FC = () => {
           
           {row.status === 'Completed' ? 
             <Button
-            variant="primary"
+            variant="info"
             size="sm"
             onClick={() => viewPrescription(row.prescription!)}
             >

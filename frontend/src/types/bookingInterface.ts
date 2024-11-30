@@ -10,6 +10,7 @@ export interface Ibooking {
   timeSlotId: ObjectId; 
   payment: ObjectId | null; 
   status: 'Booked' | 'Cancelled' | 'Completed'; 
+  prescription?: ObjectId;
   cancellationReason?: string;
   createdAt: Date; 
   updatedAt: Date;

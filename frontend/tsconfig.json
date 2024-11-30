@@ -15,5 +15,5 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src","src/types/razorpay.d.ts"]
+  "include": ["src","src/types/*.d.ts"]
 }

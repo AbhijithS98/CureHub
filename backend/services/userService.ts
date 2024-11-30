@@ -10,6 +10,7 @@ import { IReview } from "../models/reviewSchema.js";
 import sendEmail from "../utils/emailSender.js";
 import { Request, Response } from "express";
 import { IPayment } from "../models/paymentSchema.js";
+import { IPrescription } from "../models/prescriptionSchema.js";
 
 dotenv.config(); 
 
@@ -485,6 +486,21 @@ class UserService {
     }
   
     return Reviews
+  }
+
+
+  async getPrescription(req: Request): Promise<IPrescription | null> {  
+
+    const { Pr_Id } = req.query;
+    const prescription = await userRepository.findPrescription(Pr_Id);
+  
+    if(!prescription){
+      const error = Error('No prescription found with this id');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+    
+    return prescription
   }
 }
 

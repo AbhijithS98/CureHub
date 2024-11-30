@@ -141,7 +141,11 @@ class DoctorRepository {
   }
 
   async findPrescription(prescriptionId: any): Promise<IPrescription | null> {
-    return await Prescription.findOne({ _id: prescriptionId });
+    return await Prescription.findOne({ _id: prescriptionId })
+    .populate('appointment', 'date time')
+    .populate('doctor', 'name specialization address')
+    .populate('patient', 'name phone')
+    .lean();
   }
 
   async updateUserPrescription(_id:any, updateFields:Partial<IPrescription>): Promise<void> {

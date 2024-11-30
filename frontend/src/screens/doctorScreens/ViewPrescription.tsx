@@ -3,9 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button, Form, Container, Row, Col, Card, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { IPrescription } from "../../types/prescriptionInterface";
-import { skipToken } from '@reduxjs/toolkit/query/react';
+
 import { useDoctorGetPrescriptionQuery,
-         useDoctorUpdatePrescriptionMutation
+         useDoctorUpdatePrescriptionMutation,
+         useDoctorGetSingleAppointmentQuery
        } from "../../slices/doctorSlices/doctorApiSlice";
 
 interface Imedication {
@@ -16,11 +17,11 @@ interface Imedication {
 }
 
 const ViewPrescription = () => {
-  const { prescriptionId } = useParams<{ prescriptionId: string }>();
+  const { preId } = useParams<{ preId: string; }>();
   const navigate = useNavigate();
 
-  const {data,isLoading} = useDoctorGetPrescriptionQuery(prescriptionId!);
-  const [updatePrescription, { isLoading: isUpdating }] = useDoctorUpdatePrescriptionMutation();
+  const {data} = useDoctorGetPrescriptionQuery(preId!);
+  const [updatePrescription] = useDoctorUpdatePrescriptionMutation();
   const [prescription,setPrescription] = useState<IPrescription | null>(null);
   
   // State to hold the editable prescription data
@@ -56,7 +57,7 @@ const ViewPrescription = () => {
     };
 
     try {
-      await updatePrescription({ id: prescriptionId!, updatedPrescription }).unwrap();
+      await updatePrescription({ id: preId!, updatedPrescription }).unwrap();
       toast.success("Prescription updated successfully!");
       navigate(-1);
       
@@ -91,6 +92,49 @@ const ViewPrescription = () => {
               <h4>View/Edit Prescription</h4>
             </Card.Header>
             <Card.Body>
+                <div className="mb-4">
+                  <Row>
+                    {/* Left Column: Appointment & Patient Details */}
+                    <Col md={6}>
+                      <div className="p-3 border rounded bg-white shadow-sm">
+                        <h5 className="text-primary">Appointment Details:</h5>
+                        <p className="mb-2">
+                          <strong>Date:</strong> {new Date(data?.result?.appointment?.date).toLocaleDateString('en-GB')}
+                        </p>
+                        <p>
+                          <strong>Time:</strong> {data?.result?.appointment?.time}
+                        </p>
+                        <hr />
+                        <h5 className="text-primary">Patient Details:</h5>
+                        <p className="mb-2">
+                          <strong>Name:</strong> {data?.result?.patient?.name}
+                        </p>
+                        <p>
+                          <strong>Phone:</strong> {data?.result?.patient?.phone}
+                        </p>
+                      </div>
+                    </Col>
+
+                    {/* Right Column: Doctor Details */}
+                    <Col md={6}>
+                      <div className="p-3 border rounded bg-white shadow-sm">
+                        <h5 className="text-primary">Doctor Details:</h5>
+                        <p className="mb-2">
+                          <strong>Name:</strong> {data?.result?.doctor?.name}
+                        </p>
+                        <p className="mb-2">
+                          <strong>Specialization:</strong> {data?.result?.doctor?.specialization}
+                        </p>
+                        <p>
+                          <strong>Address:</strong> {data?.result?.doctor?.address.clinicName},
+                                                    {data?.result?.doctor?.address.district},
+                                                    {data?.result?.doctor?.address.city}
+                        </p>
+                      </div>
+                    </Col>
+                  </Row>
+                </div>
+
               <Form onSubmit={handleSubmit}>
                 {/* Diagnosis */}
                 <Form.Group className="mb-3" controlId="formDiagnosis">

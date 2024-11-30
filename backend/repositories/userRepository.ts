@@ -2,10 +2,10 @@ import User,{ IUser} from "../models/user.js";
 import Doctor,{ IDoctor } from "../models/doctor.js";
 import Payment,{ IPayment } from "../models/paymentSchema.js";
 import Availability,{ IAvailability } from "../models/availability.js";
-import { BookedSlot } from "../types/bookedSlotsInterface.js";
 import Appointment,{ IAppointment} from "../models/appointment.js";
 import Wallet,{ IWallet } from "../models/walletSchema.js";
 import Review,{ IReview} from "../models/reviewSchema.js";
+import Prescription,{ IPrescription } from "../models/prescriptionSchema.js";
 import { Types } from "mongoose";
 
 
@@ -153,6 +153,14 @@ class UserRepository {
 
   async getReviews(doctorId: any): Promise<IReview[] | null> {
     return await Review.find({ doctorId }).populate('patientId', 'name profilePicture')
+  }
+
+  async findPrescription(prescriptionId: any): Promise<IPrescription | null> {
+    return await Prescription.findOne({ _id: prescriptionId })
+    .populate('appointment', 'date time')
+    .populate('doctor', 'name specialization address')
+    .populate('patient', 'name phone')
+    .lean();
   }
 }
 
