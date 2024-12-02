@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from "react";
-import { Table, Form } from "react-bootstrap";
+import { Container, Table, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { IAppointmentPd, IPopulatedDoctor, IPopulatedUser } from "../../types/IAppointmentPd";
 import { useAdminListAppointmentsQuery } from "../../slices/adminSlices/adminApiSlice";
@@ -51,6 +51,7 @@ const AllDoctorsAppointments: React.FC = () => {
     return <p className="text-center text-primary fs-4 mt-5">Loading doctor's appointments...</p>;
   }
   return (
+    <Container style={{marginTop: 90}}>
     <div className="container mt-5">
       <h2 className="text-center text-primary">All Doctor Appointments</h2>
 
@@ -89,6 +90,7 @@ const AllDoctorsAppointments: React.FC = () => {
         </tbody>
       </Table>
     </div>
+    </Container>
   );
 };
 

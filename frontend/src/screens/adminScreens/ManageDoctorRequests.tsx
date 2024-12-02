@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Sidebar from "../../components/adminComponents/Sidebar";
 import { useNavigate } from "react-router-dom";
 import { Table, Button, Container } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -32,7 +33,7 @@ const ManageDoctorRequests: React.FC = () => {
     return <p className="text-center text-primary fs-4 mt-5">Loading doctors...</p>;
   }
   return (
-    <Container>
+    <Container style={{marginTop: 90}}>
       <h1 className="my-4 text-center">Pending Doctor Requests</h1>
       {doctors?.length === 0 ? (
         <p className="text-center text-danger fs-4 mt-5">No requests found</p>

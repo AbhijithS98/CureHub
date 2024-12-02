@@ -69,7 +69,7 @@ const ManageUsers: React.FC = () => {
 
 
   return (
-    <Container>
+    <Container style={{marginTop: 90}}>
       <h1 className="my-4 text-center">User Management</h1>
       {isLoading ? (
         <p className="text-center text-primary fs-4 mt-5">Loading users...</p>

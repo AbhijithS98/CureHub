@@ -79,7 +79,7 @@ const ManageDoctors: React.FC = () => {
     return <p className="text-center text-primary fs-4 mt-5">Loading doctors...</p>;
   }
   return (
-    <Container>
+    <Container style={{marginTop: 90}}>
       <h1 className="my-4 text-center">Manage Doctors</h1>
       {doctors?.length === 0 ? (
         <p className="text-center text-danger fs-4 mt-5">No Registered Doctors found</p>

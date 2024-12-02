@@ -1,7 +1,48 @@
-/*styles for admin dashboard*/
+/* styles for admin dashboard */
 
-.admin-dashboard {
-  padding: 20px 0;
+.admin-dashboard-container {
+  display: flex;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #2d5277;
+  height: 100vh;
+  padding-top: 20px;
+  position: fixed;
+  top: 73px;
+  left: 0; /* Hidden by default for mobile */
+  transition: all 0.3s ease-in-out;
+}
+
+.sidebar.open {
+  left: 0; /* Slide in when open */
+}
+
+.sidebar .sidebar-link {
+  color: white;
+  padding: 10px 20px;
+  font-size: 18px;
+  text-decoration: none;
+}
+
+.sidebar .sidebar-link:hover {
+  background-color: #495057;
+  border-radius: 5px;
+}
+
+.sidebar-toggle {
+  position: fixed;
+  top: 75px;
+  left: 10px;
+  z-index: 1050;
+}
+
+.main-content {
+  margin-top: 60px;
+  margin-left: 250px;
+  padding: 20px;
+  flex-grow: 1;
 }
 
 .dashboard-card {
@@ -17,4 +58,22 @@
 .dashboard-icon {
   font-size: 2rem;
   margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -250px;
+    top: 73px;
+    width: 250px;
+    height: calc(100vh - 73px);
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
 }

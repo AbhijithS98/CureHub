@@ -6,7 +6,7 @@
 
 /* Welcome Section */
 .welcome-section .doctor-images .doctor-img {
-  width: 600px;
+  width: 100%;
   height: auto;
   border-radius: 50%;
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
@@ -20,6 +20,7 @@
 .doctor-images {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap
 }
 
 .services-section {

@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { RootState } from "../../store";
 import { useAdminLogoutMutation } from "../../slices/adminSlices/adminApiSlice";
 import { clearAdminCredentials } from "../../slices/adminSlices/adminAuthSlice";
-
+import './style.css'
 
 function AdminHeader() {
   const {adminInfo} = useSelector((state: RootState) => state.adminAuth);
@@ -30,6 +30,7 @@ function AdminHeader() {
   return (
     <header>
       <Navbar
+        className="fixed-top"
         style={{ backgroundColor: "rgb(52, 58, 64)" }} 
         variant="dark"
         expand="lg"

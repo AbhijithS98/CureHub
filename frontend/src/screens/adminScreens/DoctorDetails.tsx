@@ -68,7 +68,7 @@ const DoctorDetails: React.FC = () => {
     
   return (
       <Container className="my-5">
-        <Card className="shadow-sm">
+        <Card className="shadow-sm" style={{marginTop: 90}}>
           <Card.Header className="text-center">
             <h2 className="mb-0">Dr. {doctor.name}</h2>
             <Badge bg="info" className="mt-2">

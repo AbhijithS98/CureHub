@@ -9,6 +9,7 @@ import {
 import { Provider } from "react-redux";
 import store from './store'
 import App from './App'
+import { ROUTES } from './router';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 {/* Protected route components */}
@@ -56,62 +57,50 @@ import AdminManageDoctors from './screens/adminScreens/ManageDoctors';
 import AllDoctorsAppointments from './screens/adminScreens/AllDoctorsAppointments';
 
 
-
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path='/' element={<App />}>
-      <Route index element={<HomeScreen />}></Route>
-      <Route path="list-doctors" element={<DoctorListingScreen />}></Route>
-      <Route path="view-doctor" element={<ViewDoctorScreen />}></Route>
-      
+    <Route path={ROUTES.HOME} element={<App />}>
+      <Route index element={<HomeScreen />} />
+      <Route path={ROUTES.LIST_DOCTORS} element={<DoctorListingScreen />} />
+      <Route path={ROUTES.VIEW_DOCTOR} element={<ViewDoctorScreen />} />
+
       {/* User Routes */}
-      <Route path="user">
-        <Route path="register" element={<RegisterScreen />}></Route>
-        <Route path="otp" element={<OtpScreen />}></Route>
-        <Route path="login" element={<LoginScreen />}></Route>
-        <Route path="forgot-password" element={<ForgotPasswordScreen />}></Route>
-        <Route path="reset-password" element={<ResetPasswordScreen />}></Route>
-        <Route path="profile" element={<UserProtectedRoute><ProfileScreen /></UserProtectedRoute>}/>
-        <Route path="book-slot" element={<UserProtectedRoute><AppointmentBookingScreen /></UserProtectedRoute>}/>
-        <Route path="payment" element={<UserProtectedRoute><PaymentScreen /></UserProtectedRoute>}/>
-        <Route path="thank-you" element={<UserProtectedRoute><ThankyouScreen /></UserProtectedRoute>}/>
-        <Route path="wallet" element={<UserProtectedRoute><WalletScreen /></UserProtectedRoute>}/>
-        <Route path="view-prescription/:preId" element={<UserProtectedRoute><UserViewPrescription /></UserProtectedRoute>}/>
-      </Route>
+      <Route path={ROUTES.USER.REGISTER} element={<RegisterScreen />} />
+      <Route path={ROUTES.USER.OTP} element={<OtpScreen />} />
+      <Route path={ROUTES.USER.LOGIN} element={<LoginScreen />} />
+      <Route path={ROUTES.USER.FORGOT_PASSWORD} element={<ForgotPasswordScreen />} />
+      <Route path={ROUTES.USER.RESET_PASSWORD} element={<ResetPasswordScreen />} />
+      <Route path={ROUTES.USER.PROFILE} element={<UserProtectedRoute><ProfileScreen /></UserProtectedRoute>} />
+      <Route path={ROUTES.USER.BOOK_SLOT} element={<UserProtectedRoute><AppointmentBookingScreen /></UserProtectedRoute>} />
+      <Route path={ROUTES.USER.PAYMENT} element={<UserProtectedRoute><PaymentScreen /></UserProtectedRoute>} />
+      <Route path={ROUTES.USER.THANK_YOU} element={<UserProtectedRoute><ThankyouScreen /></UserProtectedRoute>} />
+      <Route path={ROUTES.USER.WALLET} element={<UserProtectedRoute><WalletScreen /></UserProtectedRoute>} />
+      <Route path={ROUTES.USER.VIEW_PRESCRIPTION(':preId')} element={<UserProtectedRoute><UserViewPrescription /></UserProtectedRoute>} />
 
       {/* Doctor Routes */}
-      <Route path="doctor">
-        <Route path="register" element={<DoctorRegisterScreen />}></Route>
-        <Route path="otp" element={<DoctorOtpScreen />}></Route>
-        <Route path="reg-confirm" element={<ConfirmationScreen />}></Route>
-        <Route path="login" element={<DoctorLoginScreen />}></Route>
-        <Route path="forgot-password" element={<DoctorForgotPassScreen />}></Route>
-        <Route path="reset-password" element={<DoctorResetPassScreen />}></Route>
-        <Route path="profile" element={<DoctorProtectedRoute><DoctorProfileScreen /></DoctorProtectedRoute>}/>
-        <Route path="availabilities" element={<DoctorProtectedRoute><DoctorAvailabilityScreen /></DoctorProtectedRoute>}/>
-        <Route path="add-prescription" element={<DoctorProtectedRoute><AddPrescription /></DoctorProtectedRoute>}/>
-        <Route path="view-prescription/:preId" element={<DoctorProtectedRoute><ViewPrescription /></DoctorProtectedRoute>}/>
-      </Route>
+      <Route path={ROUTES.DOCTOR.REGISTER} element={<DoctorRegisterScreen />} />
+      <Route path={ROUTES.DOCTOR.OTP} element={<DoctorOtpScreen />} />
+      <Route path={ROUTES.DOCTOR.REG_CONFIRM} element={<ConfirmationScreen />} />
+      <Route path={ROUTES.DOCTOR.LOGIN} element={<DoctorLoginScreen />} />
+      <Route path={ROUTES.DOCTOR.FORGOT_PASSWORD} element={<DoctorForgotPassScreen />} />
+      <Route path={ROUTES.DOCTOR.RESET_PASSWORD} element={<DoctorResetPassScreen />} />
+      <Route path={ROUTES.DOCTOR.PROFILE} element={<DoctorProtectedRoute><DoctorProfileScreen /></DoctorProtectedRoute>} />
+      <Route path={ROUTES.DOCTOR.AVAILABILITIES} element={<DoctorProtectedRoute><DoctorAvailabilityScreen /></DoctorProtectedRoute>} />
+      <Route path={ROUTES.DOCTOR.ADD_PRESCRIPTION} element={<DoctorProtectedRoute><AddPrescription /></DoctorProtectedRoute>} />
+      <Route path={ROUTES.DOCTOR.VIEW_PRESCRIPTION(':preId')} element={<DoctorProtectedRoute><ViewPrescription /></DoctorProtectedRoute>} />
 
       {/* Admin Routes */}
-      <Route path="admin">
-        <Route path="login" element={<AdminLoginScreen />}></Route>
-        <Route path="forgot-password" element={<AdminForgotPassScreen />}></Route>
-        <Route path="reset-password" element={<AdminResetPassScreen />}></Route>
-
-        {/* Protected Admin Routes */}
-        <Route element={<AdminProtectedRoute/>}>
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="list-unapproved-doctors" element={<ManageDoctorRequests />} />
-          <Route path="doctor-details" element={<AdminDoctorDetailsScreen />} />
-          <Route path="list-users" element={<AdminManageUsers />} />
-          <Route path="list-doctors" element={<AdminManageDoctors />} />
-          <Route path="doctors-appointments" element={<AllDoctorsAppointments />} />
-          
-        </Route>
-
+      <Route path={ROUTES.ADMIN.LOGIN} element={<AdminLoginScreen />} />
+      <Route path={ROUTES.ADMIN.FORGOT_PASSWORD} element={<AdminForgotPassScreen />} />
+      <Route path={ROUTES.ADMIN.RESET_PASSWORD} element={<AdminResetPassScreen />} />
+      <Route element={<AdminProtectedRoute />}>
+        <Route path={ROUTES.ADMIN.DASHBOARD} element={<AdminDashboard />} />
+        <Route path={ROUTES.ADMIN.LIST_UNAPPROVED_DOCTORS} element={<ManageDoctorRequests />} />
+        <Route path={ROUTES.ADMIN.DOCTOR_DETAILS} element={<AdminDoctorDetailsScreen />} />
+        <Route path={ROUTES.ADMIN.LIST_USERS} element={<AdminManageUsers />} />
+        <Route path={ROUTES.ADMIN.LIST_DOCTORS} element={<AdminManageDoctors />} />
+        <Route path={ROUTES.ADMIN.DOCTORS_APPOINTMENTS} element={<AllDoctorsAppointments />} />
       </Route>
-
     </Route>
   )
 ) 

@@ -32,7 +32,7 @@ const ForgotPassScreen: React.FC = () => {
   };
 
   return (
-        <FormContainer>
+        <FormContainer >
           <h2 className="text-center my-4">Forgot Password</h2>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formEmail">
