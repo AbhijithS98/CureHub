@@ -2,8 +2,8 @@ import { ObjectId } from 'mongoose';
 
 export interface Ibooking {
   _id: ObjectId;
-  user: ObjectId;
-  doctor: {name:string}; 
+  user: string;
+  doctor: {_id:string,name:string}; 
   date: Date; 
   time: string; 
   slotId: ObjectId; 

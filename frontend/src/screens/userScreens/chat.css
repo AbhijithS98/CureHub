@@ -1,0 +1,203 @@
+/* Main Chat Container */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 600px;
+  margin: 0 auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Header Section */
+.chat-header {
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* Chat Body */
+.chat-body {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Message List */
+.message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Message Styling */
+.message {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+/* Align Message to Left */
+.align-left {
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+/* Align Message to Right */
+.align-right {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+}
+
+.message-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.message-profile-pic {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.message .message-content {
+  padding: 10px;
+  border-radius: 15px;
+  max-width: 60%;
+  word-wrap: break-word;
+}
+
+/* Customize Message Bubble Colors */
+.align-left .message-content {
+  background-color: #f1f1f1;
+  color: #000;
+  border-radius: 15px 15px 15px 0;
+}
+
+.align-right .message-content {
+  background-color: #181a1d;
+  color: white;
+  border-radius: 15px 15px 0 15px;
+}
+
+/* Message Time */
+.message .message-time {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 5px;
+}
+
+.read-indicator {
+  font-size: 0.8rem;
+  color: #1f7fed; /* Green for read */
+  margin-top: 5px;
+  display: inline-block;
+}
+
+.unread-indicator {
+  font-size: 0.8rem;
+  color: #a99294; /* Red for unread */
+  margin-top: 5px;
+  display: inline-block;
+}
+
+
+/* Input Section */
+.input-container {
+  display: flex;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+}
+
+.input-field {
+  flex-grow: 1;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 30px;
+  margin-right: 10px;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: #007bff;
+}
+
+.send-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+.send-button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive Design for Smaller Screens */
+@media screen and (max-width: 768px) {
+  .chat-container {
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+  }
+
+  .chat-header {
+    font-size: 1rem;
+    padding: 0.8rem;
+  }
+
+  .message .message-content {
+    max-width: 90%; /* Allow more space for messages on smaller screens */
+  }
+
+  .input-container {
+    padding: 8px;
+  }
+
+  .input-field {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  .send-button {
+    padding: 8px 15px;
+  }
+}
+
+/* Additional Mobile Responsiveness for Extremely Small Screens */
+@media screen and (max-width: 480px) {
+  .chat-header {
+    font-size: 1rem;
+    padding: 0.6rem;
+  }
+
+  .message .message-content {
+    padding: 8px;
+    font-size: 0.9rem; /* Slightly smaller font size for very small screens */
+  }
+
+  .input-field {
+    font-size: 0.85rem;
+    padding: 6px;
+  }
+
+  .send-button {
+    padding: 6px 12px;
+  }
+}

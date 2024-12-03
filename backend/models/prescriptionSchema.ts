@@ -11,12 +11,13 @@ export interface IPrescription extends Document {
     name: string;
     dosage: string;
     frequency: string;
-    duration: string; // e.g., '7 days', '2 weeks'
+    duration: string; 
   }[];
-  advice?: string; // General advice or follow-up instructions
+  advice?: string; 
   createdAt: Date;
   updatedAt: Date;
 }
+
 
 // Prescription Schema
 const prescriptionSchema = new Schema<IPrescription>(
@@ -28,9 +29,9 @@ const prescriptionSchema = new Schema<IPrescription>(
     medications: [
       {
         name: { type: String, required: true },
-        dosage: { type: String, required: true }, // e.g., '500mg'
-        frequency: { type: String, required: true }, // e.g., 'Twice a day'
-        duration: { type: String, required: true }, // e.g., '7 days'
+        dosage: { type: String, required: true }, 
+        frequency: { type: String, required: true }, 
+        duration: { type: String, required: true }, 
         notes: { type: String },
       },
     ],

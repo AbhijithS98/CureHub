@@ -147,6 +147,10 @@ const ProfileScreen: React.FC = () => {
     navigate(`/user/view-prescription/${preId}`);
   };
 
+  const handleChat = (doctorId: string, userId: string) => {
+    navigate(`/user/chat`, { state: { doctorId, userId } });
+  };
+
   const columns: Column<Ibooking>[] = [
     {
       key: 'date',
@@ -210,14 +214,24 @@ const ProfileScreen: React.FC = () => {
       key: 'actions',
       label: 'Action',
       render: (_: any, row: Ibooking) => (
+        <>
         <Button
           variant="info"
           size="sm"
+          style={{ marginRight: "8px" }}
           onClick={() => viewPrescription(row.prescription!)}
         >
           View Prescription
         </Button>
         
+        <Button
+        variant="primary"
+        size="sm"
+        onClick={() => handleChat(row.doctor._id,row.user)}
+      >
+        Chat
+      </Button>
+      </>
       ),
     },
   ];

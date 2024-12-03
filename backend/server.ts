@@ -11,7 +11,11 @@ import userRoutes from './routes/userRoutes.js'
 import doctorRoutes from './routes/doctorRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import paymentRoutes from './routes/paymentRoute.js'
+import chatRoutes from './routes/chatRoutes.js'
 import errorHandler from './middleware/errorHandler.js';
+import { Server } from 'socket.io';
+import http from 'http';
+import Chat from './models/chatSchema.js';
 
 dotenv.config();
 
@@ -30,14 +34,14 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use(express.urlencoded( { extended: true } ))
-app.use(cookieParser())
+app.use(express.urlencoded( { extended: true } ));
+app.use(cookieParser());
 
-app.use('/api/users',userRoutes)
-app.use('/api/doctors',doctorRoutes)
-app.use('/api/admin',adminRoutes)
+app.use('/api/users',userRoutes);
+app.use('/api/doctors',doctorRoutes);
+app.use('/api/admin',adminRoutes);
 app.use('/api/payment', paymentRoutes);
-
+app.use('/api/chat', chatRoutes);
 
 app.use(express.static(path.join(__dirname,'../public')));
 
@@ -47,4 +51,44 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Server Ready')
 });
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+const server = http.createServer(app);
+
+// Initialize Socket.io
+const io = new Server(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  },
+});
+
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+
+  // Handle incoming messages
+  socket.on('sendMessage', async (data) => {
+    const { doctorId, patientId, message, isDoctorSender } = data;
+
+    try {
+      // Save message to database
+      const chat = new Chat({
+        doctorId,
+        patientId,
+        message,
+        isDoctorSender,
+      });
+      await chat.save();
+
+      // Emit the message to the receiver
+      socket.broadcast.emit('receiveMessage', chat);
+    } catch (error) {
+      console.error('Error saving message:', error);
+    }
+  });
+
+  // Handle disconnection
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
+
+server.listen(PORT, () => console.log(`Server started on port ${PORT}`));

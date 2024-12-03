@@ -61,7 +61,6 @@ class DoctorController {
     try {
 
       const result = await doctorService.authenticateDoctor(email,password,res)
-
       const token = generateDoctorTokens(res,result._id as string)
 
       res.status(200).json({ 
@@ -78,7 +77,6 @@ class DoctorController {
         token,
       });
       
-
     } catch (error: any) {
 
       console.error('error logging in doctor:',error.message);

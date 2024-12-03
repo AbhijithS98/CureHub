@@ -8,9 +8,9 @@ const prescriptionSchema = new Schema({
     medications: [
         {
             name: { type: String, required: true },
-            dosage: { type: String, required: true }, // e.g., '500mg'
-            frequency: { type: String, required: true }, // e.g., 'Twice a day'
-            duration: { type: String, required: true }, // e.g., '7 days'
+            dosage: { type: String, required: true },
+            frequency: { type: String, required: true },
+            duration: { type: String, required: true },
             notes: { type: String },
         },
     ],

@@ -32,6 +32,7 @@ import PaymentScreen from './screens/userScreens/PaymentScreen';
 import ThankyouScreen from './screens/userScreens/ThankYouScreen';
 import WalletScreen from './screens/userScreens/WalletScreen';
 import UserViewPrescription from './screens/userScreens/ViewPrescriptionScreen';
+import ChatScreen from './screens/userScreens/ChatScreen';
 
 {/* Doctor screens imports */}
 import DoctorRegisterScreen from './screens/doctorScreens/RegisterScreen';
@@ -44,6 +45,7 @@ import DoctorProfileScreen from './screens/doctorScreens/ProfileScreen';
 import DoctorAvailabilityScreen from './screens/doctorScreens/SetAvailabilityScreen';
 import AddPrescription from './screens/doctorScreens/AddPrescription';
 import ViewPrescription from './screens/doctorScreens/ViewPrescription';
+import DoctorChatList from './screens/doctorScreens/DoctorChatList';
 
 {/* Admin screens imports */}
 import AdminLoginScreen from './screens/adminScreens/LoginScreen';
@@ -76,6 +78,7 @@ const router = createBrowserRouter(
       <Route path={ROUTES.USER.THANK_YOU} element={<UserProtectedRoute><ThankyouScreen /></UserProtectedRoute>} />
       <Route path={ROUTES.USER.WALLET} element={<UserProtectedRoute><WalletScreen /></UserProtectedRoute>} />
       <Route path={ROUTES.USER.VIEW_PRESCRIPTION(':preId')} element={<UserProtectedRoute><UserViewPrescription /></UserProtectedRoute>} />
+      <Route path={ROUTES.USER.CHAT} element={<UserProtectedRoute><ChatScreen /></UserProtectedRoute>} />
 
       {/* Doctor Routes */}
       <Route path={ROUTES.DOCTOR.REGISTER} element={<DoctorRegisterScreen />} />
@@ -88,6 +91,8 @@ const router = createBrowserRouter(
       <Route path={ROUTES.DOCTOR.AVAILABILITIES} element={<DoctorProtectedRoute><DoctorAvailabilityScreen /></DoctorProtectedRoute>} />
       <Route path={ROUTES.DOCTOR.ADD_PRESCRIPTION} element={<DoctorProtectedRoute><AddPrescription /></DoctorProtectedRoute>} />
       <Route path={ROUTES.DOCTOR.VIEW_PRESCRIPTION(':preId')} element={<DoctorProtectedRoute><ViewPrescription /></DoctorProtectedRoute>} />
+      <Route path={ROUTES.DOCTOR.CHAT_LIST(':doctorId')} element={<DoctorProtectedRoute><DoctorChatList /></DoctorProtectedRoute>} />
+      <Route path={ROUTES.DOCTOR.SINGLE_CHAT} element={<DoctorProtectedRoute><ChatScreen /></DoctorProtectedRoute>} />
 
       {/* Admin Routes */}
       <Route path={ROUTES.ADMIN.LOGIN} element={<AdminLoginScreen />} />

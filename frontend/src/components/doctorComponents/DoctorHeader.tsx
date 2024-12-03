@@ -1,6 +1,8 @@
+import { useState, useEffect } from "react";
 import { Navbar, Nav, Container, } from "react-bootstrap";
 import { FaSignInAlt, FaSignOutAlt, FaUserPlus } from "react-icons/fa";
 import { BsPersonFill } from "react-icons/bs";
+import { FaComments } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
 import { LinkContainer } from "react-router-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
@@ -9,10 +11,13 @@ import { RootState } from '../../store.js';
 import { useNavigate } from "react-router-dom";
 import { useDoctorLogoutMutation } from "../../slices/doctorSlices/doctorApiSlice.js";
 import { clearDoctorCredentials } from "../../slices/doctorSlices/doctorAuthSlice.js";
+import socket from "../../services/socketService";
+import './style.css'
 
 
 function DoctorHeader() {
   const { doctorInfo } = useSelector((state: RootState) => state.doctorAuth);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [logout] = useDoctorLogoutMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -28,6 +33,34 @@ function DoctorHeader() {
       toast.error(err.message || "Logout failed. Please try again.")
    }
   }
+
+  useEffect(() => {
+    if (!doctorInfo?._id) return;
+
+    const fetchUnreadCount = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/chat/unread-count?ownerId=${doctorInfo?._id}`
+        );
+        const data = await response.json();
+        setUnreadCount(data.unreadCount || 0);
+      } catch (error) {
+        console.error("Error fetching unread count:", error);
+      }
+    };
+  
+    
+    fetchUnreadCount();
+    // Listen for new messages via socket
+    socket.on("receiveMessage", (message) => {
+      if (message.doctorId === doctorInfo?._id) {
+        setUnreadCount((prevCount) => prevCount + 1);
+      }
+    });
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, []);
 
   return (  
     <header>
@@ -70,7 +103,14 @@ function DoctorHeader() {
                   </Nav.Link>
                 </LinkContainer>
 
-                
+                <LinkContainer to={`/doctor/chats/${doctorInfo._id}`}>
+                  <Nav.Link>
+                    <FaComments />Chats
+                    {unreadCount > 0 && (
+                      <span className="badge badge-danger ml-1">{unreadCount}</span>
+                    )}
+                  </Nav.Link>
+                </LinkContainer>
 
                 <Nav.Link onClick={handleLogout}>
                   <FaSignOutAlt />

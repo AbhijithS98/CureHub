@@ -15,6 +15,7 @@ export const ROUTES = {
     THANK_YOU: '/user/thank-you',
     WALLET: '/user/wallet',
     VIEW_PRESCRIPTION: (preId: string) => `/user/view-prescription/${preId}`,
+    CHAT: 'user/chat',
   },
   DOCTOR: {
     REGISTER: '/doctor/register',
@@ -27,6 +28,8 @@ export const ROUTES = {
     AVAILABILITIES: '/doctor/availabilities',
     ADD_PRESCRIPTION: '/doctor/add-prescription',
     VIEW_PRESCRIPTION: (preId: string) => `/doctor/view-prescription/${preId}`,
+    CHAT_LIST: (doctorId: string) => `/doctor/chats/${doctorId}`, 
+    SINGLE_CHAT: '/doctor/single-chat',
   },
   ADMIN: {
     LOGIN: '/admin/login',
