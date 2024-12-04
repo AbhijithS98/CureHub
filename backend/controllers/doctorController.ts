@@ -313,6 +313,22 @@ class DoctorController {
      }
    }
 
+
+
+   
+   async getSingleUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+  
+    try {
+       
+      const data = await doctorService.fetchUser(req);
+      res.status(200).json({data});
+
+    } catch (error: any) {
+      console.error("Getting single user error: ", error.message);
+      next(error)
+    }
+  }
+
 }
 
 export default new DoctorController();

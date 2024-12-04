@@ -14,7 +14,7 @@ class UserRepository {
     return await User.findOne({ email });
   }
 
-  async findDoctorById(_id: string): Promise<IDoctor | null> {
+  async findDoctorById(_id: any): Promise<IDoctor | null> {
     return await Doctor.findOne({ _id });
   }
 
@@ -117,7 +117,8 @@ class UserRepository {
 
   async getUserAppointments(id: string): Promise<IAppointment[] | null> {
     return await Appointment.find({ user: id })
-    .populate('doctor', 'name')
+    .populate('doctor', 'name profilePicture')
+    .populate('user', 'name profilePicture')
     .sort({ createdAt: -1 });
   }
   

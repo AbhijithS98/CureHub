@@ -1,9 +1,22 @@
 import { ObjectId } from 'mongoose';
 
+
+export interface UPscreenPopulatedUser{
+  _id:string,
+  name:string,
+  profilePicture:string
+}
+
+export interface UPscreenPopulatedDoctor{
+  _id:string,
+  name:string,
+  profilePicture:string
+}
+
 export interface Ibooking {
   _id: ObjectId;
-  user: string;
-  doctor: {_id:string,name:string}; 
+  user: UPscreenPopulatedUser;
+  doctor: UPscreenPopulatedDoctor; 
   date: Date; 
   time: string; 
   slotId: ObjectId; 

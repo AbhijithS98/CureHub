@@ -284,5 +284,17 @@ class DoctorController {
             }
         });
     }
+    getSingleUser(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const data = yield doctorService.fetchUser(req);
+                res.status(200).json({ data });
+            }
+            catch (error) {
+                console.error("Getting single user error: ", error.message);
+                next(error);
+            }
+        });
+    }
 }
 export default new DoctorController();

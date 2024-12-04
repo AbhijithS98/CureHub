@@ -342,5 +342,22 @@ class DoctorService {
             yield doctorRepository.updateUserPrescription(id, updateFields);
         });
     }
+    fetchUser(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { userId } = req.query;
+            if (!userId) {
+                const error = Error('No user id provided');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            const User = yield doctorRepository.findUserById(userId);
+            if (!User) {
+                const error = Error('No User found with this id');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return User;
+        });
+    }
 }
 export default new DoctorService();

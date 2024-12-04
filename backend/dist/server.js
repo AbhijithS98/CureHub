@@ -59,6 +59,11 @@ const io = new Server(server, {
 });
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
+    // Listen for joining a specific room (doctor or patient)
+    socket.on('join', ({ userId }) => {
+        console.log(`User with ID: ${userId} joined the room.`);
+        socket.join(userId); // User joins their unique room
+    });
     // Handle incoming messages
     socket.on('sendMessage', (data) => __awaiter(void 0, void 0, void 0, function* () {
         const { doctorId, patientId, message, isDoctorSender } = data;
@@ -71,8 +76,10 @@ io.on('connection', (socket) => {
                 isDoctorSender,
             });
             yield chat.save();
-            // Emit the message to the receiver
-            socket.broadcast.emit('receiveMessage', chat);
+            // Determine the recipient
+            const recipientId = isDoctorSender ? patientId : doctorId;
+            // Emit the message to the recipient
+            socket.to(recipientId).emit('receiveMessage', chat);
         }
         catch (error) {
             console.error('Error saving message:', error);

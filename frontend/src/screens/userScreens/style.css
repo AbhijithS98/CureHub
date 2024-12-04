@@ -305,3 +305,11 @@
   border-radius: 50%;
 }
 
+/* Styles for UserChatList screeen*/
+.chatlist-profile-pic {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}

@@ -311,5 +311,17 @@ class UserController {
             }
         });
     }
+    getDoctor(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const data = yield userService.fetchSingleDoctor(req);
+                res.status(200).json({ data });
+            }
+            catch (error) {
+                console.error('fetching single doctor error:', error);
+                next(error);
+            }
+        });
+    }
 }
 export default new UserController();

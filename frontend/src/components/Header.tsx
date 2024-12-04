@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
 import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
 import { BsPersonFill } from "react-icons/bs";
+import { FaComments } from "react-icons/fa";
 import { LinkContainer } from "react-router-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from 'react-toastify';
@@ -9,11 +11,12 @@ import { RootState } from '../store.js';
 import { useLogoutMutation } from "../slices/userSlices/userApiSlice.js";
 import { clearCredentials } from "../slices/userSlices/userAuthSlice.js";
 import { useNavigate } from "react-router-dom";
+import socket from "../services/socketService";
 
 
 function Header() {
   const { userInfo } = useSelector((state: RootState) => state.userAuth);
-
+  const [unreadCount, setUnreadCount] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [logout] = useLogoutMutation();
@@ -29,6 +32,38 @@ function Header() {
       toast.error(err.message || "Logout failed. Please try again.")
    }
   }
+
+
+  useEffect(() => {    
+    if (!userInfo?._id) return;
+
+    const fetchUnreadCount = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/chat/unread-count?patientId=${userInfo?._id}`
+        );
+        const data = await response.json();
+        console.log("Initial unread count:", data.unreadCount);
+        setUnreadCount(data.unreadCount || 0);
+      } catch (error) {
+        console.error("Error fetching unread count:", error);
+      }
+    };
+  
+    fetchUnreadCount();
+
+    // Listen for new messages via socket
+    socket.on("receiveMessage", (message) => {
+      console.log("New message received:", message);
+      if (message.patientId === userInfo?._id) {
+        setUnreadCount((prevCount) => prevCount + 1);
+      }
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, [userInfo]);
 
   return (
     <header>
@@ -69,11 +104,22 @@ function Header() {
                           <BsPersonFill />Profile
                         </Nav.Link>
                     </LinkContainer>
+
+                    <LinkContainer to={`/user/chats/${userInfo._id}`}>
+                      <Nav.Link>
+                        <FaComments />Chats
+                        {unreadCount > 0 && (
+                          <span className="badge badge-danger ml-1">{unreadCount}</span>
+                        )}
+                      </Nav.Link>
+                    </LinkContainer>
+
                     <LinkContainer to="/user/wallet">
                       <Nav.Link className="mx-2">
                         <BsPersonFill />My wallet
                       </Nav.Link>
                     </LinkContainer>
+
                     <Nav.Link className="mx-2" onClick={handleLogout}>
                       <FaSignOutAlt />
                       Logout</Nav.Link>

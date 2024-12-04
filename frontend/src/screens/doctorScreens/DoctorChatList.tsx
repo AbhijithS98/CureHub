@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { FaComments } from "react-icons/fa";
+import './styles.css';
 
 interface User {
   userId: string;
   name: string;
   profilePicture: string;
+  unreadCount: number;
 }
 
 const DoctorChatList = () => {
@@ -41,10 +43,12 @@ const DoctorChatList = () => {
               <img
                 src={`http://localhost:5000/${user.profilePicture}`}
                 alt={user.name}
-                className="rounded-circle"
-                style={{ width: "40px", height: "40px", objectFit: "cover" }}
+                className="chatlist-profile-pic"
               />
               <span className="ms-3">{user.name}</span>
+              {user.unreadCount > 0 && (
+                      <span className="badge badge-danger ml-1">{user.unreadCount}</span>
+                    )}
             </div>
             <Link to={{pathname: "/doctor/single-chat",}}
                   state={{ doctorId,userId: user.userId }} 

@@ -147,7 +147,7 @@ const ProfileScreen: React.FC = () => {
     navigate(`/user/view-prescription/${preId}`);
   };
 
-  const handleChat = (doctorId: string, userId: string) => {
+  const handleChat = (doctorId: string, userId: string ) => {
     navigate(`/user/chat`, { state: { doctorId, userId } });
   };
 
@@ -227,7 +227,7 @@ const ProfileScreen: React.FC = () => {
         <Button
         variant="primary"
         size="sm"
-        onClick={() => handleChat(row.doctor._id,row.user)}
+        onClick={() => handleChat(row.doctor._id,row.user._id)}
       >
         Chat
       </Button>

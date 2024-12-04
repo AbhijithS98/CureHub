@@ -34,33 +34,36 @@ function DoctorHeader() {
    }
   }
 
-  useEffect(() => {
+  useEffect(() => {    
     if (!doctorInfo?._id) return;
-
+    
     const fetchUnreadCount = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/chat/unread-count?ownerId=${doctorInfo?._id}`
+          `http://localhost:5000/api/chat/unread-count?doctorId=${doctorInfo?._id}`
         );
         const data = await response.json();
+        console.log("Initial unread count:", data.unreadCount);
         setUnreadCount(data.unreadCount || 0);
       } catch (error) {
         console.error("Error fetching unread count:", error);
       }
     };
   
-    
     fetchUnreadCount();
+
     // Listen for new messages via socket
     socket.on("receiveMessage", (message) => {
+      console.log("New message received:", message);
       if (message.doctorId === doctorInfo?._id) {
         setUnreadCount((prevCount) => prevCount + 1);
       }
     });
+
     return () => {
       socket.off("receiveMessage");
     };
-  }, []);
+  }, [doctorInfo]);
 
   return (  
     <header>

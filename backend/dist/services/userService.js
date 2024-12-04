@@ -406,5 +406,22 @@ class UserService {
             return prescription;
         });
     }
+    fetchSingleDoctor(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { docId } = req.query;
+            if (!docId) {
+                const error = new Error("No doctor id provided");
+                error.name = 'ValidationError';
+                throw error;
+            }
+            const Doctor = yield userRepository.findDoctorById(docId);
+            if (!Doctor) {
+                const error = new Error("No doctor found with this id");
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return Doctor;
+        });
+    }
 }
 export default new UserService();

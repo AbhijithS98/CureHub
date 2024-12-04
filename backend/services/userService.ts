@@ -502,6 +502,27 @@ class UserService {
     
     return prescription
   }
+
+
+  async fetchSingleDoctor(req:Request): Promise<IDoctor | null> {
+
+    const { docId } = req.query;
+    if(!docId){
+      const error = new Error("No doctor id provided")
+      error.name = 'ValidationError'
+      throw error;
+    }
+
+    const Doctor = await userRepository.findDoctorById(docId);
+ 
+    if(!Doctor){
+     const error = new Error("No doctor found with this id")
+     error.name = 'ValidationError'
+     throw error;
+   }
+   
+    return Doctor
+   }
 }
 
 export default new UserService();

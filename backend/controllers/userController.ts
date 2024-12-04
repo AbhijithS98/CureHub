@@ -337,6 +337,20 @@ class UserController {
       next(error)
     }
   }
+
+
+  async getDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+     
+      const data = await userService.fetchSingleDoctor(req);
+      res.status(200).json({data})
+
+    } catch (error: any) {
+      console.error('fetching single doctor error:', error);
+      next(error)
+    }
+  }
 }
 
 

@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import socket from "../../services/socketService";
 import { useLocation } from "react-router-dom";
+import { useUserGetDoctorQuery } from "../../slices/userSlices/userApiSlice";
+import { useDoctorGetUserQuery } from "../../slices/doctorSlices/doctorApiSlice";
 import './chat.css';
   
 interface Message {
@@ -14,7 +16,9 @@ interface Message {
 
 const Chat = () => {
   const location = useLocation();
-  const { doctorId, userId } = location.state || {}; // Retrieve doctorId and userId from state
+  const { doctorId, userId } = location.state || {}; 
+  const {data:doctor} = useUserGetDoctorQuery(doctorId);
+  const {data:user} = useDoctorGetUserQuery(userId);
   const isDoctor = location.pathname.includes("doctor");
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -32,6 +36,7 @@ const Chat = () => {
     socket.emit("sendMessage", messageData);
     setNewMessage("");
   };
+
 
   useEffect(() => {
     const fetchChatHistory = async () => {
@@ -57,6 +62,7 @@ const Chat = () => {
     };
   }, [doctorId, userId, sendMessage]);
 
+  
   useEffect(() => {
     const markMessagesAsRead = async () => {
       try {
@@ -71,6 +77,7 @@ const Chat = () => {
             userRole: isDoctor ? 'doctor' : 'patient',
           }),
         });
+        
       } catch (error) {
         console.error('Error marking messages as read:', error);
       }
@@ -81,15 +88,15 @@ const Chat = () => {
   
   return (
     <div className="chat-container">
-      <div className="chat-header text-start">
+      <div className="chat-header">
              <img
                 src={`http://localhost:5000/${
-                  isDoctor? messages[0]?.patientId.profilePicture : messages[0]?.doctorId.profilePicture}`}
-                alt={messages[0]?.patientId.name}
-                className="rounded-circle"
-                style={{ width: "40px", height: "40px", objectFit: "cover", marginRight: "10px" }}
+                  isDoctor? user?.data.profilePicture : doctor?.data.profilePicture}`}
+                alt={user?.data.name}
+                className="chat-header-profile-pic"
+                
               />
-             {isDoctor ? `${messages[0]?.patientId.name}` : `${messages[0]?.doctorId.name}`}
+             {isDoctor ? `${user?.data.name}` : `${doctor?.data.name}`}
       </div>
       <div className="chat-body">
         <div className="message-list">

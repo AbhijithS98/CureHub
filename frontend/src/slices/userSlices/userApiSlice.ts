@@ -145,6 +145,12 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    userGetDoctor: builder.query({
+      query: (doctorId:any) => ({
+        url: `/users/get-doctor?docId=${doctorId}`,
+        method: "GET",
+      }),
+    }),
   })
 })
 
@@ -171,5 +177,6 @@ export const {
   useUserFetchDoctorReviewsQuery,
   useUserAddDoctorReviewMutation,
   useUserGetPrescriptionQuery,
+  useUserGetDoctorQuery,
 
 } = userApiSlice;

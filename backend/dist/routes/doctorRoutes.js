@@ -23,4 +23,5 @@ router.put('/cancel-appointment', verifyDoctorToken, doctorController.cancelAppo
 router.post('/add-prescription', verifyDoctorToken, doctorController.addPrescription);
 router.get('/get-prescription', verifyDoctorToken, doctorController.viewPrescription);
 router.put('/update-prescription:id', verifyDoctorToken, doctorController.updatePrescription);
+router.get('/get-user', doctorController.getSingleUser);
 export default router;

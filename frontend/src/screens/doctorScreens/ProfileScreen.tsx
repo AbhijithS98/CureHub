@@ -87,6 +87,7 @@ const ProfileScreen: React.FC = () => {
     bio: '',
   });
    
+
   useEffect(()=>{
     if(doctorInfo){
       setFormData({

@@ -124,7 +124,8 @@ class UserRepository {
     getUserAppointments(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield Appointment.find({ user: id })
-                .populate('doctor', 'name')
+                .populate('doctor', 'name profilePicture')
+                .populate('user', 'name profilePicture')
                 .sort({ createdAt: -1 });
         });
     }

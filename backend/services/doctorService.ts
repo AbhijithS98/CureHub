@@ -8,6 +8,7 @@ import { Request, Response } from "express";
 import { IPayment } from "../models/paymentSchema.js";
 import { IAppointment } from "../models/appointment.js";
 import { IPrescription } from "../models/prescriptionSchema.js";
+import { IUser } from "../models/user.js";
 
 
 
@@ -417,6 +418,27 @@ async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
     }
   
     await doctorRepository.updateUserPrescription(id,updateFields);
+  }
+
+
+
+  async fetchUser(req: Request): Promise<IUser | null> {  
+
+    const { userId } = req.query;
+    if(!userId){
+      const error = Error('No user id provided');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+
+    const User = await doctorRepository.findUserById(userId);  
+    if(!User){
+      const error = Error('No User found with this id');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+    
+    return User;
   }
 }
 

@@ -30,5 +30,6 @@ router.put('/cancel-booking',verifyUserToken, userController.cancelBooking);
 router.post('/add-review',verifyUserToken,userController.addReview);
 router.get('/get-doctor-reviews',userController.getReviews);
 router.get('/get-prescription',verifyUserToken,userController.viewPrescription);
+router.get('/get-doctor',userController.getDoctor);
 
 export default router;

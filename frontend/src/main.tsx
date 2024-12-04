@@ -32,6 +32,7 @@ import PaymentScreen from './screens/userScreens/PaymentScreen';
 import ThankyouScreen from './screens/userScreens/ThankYouScreen';
 import WalletScreen from './screens/userScreens/WalletScreen';
 import UserViewPrescription from './screens/userScreens/ViewPrescriptionScreen';
+import UserChatList from './screens/userScreens/UserChatList';
 import ChatScreen from './screens/userScreens/ChatScreen';
 
 {/* Doctor screens imports */}
@@ -78,6 +79,7 @@ const router = createBrowserRouter(
       <Route path={ROUTES.USER.THANK_YOU} element={<UserProtectedRoute><ThankyouScreen /></UserProtectedRoute>} />
       <Route path={ROUTES.USER.WALLET} element={<UserProtectedRoute><WalletScreen /></UserProtectedRoute>} />
       <Route path={ROUTES.USER.VIEW_PRESCRIPTION(':preId')} element={<UserProtectedRoute><UserViewPrescription /></UserProtectedRoute>} />
+      <Route path={ROUTES.USER.CHAT_LIST(':userId')} element={<UserProtectedRoute><UserChatList /></UserProtectedRoute>} />
       <Route path={ROUTES.USER.CHAT} element={<UserProtectedRoute><ChatScreen /></UserProtectedRoute>} />
 
       {/* Doctor Routes */}
