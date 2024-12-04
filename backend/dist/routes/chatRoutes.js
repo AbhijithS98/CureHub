@@ -19,7 +19,6 @@ router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(400).json({ message: 'doctorId and patientId are required' });
     }
     try {
-        // Fetch chat messages between the doctor and patient
         const chatHistory = yield Chat.find({ doctorId, patientId })
             .populate('doctorId', 'name profilePicture')
             .populate('patientId', 'name profilePicture')
