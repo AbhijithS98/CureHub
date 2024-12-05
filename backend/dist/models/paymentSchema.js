@@ -3,6 +3,7 @@ const paymentSchema = new Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     doctor: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },
     amount: { type: Number, required: true },
+    appFee: { type: Number, default: 104 },
     method: { type: String, enum: ['Razorpay', 'Wallet'], required: true },
     transactionType: {
         type: String,
