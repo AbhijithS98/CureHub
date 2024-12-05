@@ -58,6 +58,8 @@ import AdminDoctorDetailsScreen from './screens/adminScreens/DoctorDetails';
 import AdminManageUsers from './screens/adminScreens/ManageUsers';
 import AdminManageDoctors from './screens/adminScreens/ManageDoctors';
 import AllDoctorsAppointments from './screens/adminScreens/AllDoctorsAppointments';
+import AppointmentReportScreen from './screens/adminScreens/ReportAppointments';
+import RevenueReportScreen from './screens/adminScreens/ReportRevenue';
 
 
 const router = createBrowserRouter(
@@ -107,6 +109,8 @@ const router = createBrowserRouter(
         <Route path={ROUTES.ADMIN.LIST_USERS} element={<AdminManageUsers />} />
         <Route path={ROUTES.ADMIN.LIST_DOCTORS} element={<AdminManageDoctors />} />
         <Route path={ROUTES.ADMIN.DOCTORS_APPOINTMENTS} element={<AllDoctorsAppointments />} />
+        <Route path={ROUTES.ADMIN.APPOINTMENT_REPORT} element={<AppointmentReportScreen />} />
+        <Route path={ROUTES.ADMIN.REVENUE_REPORT} element={<RevenueReportScreen />} />
       </Route>
     </Route>
   )

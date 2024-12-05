@@ -218,6 +218,121 @@ class AdminController{
     }
   }
 
+
+  async fetchUserStats(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const usersCount = await adminService.getUsersCount();
+      res.status(200).json({usersCount})
+
+    } catch (error: any) {
+      console.error('admin fetching user stats error:', error);
+      next(error)
+    }
+  }
+
+
+  async fetchDoctorStats(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const DoctorsCount = await adminService.getDoctorsCount();
+      res.status(200).json({DoctorsCount})
+
+    } catch (error: any) {
+      console.error('admin fetching doctor stats error:', error);
+      next(error)
+    }
+  }
+  
+
+  async fetchAppointmentStats(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const AppointmentStats = await adminService.getAllAppointmentStats();
+      res.status(200).json({ AppointmentStats })
+
+    } catch (error: any) {
+      console.error('admin fetching appointment stats error:', error);
+      next(error)
+    }
+  }
+
+
+  async fetchRevenueStats(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const Result = await adminService.getTotalRevenue();
+      res.status(200).json({ Result })
+
+    } catch (error: any) {
+      console.error('admin fetching revenue stats error:', error);
+      next(error)
+    }
+  }
+
+
+  async fetchRefundStats(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const RefundStats = await adminService.getAllRefundTransactionsCount();
+      res.status(200).json({ RefundStats });
+
+    } catch (error: any) {
+      console.error('admin fetching refund stats error:', error);
+      next(error)
+    }
+  }
+
+  async fetchAppointmentsChartData(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const Result = await adminService.getAppointmentTrends();
+      res.status(200).json({ Result });
+
+    } catch (error: any) {
+      console.error('admin fetching appointment chart data error:', error);
+      next(error)
+    }
+  }
+
+
+  async fetchRevenueChartData(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const Result = await adminService.getRevenueTrends();
+      res.status(200).json({ Result });
+
+    } catch (error: any) {
+      console.error('admin fetching revenue chart data error:', error);
+      next(error)
+    }
+  }
+
+
+  async fetchAppointmentReportData(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const Result = await adminService.getAppointmentReportData(req);
+      res.status(200).json({ Result });
+
+    } catch (error: any) {
+      console.error('admin fetching appointment report data error:', error);
+      next(error)
+    }
+  }
+
+  async fetchRevenueReportData(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const RevenueReports = await adminService.getRevenueReportData(req);
+      const TotalRevenue = RevenueReports.reduce((acc, curr) => acc + curr.amount, 0);
+      res.status(200).json({ TotalRevenue, RevenueReports });
+
+    } catch (error: any) {
+      console.error('admin fetching revenue report data error:', error);
+      next(error)
+    }
+  }
 }
 
 export default new AdminController();

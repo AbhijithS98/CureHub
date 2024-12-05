@@ -182,5 +182,65 @@ class AdminService {
             return Appointments;
         });
     }
+    getUsersCount() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const UsersCount = yield adminRepository.getAllUsersCount();
+            return UsersCount;
+        });
+    }
+    getDoctorsCount() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const DoctorsCount = yield adminRepository.getAllDoctorsCount();
+            return DoctorsCount;
+        });
+    }
+    getAllAppointmentStats() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const ActiveAppointmentsCount = yield adminRepository.getActiveAppointmentsCount();
+            const CompletedAppointmentsCount = yield adminRepository.getCompletedAppointmentsCount();
+            const CancelledAppointmentsCount = yield adminRepository.getCancelledAppointmentsCount();
+            return {
+                active: ActiveAppointmentsCount,
+                completed: CompletedAppointmentsCount,
+                cancelled: CancelledAppointmentsCount,
+            };
+        });
+    }
+    getAllRefundTransactionsCount() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const RefundTransactionsCount = yield adminRepository.getRefundTransactionsCount();
+            return RefundTransactionsCount;
+        });
+    }
+    getTotalRevenue() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const TotalRevenue = yield adminRepository.getTotalRevenue();
+            return TotalRevenue;
+        });
+    }
+    getAppointmentTrends() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const AppointmentTrends = yield adminRepository.getAppointmentsChartData();
+            return AppointmentTrends;
+        });
+    }
+    getRevenueTrends() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const RevenueTrends = yield adminRepository.getRevenueChartData();
+            return RevenueTrends;
+        });
+    }
+    getAppointmentReportData(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const AppointmentReports = yield adminRepository.getAppointmentReports(req);
+            return AppointmentReports;
+        });
+    }
+    getRevenueReportData(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const RevenueReports = yield adminRepository.getRevenueReports(req);
+            return RevenueReports;
+        });
+    }
 }
 export default new AdminService();

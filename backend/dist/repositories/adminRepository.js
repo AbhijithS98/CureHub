@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import Admin from "../models/admin.js";
 import Appointment from "../models/appointment.js";
 import Doctor from "../models/doctor.js";
+import Payment from "../models/paymentSchema.js";
 import User from "../models/user.js";
 class AdminRepository {
     findAdminByEmail(email) {
@@ -93,6 +94,140 @@ class AdminRepository {
     getAllAppointments() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield Appointment.find().populate('doctor', 'name').populate('user', 'name').exec();
+        });
+    }
+    getAllUsersCount() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield User.countDocuments({});
+        });
+    }
+    getAllDoctorsCount() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Doctor.countDocuments({ isApproved: true });
+        });
+    }
+    getActiveAppointmentsCount() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Appointment.countDocuments({ status: 'Booked' });
+        });
+    }
+    getCompletedAppointmentsCount() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Appointment.countDocuments({ status: 'Completed' });
+        });
+    }
+    getCancelledAppointmentsCount() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Appointment.countDocuments({ status: 'Cancelled' });
+        });
+    }
+    getRefundTransactionsCount() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Payment.countDocuments({ transactionType: 'Refund' });
+        });
+    }
+    getTotalRevenue() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const totalRevenue = yield Payment.aggregate([
+                { $match: { transactionType: "Booking" } },
+                { $group: { _id: null, total: { $sum: "$amount" } } },
+            ]);
+            return totalRevenue;
+        });
+    }
+    getAppointmentsChartData() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const appointmentTrend = yield Appointment.aggregate([
+                {
+                    $match: {
+                        status: { $in: ["Booked", "Completed"] }
+                    }
+                },
+                {
+                    $group: {
+                        _id: { month: { $month: "$date" }, year: { $year: "$date" } },
+                        count: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { "_id.year": 1, "_id.month": 1 }
+                }
+            ]);
+            return appointmentTrend;
+        });
+    }
+    getRevenueChartData() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const RevenueTrend = yield Payment.aggregate([
+                {
+                    $match: {
+                        transactionType: 'Booking'
+                    }
+                },
+                {
+                    $group: {
+                        _id: { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
+                        total: { $sum: "$amount" }
+                    }
+                },
+                {
+                    $sort: { "_id.year": 1, "_id.month": 1 }
+                }
+            ]);
+            return RevenueTrend;
+        });
+    }
+    getAppointmentReports(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { startDate, endDate, doctorId, patientId } = req.query;
+            // Build the filter object
+            const start = startDate && typeof startDate === 'string' ? new Date(startDate) : null;
+            const end = endDate && typeof endDate === 'string' ? new Date(endDate) : null;
+            // Build the filter object
+            let filter = {};
+            if (start && end) {
+                filter.date = { $gte: start, $lte: end };
+            }
+            else if (start) {
+                filter.date = { $gte: start };
+            }
+            else if (end) {
+                filter.date = { $lte: end };
+            }
+            if (doctorId) {
+                filter.doctor = doctorId;
+            }
+            if (patientId) {
+                filter.user = patientId;
+            }
+            const appointmentReports = yield Appointment.find(filter)
+                .populate('doctor', 'name')
+                .populate('user', 'name')
+                .exec();
+            return appointmentReports;
+        });
+    }
+    getRevenueReports(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { startDate, endDate } = req.query;
+            // Build the filter object
+            const start = startDate && typeof startDate === 'string' ? new Date(startDate) : null;
+            const end = endDate && typeof endDate === 'string' ? new Date(endDate) : null;
+            let filter = {
+                transactionType: "Booking",
+                status: "Completed",
+            };
+            if (start && end) {
+                filter.createdAt = { $gte: start, $lte: end };
+            }
+            else if (start) {
+                filter.createdAt = { $gte: start };
+            }
+            else if (end) {
+                filter.createdAt = { $lte: end };
+            }
+            const revenueReports = yield Payment.find(filter).populate('doctor', 'consultationFee');
+            return revenueReports;
         });
     }
 }

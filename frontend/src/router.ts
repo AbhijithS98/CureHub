@@ -42,5 +42,7 @@ export const ROUTES = {
     LIST_USERS: '/admin/list-users',
     LIST_DOCTORS: '/admin/list-doctors',
     DOCTORS_APPOINTMENTS: '/admin/doctors-appointments',
+    APPOINTMENT_REPORT: '/admin/appointment-report',
+    REVENUE_REPORT: '/admin/revenue-report',
   },
 };

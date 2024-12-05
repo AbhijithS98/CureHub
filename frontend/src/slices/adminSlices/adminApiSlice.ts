@@ -102,6 +102,62 @@ export const adminApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    adminStatsUsers: builder.query({
+      query: () => ({
+        url: `/admin/stats-users`,
+        method: "GET",
+      }),
+    }),
+    adminStatsDoctors: builder.query({
+      query: () => ({
+        url: `/admin/stats-doctors`,
+        method: "GET",
+      }),
+    }),
+    adminStatsAppointments: builder.query({
+      query: () => ({
+        url: `/admin/stats-appointments`,
+        method: "GET",
+      }),
+    }),
+    adminStatsRevenue: builder.query({
+      query: () => ({
+        url: `/admin/stats-revenue`,
+        method: "GET",
+      }),
+    }),
+    adminStatsRefund: builder.query({
+      query: () => ({
+        url: `/admin/stats-refund`,
+        method: "GET",
+      }),
+    }),
+    adminAppointmentsChart: builder.query({
+      query: () => ({
+        url: `/admin/appointments-chart-data`,
+        method: "GET",
+      }),
+    }), 
+    adminRevenueChart: builder.query({
+      query: () => ({
+        url: `/admin/revenue-chart-data`,
+        method: "GET",
+      }),
+    }),
+    adminAppointmentReport: builder.query({
+      query: ({ startDate, endDate, doctorId, patientId }) => ({
+        url: `/admin/appointment-report-data`,
+        method: "GET",
+        params: { startDate, endDate, doctorId, patientId },
+      }),
+    }),
+    adminRevenueReport: builder.query({
+      query: ({ startDate, endDate }) => ({
+        url: `/admin/revenue-report-data`,
+        method: "GET",
+        params: { startDate, endDate },
+      }),
+    }),
   })
 })
 
@@ -120,7 +176,16 @@ export const {
   useAdminBlockDoctorMutation,
   useAdminUnblockDoctorMutation,
   useAdminRefreshTokenMutation,
-  useAdminListAppointmentsQuery
+  useAdminListAppointmentsQuery,
+  useAdminStatsUsersQuery,
+  useAdminStatsDoctorsQuery,
+  useAdminStatsAppointmentsQuery,
+  useAdminStatsRevenueQuery,
+  useAdminStatsRefundQuery,
+  useAdminAppointmentsChartQuery,
+  useAdminRevenueChartQuery,
+  useLazyAdminAppointmentReportQuery,
+  useLazyAdminRevenueReportQuery
   
 } = adminApiSlice;
 

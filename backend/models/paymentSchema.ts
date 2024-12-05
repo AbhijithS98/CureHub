@@ -5,6 +5,7 @@ export interface IPayment extends Document {
   user: Types.ObjectId;
   doctor?: Types.ObjectId;
   amount: number;
+  appFee: number;
   method: 'Razorpay' | 'Wallet';
   transactionType: 'Booking' | 'Recharge' | 'Refund';
   status: 'Pending' | 'Completed' | 'Refunded';
@@ -17,6 +18,7 @@ const paymentSchema = new Schema<IPayment>(
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     doctor: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },
     amount: { type: Number, required: true },
+    appFee: { type: Number, default: 104 },
     method: { type: String, enum: ['Razorpay', 'Wallet'], required: true },
     transactionType: {
       type: String,

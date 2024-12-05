@@ -211,5 +211,114 @@ class AdminController {
             }
         });
     }
+    fetchUserStats(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const usersCount = yield adminService.getUsersCount();
+                res.status(200).json({ usersCount });
+            }
+            catch (error) {
+                console.error('admin fetching user stats error:', error);
+                next(error);
+            }
+        });
+    }
+    fetchDoctorStats(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const DoctorsCount = yield adminService.getDoctorsCount();
+                res.status(200).json({ DoctorsCount });
+            }
+            catch (error) {
+                console.error('admin fetching doctor stats error:', error);
+                next(error);
+            }
+        });
+    }
+    fetchAppointmentStats(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const AppointmentStats = yield adminService.getAllAppointmentStats();
+                res.status(200).json({ AppointmentStats });
+            }
+            catch (error) {
+                console.error('admin fetching appointment stats error:', error);
+                next(error);
+            }
+        });
+    }
+    fetchRevenueStats(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const Result = yield adminService.getTotalRevenue();
+                res.status(200).json({ Result });
+            }
+            catch (error) {
+                console.error('admin fetching revenue stats error:', error);
+                next(error);
+            }
+        });
+    }
+    fetchRefundStats(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const RefundStats = yield adminService.getAllRefundTransactionsCount();
+                res.status(200).json({ RefundStats });
+            }
+            catch (error) {
+                console.error('admin fetching refund stats error:', error);
+                next(error);
+            }
+        });
+    }
+    fetchAppointmentsChartData(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const Result = yield adminService.getAppointmentTrends();
+                res.status(200).json({ Result });
+            }
+            catch (error) {
+                console.error('admin fetching appointment chart data error:', error);
+                next(error);
+            }
+        });
+    }
+    fetchRevenueChartData(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const Result = yield adminService.getRevenueTrends();
+                res.status(200).json({ Result });
+            }
+            catch (error) {
+                console.error('admin fetching revenue chart data error:', error);
+                next(error);
+            }
+        });
+    }
+    fetchAppointmentReportData(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const Result = yield adminService.getAppointmentReportData(req);
+                res.status(200).json({ Result });
+            }
+            catch (error) {
+                console.error('admin fetching appointment report data error:', error);
+                next(error);
+            }
+        });
+    }
+    fetchRevenueReportData(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const RevenueReports = yield adminService.getRevenueReportData(req);
+                const TotalRevenue = RevenueReports.reduce((acc, curr) => acc + curr.amount, 0);
+                res.status(200).json({ TotalRevenue, RevenueReports });
+            }
+            catch (error) {
+                console.error('admin fetching revenue report data error:', error);
+                next(error);
+            }
+        });
+    }
 }
 export default new AdminController();

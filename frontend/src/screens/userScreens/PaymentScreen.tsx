@@ -22,7 +22,7 @@ const PaymentScreen: React.FC = () => {
   const { doctor, selectedDate, selectedSlot } = location.state;
 
   const doctorFee = doctor.consultationFee;
-  const applicationCharge = 70;
+  const applicationCharge = 104;
   const gst = (doctorFee + applicationCharge) * 0.1;
   const finalAmount: number = doctorFee + applicationCharge + gst;
 

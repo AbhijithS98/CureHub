@@ -7,6 +7,7 @@ import sendEmail from "../utils/emailSender.js";
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto';
 import { IAppointment } from "../models/appointment.js";
+import { IPayment } from "../models/paymentSchema.js";
 
 
 class AdminService{
@@ -212,7 +213,76 @@ class AdminService{
        
     return Appointments;
    }
+
+  async getUsersCount(): Promise<number | null> {
+   
+    const UsersCount = await adminRepository.getAllUsersCount();
+    return UsersCount;
+  }
+
+  async getDoctorsCount(): Promise<number | null> {
+   
+    const DoctorsCount = await adminRepository.getAllDoctorsCount();
+    return DoctorsCount;
+  }
+
+  async getAllAppointmentStats(): Promise<{ 
+    active: number | null; 
+    completed: number | null; 
+    cancelled: number | null 
+  }> {
+    const ActiveAppointmentsCount = await adminRepository.getActiveAppointmentsCount();
+    const CompletedAppointmentsCount = await adminRepository.getCompletedAppointmentsCount();
+    const CancelledAppointmentsCount = await adminRepository.getCancelledAppointmentsCount();
+    
+    return {
+      active: ActiveAppointmentsCount,
+      completed: CompletedAppointmentsCount,
+      cancelled: CancelledAppointmentsCount,
+    };
+  }
+
+  async getAllRefundTransactionsCount(): Promise<number | null> {
+   
+    const RefundTransactionsCount = await adminRepository.getRefundTransactionsCount();
+    return RefundTransactionsCount;
+  }
+
+  async getTotalRevenue(): Promise<{ _id: null, total: number }[] | []> {
+   
+    const TotalRevenue = await adminRepository.getTotalRevenue();
+    return TotalRevenue;
+  }
+
+
+  async getAppointmentTrends(): Promise<any[] | []> {
+   
+    const AppointmentTrends = await adminRepository.getAppointmentsChartData();
+    return AppointmentTrends;
+  }
+
+
+  async getRevenueTrends(): Promise<any[] | []> {
+   
+    const RevenueTrends = await adminRepository.getRevenueChartData();
+    return RevenueTrends;
+  }
+
+
+
+  async getAppointmentReportData(req: Request): Promise<IAppointment[] | []> {
+   
+    const AppointmentReports = await adminRepository.getAppointmentReports(req);
+    return AppointmentReports;
+  }
+
+  async getRevenueReportData(req: Request): Promise<IPayment[] | []> {
+   
+    const RevenueReports = await adminRepository.getRevenueReports(req);
+    return RevenueReports;
+  }
 }
+
 
 
 export default new AdminService();

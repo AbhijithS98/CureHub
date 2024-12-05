@@ -1,5 +1,5 @@
 import React from "react";
-import { Nav } from "react-bootstrap";
+import { Nav, Dropdown } from "react-bootstrap";
 import { FaBars } from "react-icons/fa";
 
 interface SidebarProps {
@@ -37,6 +37,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
           <Nav.Link href="/admin/doctors-appointments" className="sidebar-link">
             Appointments
           </Nav.Link>
+          <Dropdown>
+            <Dropdown.Toggle as={Nav.Link} className="sidebar-link" id="dropdown-report-management">
+              Report Management
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              <Dropdown.Item href="/admin/appointment-report">Appointment Report</Dropdown.Item>
+              <Dropdown.Item href="/admin/revenue-report">Revenue Report</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
         </Nav>
       </div>
     </div>
