@@ -180,7 +180,7 @@ class AdminRepository{
     const start = startDate && typeof startDate === 'string' ? new Date(startDate) : null;
     const end = endDate && typeof endDate === 'string' ? new Date(endDate) : null;
 
-    // Build the filter object
+    
     let filter: any = {};
 
     if (start && end) {

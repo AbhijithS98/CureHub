@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import User, { IUser } from "../models/user.js";
-import { IDoctor } from "../models/doctor.js";
+import Doctor,{ IDoctor } from "../models/doctor.js";
 import { IWallet } from "../models/walletSchema.js";
 import { IAppointment} from "../models/appointment.js";
 import { IReview } from "../models/reviewSchema.js";
@@ -464,7 +464,24 @@ class UserService {
       rating,
     };
 
-    await userRepository.createReview(newReview)
+    await userRepository.createReview(newReview);
+
+    const reviews = await userRepository.getReviews(doctorId);
+
+    // Calculate the new average rating and review count
+    const totalRatings = reviews!.reduce((sum, review) => sum + review.rating, 0);
+    
+    const newAverage = totalRatings / reviews!.length;
+
+    console.log("new avg is: ", newAverage);
+    
+    // Step 4: Update the doctor's ratingInfo
+    const doctor = await Doctor.findById(doctorId);
+    doctor!.ratingInfo.average = newAverage;
+    doctor!.ratingInfo.count = reviews!.length;
+
+    // Step 5: Save the updated doctor document
+    await doctor!.save();
   }
 
 

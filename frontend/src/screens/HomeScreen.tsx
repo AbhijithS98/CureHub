@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 const HomeScreen: React.FC = () => {
   const [doctors, setDoctors] = useState<IDoc[]>([]);
   const {data:docList,error:listingError,isLoading:listLoading} = useUserListDoctorsQuery({});
+  const {data:specs,error:specsError,isLoading:specsLoading} = useUserGetDocSpecializationsQuery({});
   const navigate = useNavigate();
   
   useEffect(()=>{
@@ -45,30 +46,18 @@ const HomeScreen: React.FC = () => {
       <section className="services-section text-center py-5">
         <h2 className="mb-4">Our Medical Services</h2>
         <Row className="g-4">
-          <Col md={4}>
+        {specs?.map((spec:any) => (
+          <Col sm={4}>
             <Card className="service-card p-3 shadow-sm">
+              <Card.Img variant="top" src={"http://localhost:5173/src/assets/heart_inhand.jpg"} alt="Doctor Profile 1" />
               <Card.Body>
-                <h5 className="fw-bold">Cardiology</h5>
-                <p>Expert cardiology care to monitor and treat your heart health.</p>
+                <h5 className="fw-bold">{spec}</h5>
+                <p>{`Expert ${spec} care to monitor and treat your heart health`}</p>
               </Card.Body>
             </Card>
           </Col>
-          <Col md={4}>
-            <Card className="service-card p-3 shadow-sm">
-              <Card.Body>
-                <h5 className="fw-bold">Dermatology</h5>
-                <p>Advanced skincare treatments to help you look and feel your best.</p>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={4}>
-            <Card className="service-card p-3 shadow-sm">
-              <Card.Body>
-                <h5 className="fw-bold">Orthopedics</h5>
-                <p>Comprehensive orthopedic care to address joint and bone concerns.</p>
-              </Card.Body>
-            </Card>
-          </Col>
+        ))}
+        
         </Row>
       </section>
 
@@ -88,26 +77,7 @@ const HomeScreen: React.FC = () => {
             </Card>
           </Col>
         ))}
-          <Col md={3}>
-            <Card className="doctor-card p-3 shadow-sm">
-              <Card.Img variant="top" src="http://localhost:5173/src/assets/doc2-pro-pic.jpg" alt="Doctor Profile 2" />
-              <Card.Body>
-                <h5 className="fw-bold">Dr. Jane Smith</h5>
-                <p>Experience: 8 years</p>
-                <p>Specialization: Dermatology - Passionate about skincare and dermatological health.</p>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={3}>
-            <Card className="doctor-card p-3 shadow-sm">
-              <Card.Img variant="top" src="http://localhost:5173/src/assets/doc-3-pro-pic.jpg" alt="Doctor Profile 3" />
-              <Card.Body>
-                <h5 className="fw-bold">Dr. Emily Clark</h5>
-                <p>Experience: 12 years</p>
-                <p>Specialization: Orthopedics - Committed to keeping you mobile and pain-free.</p>
-              </Card.Body>
-            </Card>
-          </Col>
+          
         </Row>
       </section>
     </Container>

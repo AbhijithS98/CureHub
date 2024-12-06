@@ -26,7 +26,7 @@ export interface IDoc {
     code: number;
     expiresAt: Date;
   };
-  ratingInfo?: {
+  ratingInfo: {
     average: number; 
     count: number;  
   };

@@ -104,8 +104,17 @@ const DoctorListing = () => {
                     style={{ borderRadius: '10px', height: '300px', objectFit: 'cover' }}
                   />
                   <Card.Body>
-                    <Card.Title>Dr. {doctor.name}</Card.Title>
+                    <Card.Title>
+                      Dr. {doctor.name}
+                    </Card.Title>
                     <Card.Text>
+                      <span className="star-rating">
+                                  {[...Array(5)].map((_, index) => (
+                                    <span key={index} className={index < doctor.ratingInfo.average ? 'star-filled' : 'star-empty' }>
+                                      ★
+                                    </span> 
+                                  ))}
+                      </span><br />
                       <strong>Specialization:</strong> {doctor.specialization} <br />
                       <strong>Consultation Fee:</strong> ${doctor.consultationFee}
                     </Card.Text>

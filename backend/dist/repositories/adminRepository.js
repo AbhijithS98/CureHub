@@ -183,7 +183,6 @@ class AdminRepository {
             // Build the filter object
             const start = startDate && typeof startDate === 'string' ? new Date(startDate) : null;
             const end = endDate && typeof endDate === 'string' ? new Date(endDate) : null;
-            // Build the filter object
             let filter = {};
             if (start && end) {
                 filter.date = { $gte: start, $lte: end };

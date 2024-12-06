@@ -85,7 +85,13 @@ const ViewDoctorScreen: React.FC = () => {
             {/*  Right side - Personal Details & Appointment Box  */}
             <Col md={8}>
               <h2 className="display-6 mb-3">Dr. {doctor.name}</h2>
-
+                     <span className="star-rating">
+                                  {[...Array(5)].map((_, index) => (
+                                    <span key={index+1} className={index+1 < doctor.ratingInfo.average ? 'star-filled' : 'star-empty' }>
+                                      ★
+                                    </span> 
+                                  ))}
+                      </span>
                 {/* Personal Details with Appointment Box */}
                 <Row>
                 {/* Personal Details */}
@@ -103,7 +109,7 @@ const ViewDoctorScreen: React.FC = () => {
                       <p><strong>Phone:</strong> {doctor.phone}</p>
                       <p><strong>Address:</strong> {doctor.address?.clinicName}, {doctor.address?.district}, {doctor.address?.city}</p>
                     </section>
-                    {/* About */}                 
+                                  
                 </Col>
                 
             {/* Right section - Ticket Price & Time Slots */}

@@ -11,6 +11,7 @@ import userRepository from "../repositories/userRepository.js";
 import bcrypt from "bcryptjs";
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import Doctor from "../models/doctor.js";
 import sendEmail from "../utils/emailSender.js";
 dotenv.config();
 class UserService {
@@ -378,6 +379,17 @@ class UserService {
                 rating,
             };
             yield userRepository.createReview(newReview);
+            const reviews = yield userRepository.getReviews(doctorId);
+            // Calculate the new average rating and review count
+            const totalRatings = reviews.reduce((sum, review) => sum + review.rating, 0);
+            const newAverage = totalRatings / reviews.length;
+            console.log("new avg is: ", newAverage);
+            // Step 4: Update the doctor's ratingInfo
+            const doctor = yield Doctor.findById(doctorId);
+            doctor.ratingInfo.average = newAverage;
+            doctor.ratingInfo.count = reviews.length;
+            // Step 5: Save the updated doctor document
+            yield doctor.save();
         });
     }
     getDoctorReviews(req) {

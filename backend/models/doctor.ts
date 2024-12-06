@@ -26,7 +26,7 @@ export interface IDoctor extends Document {
     code: number;
     expiresAt: Date;
   };
-  ratingInfo?: {
+  ratingInfo: {
     average: number; 
     count: number;  
   };
