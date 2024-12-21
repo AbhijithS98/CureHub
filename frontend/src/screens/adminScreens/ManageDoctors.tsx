@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Table, Button, Container } from "react-bootstrap";
 import { toast, Id, ToastPosition } from "react-toastify";
@@ -10,8 +10,8 @@ import { IDoc } from '../../types/doctorInterface'
 
 
 const ManageDoctors: React.FC = () => {
-  const [doctors, setDoctors] = useState<IDoc[]>([]);
-  const { data, error, isLoading, refetch } = useAdminListDoctorsQuery({});
+  
+  const { data: doctors, error, isLoading, refetch } = useAdminListDoctorsQuery({});
   const [blockDoctor] = useAdminBlockDoctorMutation();
   const [unblockDoctor] = useAdminUnblockDoctorMutation();
 
@@ -63,25 +63,17 @@ const ManageDoctors: React.FC = () => {
     }    
   };
 
-
-  useEffect(() => {
-    console.log("runing useeffect");
-    refetch();
-    if (data) {   
-      setDoctors(data);
-    } else if (error) {
-      toast.error("failed to fetch doctors");
-    }
-  }, [data,error]);
-
-
-  if (isLoading) {
-    return <p className="text-center text-primary fs-4 mt-5">Loading doctors...</p>;
+  if (error) {
+    return toast.error("failed to fetch doctors");
   }
+
   return (
     <Container style={{marginTop: 90}}>
       <h1 className="my-4 text-center">Manage Doctors</h1>
-      {doctors?.length === 0 ? (
+      {isLoading ? (
+        <p className="text-center text-primary fs-4 mt-5">Loading doctors...</p>
+      ) :
+      doctors?.length === 0 ? (
         <p className="text-center text-danger fs-4 mt-5">No Registered Doctors found</p>
       ) : (
         <Table striped bordered hover responsive className="table-sm">
@@ -98,7 +90,7 @@ const ManageDoctors: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {doctors.map((doctor, index) => (
+            {doctors.map((doctor:IDoc, index:number) => (
               <tr key={index}>
                 <td>{index+1}</td>
                 <td>{doctor.name}</td>

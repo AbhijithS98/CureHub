@@ -17,7 +17,7 @@ const NotificationHandler: React.FC = () => {
       toast.error(message);
       dispatch(clearNotification());
     }
-  }, [message, dispatch]);
+  }, [message]);
 
   return null;
 };

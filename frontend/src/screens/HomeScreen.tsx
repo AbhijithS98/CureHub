@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Col, Container, Row, Button } from 'react-bootstrap';
+import { Card, Col, Container, Row, Button, Carousel } from 'react-bootstrap';
 import { useUserListDoctorsQuery,
   useUserGetDocSpecializationsQuery
 } from '../slices/userSlices/userApiSlice';
@@ -44,22 +44,27 @@ const HomeScreen: React.FC = () => {
 
       {/* Medical Services Section */}
       <section className="services-section text-center py-5">
-        <h2 className="mb-4">Our Medical Services</h2>
-        <Row className="g-4">
-        {specs?.map((spec:any) => (
-          <Col sm={4}>
-            <Card className="service-card p-3 shadow-sm">
-              <Card.Img variant="top" src={"http://localhost:5173/src/assets/heart_inhand.jpg"} alt="Doctor Profile 1" />
-              <Card.Body>
-                <h5 className="fw-bold">{spec}</h5>
-                <p>{`Expert ${spec} care to monitor and treat your heart health`}</p>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-        
-        </Row>
-      </section>
+  <h2 className="mb-4">Our Medical Services</h2>
+  <Carousel interval={null} controls={true} indicators={true}>
+    {specs?.map((spec: any, index: number) => (
+      <Carousel.Item key={index}>
+        <div className="d-flex justify-content-center">
+          <Card className="service-card p-3 shadow-sm" style={{ width: "18rem", height: "100%" }}>
+            <Card.Img
+              variant="top"
+              src={"http://localhost:5173/src/assets/heart_inhand.jpg"}
+              alt="Service"
+            />
+            <Card.Body>
+              <h5 className="fw-bold">{spec}</h5>
+              <p>{`Expert ${spec} care to monitor and treat your health.`}</p>
+            </Card.Body>
+          </Card>
+        </div>
+      </Carousel.Item>
+    ))}
+  </Carousel>
+</section>
 
       {/* Our Doctors Section */}
       <section className="doctors-section text-center py-5">

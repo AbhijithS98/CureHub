@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import socket from "../../services/socketService";
 import { useLocation } from "react-router-dom";
 import { useUserGetDoctorQuery } from "../../slices/userSlices/userApiSlice";
@@ -22,7 +22,31 @@ const Chat = () => {
   const isDoctor = location.pathname.includes("doctor");
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const inputRef = useRef<HTMLDivElement | null>(null);
 
+  const fetchChatHistory = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/chat?doctorId=${doctorId}&patientId=${userId}`
+      );
+      const data = await response.json();
+      setMessages(data);
+    } catch (error) {
+      console.error("Error fetching chat history:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchChatHistory();
+    socket.on("receiveMessage", (message: Message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, [doctorId, userId]);
+
+  
   const sendMessage = () => {
     if (!newMessage.trim()) return;
 
@@ -32,37 +56,12 @@ const Chat = () => {
       message: newMessage,
       isDoctorSender: isDoctor, 
     };
-
     socket.emit("sendMessage", messageData);
-    setNewMessage("");
+    setNewMessage(""); 
+    fetchChatHistory(); 
   };
 
 
-  useEffect(() => {
-    const fetchChatHistory = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/api/chat?doctorId=${doctorId}&patientId=${userId}`
-        );
-        const data = await response.json();
-        setMessages(data);
-      } catch (error) {
-        console.error("Error fetching chat history:", error);
-      }
-    };
-
-    fetchChatHistory();
-
-    socket.on("receiveMessage", (message: Message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
-
-    return () => {
-      socket.off("receiveMessage");
-    };
-  }, [doctorId, userId, sendMessage]);
-
-  
   useEffect(() => {
     const markMessagesAsRead = async () => {
       try {
@@ -85,7 +84,18 @@ const Chat = () => {
   
     markMessagesAsRead();
   }, [doctorId, userId, isDoctor]);
-  
+
+  // Scroll to the latest message whenever messages change
+  useEffect(() => {
+    if (inputRef.current) {     
+      inputRef.current.scrollIntoView({ behavior: "smooth" });
+      console.log("Scrolling to the input element");
+    } else {
+      console.log("Input reference not available during initial render");
+    }
+  }, [messages]);
+
+
   return (
     <div className="chat-container">
       <div className="chat-header">
@@ -131,13 +141,12 @@ const Chat = () => {
                     ) : (
                       <span className="unread-indicator">&#10003;</span>
                   )}
-                </div>
-                
+                </div>                
               </div>
             </div>
-          ))}
+          ))}          
         </div>
-        <div className="input-container">
+        <div ref={inputRef} className="input-container">
           <input
             type="text"
             className="input-field"
@@ -149,6 +158,7 @@ const Chat = () => {
             Send
           </button>
         </div>
+        
       </div>
     </div>
   );

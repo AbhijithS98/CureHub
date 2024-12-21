@@ -17,7 +17,6 @@ import TableWithPagination,{ Column } from '../../components/PaginatedTable';
 import { ObjectId } from 'mongoose';
 import './style.css';
 
-
 const ProfileScreen: React.FC = () => {
 
   const location = useLocation();

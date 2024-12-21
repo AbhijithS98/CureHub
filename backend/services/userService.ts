@@ -489,13 +489,8 @@ class UserService {
   async getDoctorReviews(req: Request): Promise<IReview[] | null> {
 
     const { docId } = req.query;
-    console.log("doc id is: ",docId);
-    
- 
     const Reviews = await userRepository.getReviews(docId);
-    console.log("rev: ",Reviews);
-    
-  
+
     if(!Reviews){
       const error = Error('No reviews for this doctor');
       error.name = 'ValidationError';  

@@ -24,6 +24,7 @@ const sendEmail = async ({ to, subject, text, html }: EmailOptions): Promise<voi
     const mailOptions = {
       from: 'abhijithSb745@gmail.com',
       to,
+      subject,
       ...(text && { text }), 
       ...(html && { html }),  
     }

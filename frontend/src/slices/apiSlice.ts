@@ -4,10 +4,9 @@ import { Mutex } from "async-mutex";
 import { setToken, clearCredentials } from "./userSlices/userAuthSlice.js";
 import { setDoctorToken, clearDoctorCredentials } from "./doctorSlices/doctorAuthSlice.js";
 import { setAdminToken, clearAdminCredentials } from "./adminSlices/adminAuthSlice.js";
-import { setNotification } from "./globalSlices/notificationSlice.js";
-import { NavigateFunction } from "react-router-dom";
 import { toast } from "react-toastify";
 const mutex = new Mutex();
+
 
 let baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:5000/api",
@@ -15,11 +14,6 @@ let baseQuery = fetchBaseQuery({
   prepareHeaders: (headers, { getState, endpoint }) => {
     let token;
     const state = getState() as RootState;
-
-    console.log("User token:", state.userAuth?.userInfo?.token);
-    console.log("Doctor token:", state.doctorAuth?.doctorInfo?.token);
-    console.log("Admin token:", state.adminAuth?.adminInfo?.token);
-    console.log("Endpoint:", endpoint);
 
     if (endpoint.startsWith("user")) {
       token = state.userAuth?.userInfo?.token;
@@ -125,8 +119,7 @@ const baseQueryWithReauth: typeof baseQuery = async (
         window.location.href = `/user/login?message=${encodeURIComponent(errMsg)}`;
       } else if(url.startsWith("/doctors")){
         api.dispatch(clearDoctorCredentials())
-        api.dispatch(setNotification(errMsg))
-        window.location.href = "/doctor/login";
+        window.location.href = `/doctor/login?message=${encodeURIComponent(errMsg)}`;
       }
     } 
   }

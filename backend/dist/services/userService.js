@@ -395,9 +395,7 @@ class UserService {
     getDoctorReviews(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const { docId } = req.query;
-            console.log("doc id is: ", docId);
             const Reviews = yield userRepository.getReviews(docId);
-            console.log("rev: ", Reviews);
             if (!Reviews) {
                 const error = Error('No reviews for this doctor');
                 error.name = 'ValidationError';

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Col, Row, Container, Card } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate,useLocation, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store.js';
 import { toast } from 'react-toastify';
@@ -16,6 +16,8 @@ const DoctorLoginScreen: React.FC = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+
   const { doctorInfo } = useSelector((state: RootState) => state.doctorAuth);
   const [login, { isLoading }] = useDoctorLoginMutation();
 
@@ -24,6 +26,14 @@ const DoctorLoginScreen: React.FC = () => {
       navigate("/");
     }
   }, [navigate, doctorInfo]);
+
+  useEffect(()=>{
+      const queryParams = new URLSearchParams(location.search);
+      const message = queryParams.get('message');
+      if (message) {
+        toast.error(decodeURIComponent(message)); 
+      }
+    },[location]); 
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
