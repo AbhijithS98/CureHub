@@ -189,6 +189,17 @@ class UserService {
             return Doctors;
         });
     }
+    fetchTopRatedDoctors() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const Doctors = yield userRepository.getTopRatedDoctors();
+            if (!Doctors) {
+                const error = new Error("No top rated doctors found");
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return Doctors;
+        });
+    }
     getSingleDoc(email) {
         return __awaiter(this, void 0, void 0, function* () {
             const Doctor = yield userRepository.fetchSingleDoctor(email);

@@ -230,6 +230,19 @@ class UserService {
     return Doctors
    }
 
+   async fetchTopRatedDoctors(): Promise<IDoctor[] | null> {
+
+    const Doctors = await userRepository.getTopRatedDoctors();
+ 
+    if(!Doctors){
+     const error = new Error("No top rated doctors found")
+     error.name = 'ValidationError'
+     throw error;
+   }
+   
+    return Doctors
+   }
+
 
    async getSingleDoc(email:string): Promise<IDoctor | null> {
 

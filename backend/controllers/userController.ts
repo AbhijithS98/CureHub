@@ -157,6 +157,19 @@ class UserController {
   }
 
 
+  async getTopRatedDoctors(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+    try {     
+      const result = await userService.fetchTopRatedDoctors();
+      res.status(200).json(result)
+
+    } catch (error: any) {
+      console.error('fetching top rated doctors list error:', error);
+      next(error)
+    }
+  }
+
+
   async getDocSpecializations(req: Request, res: Response, next: NextFunction): Promise<void> {
     
     try {     

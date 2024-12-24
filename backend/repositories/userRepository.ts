@@ -69,6 +69,11 @@ class UserRepository {
     return await Doctor.find({ isApproved: true });
   }
 
+  async getTopRatedDoctors(): Promise<IDoctor[] | null> {
+    return await Doctor.find({ isApproved: true })
+      .sort({ "ratingInfo.average": -1 }) 
+      .limit(3); 
+  }
 
   async getAllSpecializations(): Promise<string[] | []> {
     return await Doctor.distinct("specialization");

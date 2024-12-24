@@ -75,6 +75,13 @@ class UserRepository {
             return yield Doctor.find({ isApproved: true });
         });
     }
+    getTopRatedDoctors() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Doctor.find({ isApproved: true })
+                .sort({ "ratingInfo.average": -1 })
+                .limit(3);
+        });
+    }
     getAllSpecializations() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield Doctor.distinct("specialization");

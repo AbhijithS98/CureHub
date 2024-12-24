@@ -145,6 +145,18 @@ class UserController {
             }
         });
     }
+    getTopRatedDoctors(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield userService.fetchTopRatedDoctors();
+                res.status(200).json(result);
+            }
+            catch (error) {
+                console.error('fetching top rated doctors list error:', error);
+                next(error);
+            }
+        });
+    }
     getDocSpecializations(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

@@ -12,6 +12,7 @@ router.post('/resend-otp', userController.resendOtp);
 router.post('/pass-reset-link', userController.sendPassResetLink);
 router.post('/reset-password', userController.resetPassword);
 router.get('/list-doctors', userController.getDoctors);
+router.get('/list-top-rated-doctors', userController.getTopRatedDoctors);
 router.get('/get-doc-specializations', userController.getDocSpecializations);
 router.get('/view-doctor', userController.getSingleDoctor);
 router.post('/refresh-token', userController.refreshToken);

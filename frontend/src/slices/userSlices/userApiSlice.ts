@@ -56,6 +56,12 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    userListTopRatedDoctors: builder.query({
+      query: () => ({
+        url: `/users/list-top-rated-doctors`,
+        method: "GET",
+      }),
+    }),
     userGetDocSpecializations: builder.query({
       query: () => ({
         url: `/users/get-doc-specializations`,
@@ -163,6 +169,7 @@ export const {
   usePassResetLinkMutation,
   useResetPasswordMutation,
   useUserListDoctorsQuery,
+  useUserListTopRatedDoctorsQuery,
   useUserGetDocSpecializationsQuery,
   useUserViewDoctorQuery,
   useUserGetProfileQuery,
