@@ -21,6 +21,7 @@ function Header() {
   const navigate = useNavigate();
   const [logout] = useLogoutMutation();
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 
   const handleLogout = async(e: React.FormEvent)=>{
    try{
@@ -78,7 +79,7 @@ function Header() {
           <LinkContainer to="/">
             <Navbar.Brand className="d-flex align-items-center">
             <img
-              src={"http://localhost:5173/src/assets/app-logo.png"}
+              src={`${frontendURL}/src/assets/app-logo.png`}
               alt="CureHub Logo"
               width="60"
               height="60"

@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 import { useDoctorLogoutMutation } from "../../slices/doctorSlices/doctorApiSlice.js";
 import { clearDoctorCredentials } from "../../slices/doctorSlices/doctorAuthSlice.js";
 import socket from "../../services/socketService";
+const frontendURL = import.meta.env.VITE_FRONTEND_URL;
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import './style.css'
 
 
@@ -40,7 +42,7 @@ function DoctorHeader() {
     const fetchUnreadCount = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/chat/unread-count?doctorId=${doctorInfo?._id}`
+          `${backendURL}/api/chat/unread-count?doctorId=${doctorInfo?._id}`
         );
         const data = await response.json();
         console.log("Initial unread count:", data.unreadCount);
@@ -78,7 +80,7 @@ function DoctorHeader() {
           <LinkContainer to="/">
           <Navbar.Brand className="d-flex align-items-center">
             <img
-              src={"http://localhost:5173/src/assets/app-logo.png"}
+              src={`${frontendURL}/src/assets/app-logo.png`}
               alt="CureHub Logo"
               width="60"
               height="60"
