@@ -11,6 +11,7 @@ import { useUserViewDoctorQuery,
         } from '../../slices/userSlices/userApiSlice';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 import './style.css';
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import { toast } from 'react-toastify';
 
 const ViewDoctorScreen: React.FC = () => {
@@ -76,7 +77,7 @@ const ViewDoctorScreen: React.FC = () => {
             {/* Left side - Profile Picture */}
             <Col md={4} className="text-center">
               <img
-                src={`http://localhost:5000/${doctor.profilePicture}`}
+                src={`${backendURL}/${doctor.profilePicture}`}
                 alt={`${doctor.name}'s profile`}
                 className="doctor-profile-img mb-3"
               />
@@ -148,7 +149,7 @@ const ViewDoctorScreen: React.FC = () => {
                       <h4>Educational Certificates</h4>
                       {doctor.documents.medicalDegree ? (
                         <img
-                          src={`http://localhost:5000/${doctor.documents.medicalDegree}`}
+                          src={`${backendURL}/${doctor.documents.medicalDegree}`}
                           alt="Degree Certificate"
                           className="degree-certificate-img"
                         />
@@ -173,7 +174,7 @@ const ViewDoctorScreen: React.FC = () => {
 
                               {review.patientId.profilePicture ? (
                                   <img
-                                  src={`http://localhost:5000/${review.patientId.profilePicture}`}
+                                  src={`${backendURL}/${review.patientId.profilePicture}`}
                                   alt={`${review.patientId.name}'s profile`}
                                   className="review-profile-img"
                                   />

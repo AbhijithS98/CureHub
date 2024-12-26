@@ -14,12 +14,13 @@ interface User {
 const DoctorChatList = () => {
   const { doctorId } = useParams<{ doctorId: string; }>();
   const [users, setUsers] = useState<User[]>([]);
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
 
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/chat/doctorChats?doctorId=${doctorId}`);
+        const response = await fetch(`${backendURL}/api/chat/doctorChats?doctorId=${doctorId}`);
         const data = await response.json();
         console.log("dataaaaa is: ",data);
         
@@ -41,7 +42,7 @@ const DoctorChatList = () => {
           <div key={user.userId} className="list-group-item d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
               <img
-                src={`http://localhost:5000/${user.profilePicture}`}
+                src={`${backendURL}/${user.profilePicture}`}
                 alt={user.name}
                 className="chatlist-profile-pic"
               />

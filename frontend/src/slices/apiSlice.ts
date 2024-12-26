@@ -7,12 +7,12 @@ import { setAdminToken, clearAdminCredentials } from "./adminSlices/adminAuthSli
 import { toast } from "react-toastify";
 const mutex = new Mutex();
 
-const apiBaseURL = process.env.REACT_APP_BACKEND_URL;
-console.log("backend url is: ",apiBaseURL);
+const backendURL = import.meta.env.VITE_BACKEND_URL;
+console.log("backend url is: ",backendURL);
 
 
 let baseQuery = fetchBaseQuery({
-  baseUrl: `${apiBaseURL}/api`,
+  baseUrl: `${backendURL}/api`,
   credentials: "include",
   prepareHeaders: (headers, { getState, endpoint }) => {
     let token;

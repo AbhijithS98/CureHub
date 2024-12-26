@@ -21,6 +21,7 @@ import CancelAppointmentModal from '../../components/doctorComponents/CancelAppo
 import TableWithPagination,{ Column } from '../../components/PaginatedTable';
 import { IAppointmentPd } from '../../types/IAppointmentPd';
 import { IPrescription } from '../../types/prescriptionInterface';
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 interface AvailabilitySlot {
   _id: ObjectId,
@@ -379,7 +380,7 @@ const ProfileScreen: React.FC = () => {
           <div >
             
             <Image 
-            src={`http://localhost:5000/${doctorInfo.profilePicture}`} 
+            src={`${backendURL}/${doctorInfo.profilePicture}`} 
             roundedCircle
             className="img-fluid mb-3 border border-primary p-1" 
             style={{ maxWidth: '200px', height: 'auto' }} 

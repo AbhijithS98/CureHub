@@ -15,6 +15,7 @@ import { Ibooking } from '../../types/bookingInterface.js';
 import { isCancelAllowed } from '../../utils/IsCancelAllowed.js';
 import TableWithPagination,{ Column } from '../../components/PaginatedTable';
 import { ObjectId } from 'mongoose';
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import './style.css';
 
 const ProfileScreen: React.FC = () => {
@@ -248,7 +249,7 @@ if (!data) return <Alert variant="warning">User profile not found.</Alert>;
           <Card className="p-4 shadow-sm">
             <div className="text-center">
               <img
-                src={`http://localhost:5000/${userData?.profilePicture}`}
+                src={`${backendURL}/${userData?.profilePicture}`}
                 alt="User Profile"
                 className="profile-photo mb-3"
               />

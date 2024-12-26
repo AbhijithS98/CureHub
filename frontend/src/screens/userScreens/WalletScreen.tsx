@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { IWallet } from '../../types/walletInterface';
 import { Itransaction } from '../../types/transactionInterface';
 import TableWithPagination,{ Column } from '../../components/PaginatedTable';
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -29,7 +30,7 @@ const WalletScreen: React.FC = () => {
 
   const handleRecharge = async () => {
     if (parseInt(rechargeAmount) > 0) {
-      const response = await fetch('http://localhost:5000/api/payment/create-order', {
+      const response = await fetch(`${backendURL}/api/payment/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

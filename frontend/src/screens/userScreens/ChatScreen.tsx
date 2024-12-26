@@ -3,6 +3,7 @@ import socket from "../../services/socketService";
 import { useLocation } from "react-router-dom";
 import { useUserGetDoctorQuery } from "../../slices/userSlices/userApiSlice";
 import { useDoctorGetUserQuery } from "../../slices/doctorSlices/doctorApiSlice";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import './chat.css';
   
 interface Message {
@@ -27,7 +28,7 @@ const Chat = () => {
   const fetchChatHistory = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/chat?doctorId=${doctorId}&patientId=${userId}`
+        `${backendURL}/api/chat?doctorId=${doctorId}&patientId=${userId}`
       );
       const data = await response.json();
       setMessages(data);
@@ -65,7 +66,7 @@ const Chat = () => {
   useEffect(() => {
     const markMessagesAsRead = async () => {
       try {
-        await fetch('http://localhost:5000/api/chat/mark-read', {
+        await fetch(`${backendURL}/api/chat/mark-read`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -100,7 +101,7 @@ const Chat = () => {
     <div className="chat-container">
       <div className="chat-header">
              <img
-                src={`http://localhost:5000/${
+                src={`${backendURL}/${
                   isDoctor? user?.data.profilePicture : doctor?.data.profilePicture}`}
                 alt={user?.data.name}
                 className="chat-header-profile-pic"
@@ -121,8 +122,8 @@ const Chat = () => {
             >
               <div className="message-info d-flex align-items-center">
                 <img
-                  src={`http://localhost:5000/${
-                    msg.isDoctorSender ? msg.doctorId.profilePicture : msg.patientId.profilePicture
+                  src={`${backendURL}/${
+                  msg.isDoctorSender ? msg.doctorId.profilePicture : msg.patientId.profilePicture
                   }`}
                   alt={msg.isDoctorSender ? msg.doctorId.name : msg.patientId.name}
                   className="rounded-circle message-profile-pic"

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Container, Row, Col, Card, ListGroup, Form, Image } from 'react-bootstrap';
 import { useDoctorGetAvailabilityQuery } from '../../slices/doctorSlices/doctorApiSlice';
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import './style.css';
 
 interface Slot {
@@ -62,7 +63,7 @@ const AppointmentBookingScreen: React.FC = () => {
       <Row className="mb-4 text-center">
         <Col>
           <Image
-            src={`http://localhost:5000/${doctor.profilePicture}`}
+            src={`${backendURL}/${doctor.profilePicture}`}
             alt={`${doctor.name}'s profile`}
             roundedCircle
             className="doc-pro-img mb-3"

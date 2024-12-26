@@ -14,12 +14,15 @@ const HomeScreen: React.FC = () => {
   const {data:topRatedDocs} = useUserListTopRatedDoctorsQuery({});
   const {data:specs,error:specsError,isLoading:specsLoading} = useUserGetDocSpecializationsQuery({});
   const navigate = useNavigate();
-  
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+
+
   useEffect(()=>{
     if(docList){
       setDoctors(docList)
     }
   },docList)
+
 
   return (
     <Container className="home-container">
@@ -95,7 +98,7 @@ const HomeScreen: React.FC = () => {
             <Card className="doctor-card p-3 shadow-sm" onClick={() => navigate("/view-doctor", { state: { email: doctor.email } })}>
               <Card.Img 
                 variant="top" 
-                src={`http://localhost:5000/${doctor.profilePicture}`} alt="Doctor Profile 1"
+                src={`${backendURL}/${doctor.profilePicture}`} alt="Doctor Profile 1"
                 className='doctor-profile-img mb-3' />
               <Card.Body>
                 <h5 className="fw-bold">Dr. {doctor.name}</h5>

@@ -13,6 +13,7 @@ const DoctorDetails: React.FC = () => {
   const [approve,{isLoading:approveLoading}] = useAdminApproveDoctorMutation();
   const [reject,{isLoading:rejectLoading}] = useAdminRejectDoctorMutation();
   const navigate = useNavigate();
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   const confirmAndHandleAction = (email: string, action: "approve" | "reject") => {
     const toastId: Id = toast.info(
@@ -83,7 +84,7 @@ const DoctorDetails: React.FC = () => {
                 <ListGroup variant="flush">
                   <ListGroup.Item>
                   <Image 
-                  src={`http://localhost:5000/${doctor.profilePicture}`} 
+                  src={`${backendURL}/${doctor.profilePicture}`} 
                   roundedCircle
                   className="img-fluid mb-3 border border-primary p-1" 
                   style={{ maxWidth: '200px', height: 'auto' }} 
@@ -110,7 +111,7 @@ const DoctorDetails: React.FC = () => {
                   <li>
                     <strong>ID Proof:</strong> 
                     <Image 
-                        src={`http://localhost:5000/${doctor.documents.idProof}`} 
+                        src={`${backendURL}/${doctor.documents.idProof}`} 
                         alt="ID Proof" 
                         fluid 
                         thumbnail 
@@ -129,7 +130,7 @@ const DoctorDetails: React.FC = () => {
                     <li>
                       <strong>Medical Degree:</strong>
                       <Image 
-                        src={`http://localhost:5000/${doctor.documents.medicalDegree}`} 
+                        src={`${backendURL}/${doctor.documents.medicalDegree}`} 
                         alt="Medical Degree" 
                         fluid 
                         thumbnail 

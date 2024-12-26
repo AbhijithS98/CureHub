@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { useUserBookSlotMutation, useUserGetWalletQuery } from '../../slices/userSlices/userApiSlice.js';
 import { IWallet } from '../../types/walletInterface';
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import './style.css';
 
 const PaymentScreen: React.FC = () => {
@@ -66,7 +67,7 @@ const PaymentScreen: React.FC = () => {
       }
     } else {
       // Razorpay payment
-      const response = await fetch('http://localhost:5000/api/payment/create-order', {
+      const response = await fetch(`${backendURL}/api/payment/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

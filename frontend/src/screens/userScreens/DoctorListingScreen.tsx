@@ -6,6 +6,7 @@ import { useUserListDoctorsQuery,
          useUserGetDocSpecializationsQuery
        } from '../../slices/userSlices/userApiSlice';
 import { useNavigate } from 'react-router-dom';
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import './style.css' 
 
 const DoctorListing = () => {
@@ -100,7 +101,7 @@ const DoctorListing = () => {
                 <Card className="text-center">
                   <Card.Img
                     variant="top"
-                    src={`http://localhost:5000/${doctor.profilePicture}`}
+                    src={`${backendURL}/${doctor.profilePicture}`}
                     style={{ borderRadius: '10px', height: '300px', objectFit: 'cover' }}
                   />
                   <Card.Body>

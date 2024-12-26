@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { FaComments } from "react-icons/fa";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 import './style.css';
 
 interface Doctor {
@@ -19,7 +20,7 @@ const UserChatList = () => {
 
     const fetchPatientChats = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/chat/patientChats?patientId=${userId}`);
+        const response = await fetch(`${backendURL}/api/chat/patientChats?patientId=${userId}`);
         const data = await response.json();
         console.log("dataaaaa is: ",data);
         
@@ -43,7 +44,7 @@ const UserChatList = () => {
             <div key={doctor.doctorId} className="list-group-item d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center">
                 <img
-                  src={`http://localhost:5000/${doctor.profilePicture}`}
+                  src={`${backendURL}/${doctor.profilePicture}`}
                   alt={doctor.name}
                   className="chatlist-profile-pic"
                 />

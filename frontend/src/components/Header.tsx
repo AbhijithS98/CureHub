@@ -20,6 +20,7 @@ function Header() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [logout] = useLogoutMutation();
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   const handleLogout = async(e: React.FormEvent)=>{
    try{
@@ -40,7 +41,7 @@ function Header() {
     const fetchUnreadCount = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/chat/unread-count?patientId=${userInfo?._id}`
+          `${backendURL}/api/chat/unread-count?patientId=${userInfo?._id}`
         );
         const data = await response.json();
         console.log("Initial unread count:", data.unreadCount);
