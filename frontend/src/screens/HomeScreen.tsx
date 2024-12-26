@@ -8,7 +8,7 @@ import './userScreens/style.css';
 import { IDoc } from '../types/doctorInterface';
 import { useNavigate } from 'react-router-dom';
 const backendURL = import.meta.env.VITE_BACKEND_URL;
-const frontendURL = import.meta.env.VITE_FRONTEND_URL;
+
 
 const HomeScreen: React.FC = () => {
   const [doctors, setDoctors] = useState<IDoc[]>([]);
@@ -42,7 +42,7 @@ const HomeScreen: React.FC = () => {
           </Col>
           <Col md={6} className="d-flex justify-content-center">
             <div className="doctor-images">
-              <img src={`${frontendURL}/src/assets/home_page_cover1.jpg`} alt="Doctor 1" className="doctor-img" />
+              <img src={`/assets/home_page_cover1.jpg`} alt="Doctor 1" className="doctor-img" />
    
             </div>
           </Col>
@@ -74,7 +74,7 @@ const HomeScreen: React.FC = () => {
             >
               <Card.Img
                 variant="top"
-                src={`${frontendURL}/src/assets/heart_inhand.jpg`}
+                src={`/assets/heart_inhand.jpg`}
                 alt="Service"
               />
               <Card.Body>

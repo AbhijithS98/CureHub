@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 import { useDoctorLogoutMutation } from "../../slices/doctorSlices/doctorApiSlice.js";
 import { clearDoctorCredentials } from "../../slices/doctorSlices/doctorAuthSlice.js";
 import socket from "../../services/socketService";
-const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 import './style.css'
 
@@ -80,7 +79,7 @@ function DoctorHeader() {
           <LinkContainer to="/">
           <Navbar.Brand className="d-flex align-items-center">
             <img
-              src={`${frontendURL}/src/assets/app-logo.png`}
+              src={`/assets/app-logo.png`}
               alt="CureHub Logo"
               width="60"
               height="60"
