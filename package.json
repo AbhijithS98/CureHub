@@ -5,7 +5,8 @@
   "type": "module",
   "main": "backend/dist/server.js",
   "scripts": {
-    "build": "cd backend && tsc",
+    "clean": "rimraf backend/dist",
+    "build": "npm run clean && cd backend && tsc",
     "start": "node backend/dist/backend/server.js",
     "server": "cd backend && nodemon dist/server.js",
     "client": "npm run dev --prefix frontend",
