@@ -173,8 +173,19 @@ class UserRepository {
             return yield Prescription.findOne({ _id: prescriptionId })
                 .populate('appointment', 'date time')
                 .populate('doctor', 'name specialization address')
-                .populate('patient', 'name phone')
-                .lean();
+                .populate('patient', 'name phone');
+        });
+    }
+    createGoogleUser(email, name) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const newUser = new User({
+                email,
+                name,
+                phone: 'N/A',
+                isVerified: true,
+                password: 'google_oauth',
+            });
+            return newUser.save();
         });
     }
 }

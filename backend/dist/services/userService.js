@@ -13,6 +13,7 @@ import crypto from 'crypto';
 import dotenv from 'dotenv';
 import Doctor from "../models/doctor.js";
 import sendEmail from "../utils/emailSender.js";
+import { GoogleTokenVerify } from "../utils/googleTokenVerify.js";
 dotenv.config();
 class UserService {
     registerUser(req) {
@@ -442,6 +443,29 @@ class UserService {
                 throw error;
             }
             return Doctor;
+        });
+    }
+    googleLogin(googleToken, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const payload = yield GoogleTokenVerify(googleToken);
+                if (!payload) {
+                    throw new Error('Failed to verify Google token');
+                }
+                const { email, name } = payload;
+                if (!email || !name) {
+                    throw new Error('Email and name is required from Google token');
+                }
+                let GoogleUser = yield userRepository.findUserByEmail(email);
+                if (!GoogleUser) {
+                    GoogleUser = yield userRepository.createGoogleUser(email, name);
+                }
+                return GoogleUser;
+            }
+            catch (error) {
+                console.error('Google login error:', error);
+                throw new Error('Error occured during Google login');
+            }
         });
     }
 }

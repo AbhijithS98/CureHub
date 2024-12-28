@@ -9,6 +9,9 @@ import { toast } from 'react-toastify';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { setCredentials } from '../../slices/userSlices/userAuthSlice.js';
 import { useLoginMutation, useResendOtpMutation } from '../../slices/userSlices/userApiSlice.js';
+import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const BackendURL = import.meta.env.VITE_BACKEND_URL;
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -70,7 +73,38 @@ const LoginScreen: React.FC = () => {
     }
   };
 
+
+  const handleGoogleSuccess = async (response: CredentialResponse) => {
+    const token = response.credential;
+    console.log("google token: ",token);
+    
+    try {
+        const res = await fetch(`${BackendURL}/api/users/google-login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ googleToken: token }),
+        });
+
+      const data = await res.json();
+      console.log("googleUserdata:",data); 
+      dispatch(setCredentials(data));
+      toast.success("Logged in successfully!");
+      navigate('/')
+    } catch (error) {
+      toast.error('Google login failed. Please try again.');
+      console.error('Google Login Error:', error);
+    }
+  };
+
+  const handleGoogleFailure = () => {
+    toast.error('oops Google login failed. Please try again.');
+  };
+
   return (
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID || ''}>
       <FormContainer >
         <h2 className='text-dark'>Login As Patient</h2>
         <Form onSubmit={handleLogin}>
@@ -114,10 +148,21 @@ const LoginScreen: React.FC = () => {
           <Col className="text-end">
             <Link to="/user/forgot-password">Forgot Password?</Link>
           </Col>
+
+          <Row className="mt-3">
+            <Col>
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleFailure}
+                useOneTap
+              />
+            </Col>
+          </Row>
           
           {loginLoading || resendLoading && <Loader />}
         </Form>
       </FormContainer>
+    </GoogleOAuthProvider>
   );
 };
 

@@ -249,7 +249,11 @@ if (!data) return <Alert variant="warning">User profile not found.</Alert>;
           <Card className="p-4 shadow-sm">
             <div className="text-center">
               <img
-                src={`${backendURL}/${userData?.profilePicture}`}
+                src={
+                  userData?.profilePicture
+                    ? `${backendURL}/${userData.profilePicture}`
+                    : '/assets/dummy-profile.png' 
+                }
                 alt="User Profile"
                 className="profile-photo mb-3"
               />

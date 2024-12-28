@@ -364,6 +364,42 @@ class UserController {
       next(error)
     }
   }
+
+
+  async googleLogin(req:Request, res:Response, next:NextFunction): Promise<void> {
+console.log("hit controller google");
+
+    const { googleToken } = req.body;
+    console.log(googleToken,"tokennnnnnnnnnnnnn");
+    
+    if(!googleToken){
+     
+      
+      const error = new Error("The verifyIdToken method requires an ID Token")
+      error.name = 'ValidationError'
+      throw error;
+    }
+
+    try {
+      const GoogleUser = await userService.googleLogin(googleToken, res);
+      const token = generateUserTokens(res,GoogleUser._id as string);
+
+      res.status(200).json({ 
+        _id:GoogleUser._id,
+        name: GoogleUser.name,
+        email: GoogleUser.email,
+        phone: GoogleUser.phone,
+        isVerified: GoogleUser.isVerified,
+        isBlocked: GoogleUser.isBlocked,
+        token,
+      });
+    } catch(error:any){
+
+      console.error('error logging in with google:',error.message);
+      next(error)
+    }
+  };
+
 }
 
 

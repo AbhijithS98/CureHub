@@ -28,4 +28,5 @@ router.post('/add-review', verifyUserToken, userController.addReview);
 router.get('/get-doctor-reviews', userController.getReviews);
 router.get('/get-prescription', verifyUserToken, userController.viewPrescription);
 router.get('/get-doctor', userController.getDoctor);
+router.post('/google-login', userController.googleLogin);
 export default router;

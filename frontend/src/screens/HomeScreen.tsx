@@ -17,8 +17,6 @@ const HomeScreen: React.FC = () => {
   const {data:specs,error:specsError,isLoading:specsLoading} = useUserGetDocSpecializationsQuery({});
   const navigate = useNavigate();
   
-
-
   useEffect(()=>{
     if(docList){
       setDoctors(docList)
@@ -43,7 +41,6 @@ const HomeScreen: React.FC = () => {
           <Col md={6} className="d-flex justify-content-center">
             <div className="doctor-images">
               <img src={`/assets/home_page_cover1.jpg`} alt="Doctor 1" className="doctor-img" />
-   
             </div>
           </Col>
         </Row>
@@ -93,7 +90,7 @@ const HomeScreen: React.FC = () => {
 
       {/* Our Doctors Section */}
       <section className="doctors-section text-center py-5">
-        <h2 className="mb-4">Our Great Doctors</h2>
+        <h2 className="mb-4">Our Top Rated Doctors</h2>
         <Row className="g-4">
         {topRatedDocs?.map((doctor:IDoc) => (
           <Col md={4}>

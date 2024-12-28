@@ -335,5 +335,35 @@ class UserController {
             }
         });
     }
+    googleLogin(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log("hit controller google");
+            const { googleToken } = req.body;
+            console.log(googleToken, "tokennnnnnnnnnnnnn");
+            if (!googleToken) {
+                const error = new Error("The verifyIdToken method requires an ID Token");
+                error.name = 'ValidationError';
+                throw error;
+            }
+            try {
+                const GoogleUser = yield userService.googleLogin(googleToken, res);
+                const token = generateUserTokens(res, GoogleUser._id);
+                res.status(200).json({
+                    _id: GoogleUser._id,
+                    name: GoogleUser.name,
+                    email: GoogleUser.email,
+                    phone: GoogleUser.phone,
+                    isVerified: GoogleUser.isVerified,
+                    isBlocked: GoogleUser.isBlocked,
+                    token,
+                });
+            }
+            catch (error) {
+                console.error('error logging in with google:', error.message);
+                next(error);
+            }
+        });
+    }
+    ;
 }
 export default new UserController();

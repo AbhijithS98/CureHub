@@ -84,7 +84,6 @@ const router = createBrowserRouter(
       <Route path={ROUTES.USER.CHAT_LIST(':userId')} element={<UserProtectedRoute><UserChatList /></UserProtectedRoute>} />
       <Route path={ROUTES.USER.CHAT} element={<UserProtectedRoute><ChatScreen /></UserProtectedRoute>} />
 
-
       {/* Doctor Routes */}
       <Route path={ROUTES.DOCTOR.REGISTER} element={<DoctorRegisterScreen />} />
       <Route path={ROUTES.DOCTOR.OTP} element={<DoctorOtpScreen />} />
@@ -123,7 +122,4 @@ createRoot(document.getElementById('root')!).render(
         <RouterProvider router={router} />
     </StrictMode>
   </Provider>
- 
 )
-
-

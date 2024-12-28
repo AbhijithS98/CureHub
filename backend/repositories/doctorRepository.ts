@@ -145,7 +145,7 @@ class DoctorRepository {
     .populate('appointment', 'date time')
     .populate('doctor', 'name specialization address')
     .populate('patient', 'name phone')
-    .lean();
+    
   }
 
   async updateUserPrescription(_id:any, updateFields:Partial<IPrescription>): Promise<void> {

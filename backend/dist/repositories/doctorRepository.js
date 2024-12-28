@@ -143,8 +143,7 @@ class DoctorRepository {
             return yield Prescription.findOne({ _id: prescriptionId })
                 .populate('appointment', 'date time')
                 .populate('doctor', 'name specialization address')
-                .populate('patient', 'name phone')
-                .lean();
+                .populate('patient', 'name phone');
         });
     }
     updateUserPrescription(_id, updateFields) {

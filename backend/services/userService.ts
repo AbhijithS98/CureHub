@@ -11,6 +11,8 @@ import sendEmail from "../utils/emailSender.js";
 import { Request, Response } from "express";
 import { IPayment } from "../models/paymentSchema.js";
 import { IPrescription } from "../models/prescriptionSchema.js";
+import { TokenPayload } from "google-auth-library";
+import { GoogleTokenVerify } from "../utils/googleTokenVerify.js";
 
 dotenv.config(); 
 
@@ -548,6 +550,35 @@ class UserService {
    
     return Doctor
    }
+
+
+
+   async googleLogin(googleToken: string, res: Response): Promise<IUser> {
+
+    try {
+      const payload: TokenPayload | undefined = await GoogleTokenVerify(googleToken);
+      
+      if (!payload) {
+        throw new Error('Failed to verify Google token');
+      }
+  
+      const { email, name } = payload;
+      if (!email || !name) {
+        throw new Error('Email and name is required from Google token');
+      }
+
+      let GoogleUser = await userRepository.findUserByEmail(email);
+      if(!GoogleUser){
+        GoogleUser = await userRepository.createGoogleUser(email,name)
+      }
+      
+      return GoogleUser;
+
+    } catch (error) {
+      console.error('Google login error:', error);
+      throw new Error('Error occured during Google login');
+    }
+  }
 }
 
 export default new UserService();

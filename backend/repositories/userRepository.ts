@@ -166,8 +166,24 @@ class UserRepository {
     .populate('appointment', 'date time')
     .populate('doctor', 'name specialization address')
     .populate('patient', 'name phone')
-    .lean();
+    
   }
+
+
+  async createGoogleUser(email:string,name:string): Promise<IUser> {
+    const newUser = new User({
+      email,
+      name,
+      phone: 'N/A',
+      isVerified: true,
+      password: 'google_oauth', 
+    });
+    
+    return newUser.save();
+  }
+  
+
+  
 }
 
 export default new UserRepository();

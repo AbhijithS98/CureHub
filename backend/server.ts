@@ -25,9 +25,6 @@ const app = express()
 //connect to database
 connectDB()
 
-console.log(process.env.RAZORPAY_KEY_ID);
-console.log(process.env.RAZORPAY_KEY_SECRET);
-
 app.use(cors({
   origin: process.env.FRONTEND_URL,
   credentials: true,
@@ -39,11 +36,13 @@ app.use(express.json());
 app.use(express.urlencoded( { extended: true } ));
 app.use(cookieParser());
 
+
 app.use('/api/users',userRoutes);
 app.use('/api/doctors',doctorRoutes);
 app.use('/api/admin',adminRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/chat', chatRoutes);
+
 
 app.use(express.static(path.join(__dirname,'../public')));
 
