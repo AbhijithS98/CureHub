@@ -30,7 +30,7 @@ const HomeScreen: React.FC = () => {
       <section className="welcome-section text-center my-5">
         <Row className="align-items-center">
           <Col md={6} className="mb-4 mb-md-0">
-            <h1 className="fw-bold display-5">We help patients live a healthy, longer life.</h1>
+            <h1 className="fw-bold display-5">We help our patients live a healthy, longer life.</h1>
             <p className="lead mt-3">
               CureHub connects you to skilled doctors and personalized care, enhancing health outcomes
               and saving time. With us, scheduling consultations and accessing trusted health services
