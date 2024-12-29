@@ -140,9 +140,11 @@ const Chat = () => {
             >
               <div className="message-info d-flex align-items-center">
                 <img
-                  src={`${backendURL}/${
-                  msg.isDoctorSender ? msg.doctorId.profilePicture : msg.patientId.profilePicture
-                  }`}
+                  src={!msg.isDoctorSender ? msg.patientId.profilePicture?
+                      `${backendURL}/${msg.patientId.profilePicture}` : '/assets/dummy-profile.png'
+                      :
+                      `${backendURL}/${msg.doctorId.profilePicture}`                                     
+                  }
                   alt={msg.isDoctorSender ? msg.doctorId.name : msg.patientId.name}
                   className="rounded-circle message-profile-pic"
                 />
