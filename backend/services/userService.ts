@@ -274,6 +274,25 @@ class UserService {
   }
 
 
+
+  
+  async checkSlotAvailability(req: any): Promise<string | null> {
+ 
+    const { slotId, timeSlotId } = req.body;
+    
+    // check the availability
+    const status = await userRepository.checkAvailabilityStatus(slotId,timeSlotId);
+
+    if(!status){
+      const error = Error('No such a time slot available.');
+      error.name = 'ValidationError';  
+      throw error;
+    }
+  
+    return status
+  }
+
+
   async bookAppointment(req: any): Promise<void> {
     
     const { userEmail, slotId, timeSlotId, doctorId, paymentMethod, amount } = req.body.bookingDetails;

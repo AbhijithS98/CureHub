@@ -223,6 +223,19 @@ class UserService {
             return User;
         });
     }
+    checkSlotAvailability(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { slotId, timeSlotId } = req.body;
+            // check the availability
+            const status = yield userRepository.checkAvailabilityStatus(slotId, timeSlotId);
+            if (!status) {
+                const error = Error('No such a time slot available.');
+                error.name = 'ValidationError';
+                throw error;
+            }
+            return status;
+        });
+    }
     bookAppointment(req) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;

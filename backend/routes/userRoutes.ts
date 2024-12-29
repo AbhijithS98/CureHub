@@ -23,6 +23,7 @@ router.post('/refresh-token',userController.refreshToken)
 router.get('/get-profile',verifyUserToken,userController.getProfile);
 router.put('/update-profile',verifyUserToken,uploadUserProfilePicture,userController.updateProfile);
 router.put('/book-slot',verifyUserToken, userController.bookSlot);
+router.post('/check-slot',verifyUserToken, userController.checkSlot);
 router.get('/get-appointments',verifyUserToken, userController.getUserAppointments);
 router.post('/wallet-recharge',verifyUserToken,userController.walletRecharge);
 router.get('/get-wallet',verifyUserToken,userController.getUserWallet)

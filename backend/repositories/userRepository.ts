@@ -116,6 +116,25 @@ class UserRepository {
   }
 
 
+  async checkAvailabilityStatus(slotId: any, timeSlotId: any): Promise<string | null> {
+    const availability = await Availability.findOne({ _id: slotId });
+  
+    if (!availability) {
+      return null; // Return null if the availability document is not found
+    }
+  
+    // Find the specific time slot by its ID
+    const timeSlot = availability.timeSlots.find((slot: any) => slot._id.toString() === timeSlotId.toString());
+  
+    if (!timeSlot) {
+      return null; // Return null if the time slot is not found
+    }
+  
+    return timeSlot.status; // Return the status of the specific time slot
+  }
+  
+
+
   async findUserWallet(userId:any): Promise<IWallet | null> {
     return await Wallet.findOne({ ownerId: userId });
   }

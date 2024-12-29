@@ -224,6 +224,18 @@ class UserController {
             }
         });
     }
+    checkSlot(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const slotStatus = yield userService.checkSlotAvailability(req);
+                res.status(200).json({ slotStatus });
+            }
+            catch (error) {
+                console.error("user slot booking error: ", error.message);
+                next(error);
+            }
+        });
+    }
     getUserAppointments(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;

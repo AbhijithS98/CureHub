@@ -242,6 +242,19 @@ class UserController {
    }
 
 
+   async checkSlot(req:any, res: Response, next: NextFunction): Promise<void> {
+    
+    try {
+      const slotStatus = await userService.checkSlotAvailability(req);
+      res.status(200).json({ slotStatus });
+
+    } catch (error: any) {
+      console.error("user slot booking error: ", error.message);
+      next(error)
+    }
+  }
+
+
 
    async getUserAppointments(req: Request, res: Response, next: NextFunction): Promise<void> {
     

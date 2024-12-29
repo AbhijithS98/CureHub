@@ -157,6 +157,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    userConfirmSlotAvailability: builder.mutation({
+      query: (bookingDetails) => ({
+        url: `/users/check-slot`,  
+        method: "POST",
+        body: bookingDetails,
+      }),
+    }),
   })
 })
 
@@ -185,5 +192,6 @@ export const {
   useUserAddDoctorReviewMutation,
   useUserGetPrescriptionQuery,
   useUserGetDoctorQuery,
+  useUserConfirmSlotAvailabilityMutation
 
 } = userApiSlice;

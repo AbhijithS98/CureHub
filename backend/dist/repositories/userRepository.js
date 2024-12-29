@@ -123,6 +123,20 @@ class UserRepository {
             return yield Availability.findOne({ _id: slotId });
         });
     }
+    checkAvailabilityStatus(slotId, timeSlotId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const availability = yield Availability.findOne({ _id: slotId });
+            if (!availability) {
+                return null; // Return null if the availability document is not found
+            }
+            // Find the specific time slot by its ID
+            const timeSlot = availability.timeSlots.find((slot) => slot._id.toString() === timeSlotId.toString());
+            if (!timeSlot) {
+                return null; // Return null if the time slot is not found
+            }
+            return timeSlot.status; // Return the status of the specific time slot
+        });
+    }
     findUserWallet(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield Wallet.findOne({ ownerId: userId });

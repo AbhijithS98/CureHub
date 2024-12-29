@@ -5,16 +5,20 @@ import { RootState } from '../../store.js';
 import { Button, Container, Row, Col, Card, ListGroup, Spinner} from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-import { useUserBookSlotMutation, useUserGetWalletQuery } from '../../slices/userSlices/userApiSlice.js';
+import { useUserBookSlotMutation, 
+         useUserGetWalletQuery,
+         useUserConfirmSlotAvailabilityMutation } from '../../slices/userSlices/userApiSlice.js';
 import { IWallet } from '../../types/walletInterface';
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 import './style.css';
+
 
 const PaymentScreen: React.FC = () => {
   const { userInfo } = useSelector((state: RootState) => state.userAuth);
   const { data, error, isLoading: walletLoading } = useUserGetWalletQuery({});
   const wallet: IWallet | null = data?.wallet;
   const [bookSlot, {isLoading:bookingLoading}] = useUserBookSlotMutation();
+  const [checkSlot] = useUserConfirmSlotAvailabilityMutation();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -29,6 +33,12 @@ const PaymentScreen: React.FC = () => {
 
   // Payment handler (Razorpay integration)
   const handlePayment = async () => {
+    const response = await checkSlot({slotId: selectedDate._id, timeSlotId: selectedSlot._id,}).unwrap();
+    if(response.slotStatus !== 'Available'){
+      toast.error("Slot has been booked by another user.") 
+      return
+    }
+
     if (paymentMethod === 'Wallet') {
       // Wallet payment
       if (!wallet || wallet.balance < finalAmount) {
