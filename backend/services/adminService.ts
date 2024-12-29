@@ -15,21 +15,18 @@ class AdminService{
   async authenticateAdmin(email: string, password: string, res: Response): Promise<IAdmin> {
     
     const admin = await adminRepository.findAdminByEmail(email);
-
     if(!admin){
       const error = new Error("Admin not found with given email")
       error.name = 'ValidationError'
       throw error;
-    }
-    
+    } 
     const isMatching = await bcrypt.compare(password, admin.password);
 
     if(!isMatching){
       const error = new Error("Incorrect password")
       error.name = 'ValidationError'
       throw error;
-    }
-    
+    }  
     return admin
   }
 
