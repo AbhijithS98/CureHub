@@ -20,7 +20,6 @@ import { ObjectId, Types } from 'mongoose';
 import CancelAppointmentModal from '../../components/doctorComponents/CancelAppointmentModal';
 import TableWithPagination,{ Column } from '../../components/PaginatedTable';
 import { IAppointmentPd } from '../../types/IAppointmentPd';
-import { IPrescription } from '../../types/prescriptionInterface';
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 interface AvailabilitySlot {
@@ -30,22 +29,14 @@ interface AvailabilitySlot {
   timeSlots: {
     time: string;  
     status: 'Available' | 'Booked' ;
-    _id: ObjectId; 
+    _id: any; 
   }[]; 
 }
 
-interface Appointment {
-  _id: ObjectId;
-  user: {name:string} 
-  doctor: ObjectId; 
-  date: Date; 
-  time: string; 
-  slotId: ObjectId; 
-  timeSlotId: ObjectId; 
-  payment: ObjectId | null; 
-  status: 'Booked' | 'Cancelled' | 'Completed'; 
-  createdAt: Date; 
-  updatedAt: Date;
+interface ITimeSlot {
+    time: string;  
+    status: 'Available' | 'Booked' ;
+    _id: any; 
 }
 
 const ProfileScreen: React.FC = () => { 
@@ -368,6 +359,86 @@ const ProfileScreen: React.FC = () => {
   ];
 
 
+  const AvailabilitiesColumns: Column<AvailabilitySlot>[] = [
+    {
+      key: 'date',
+      label: 'Date',
+      render: (value: string) => new Date(value).toLocaleDateString('en-GB'),
+    },
+    {
+      key: 'timeSlots',
+      label: 'Total Slots',
+      render: (_: any, row: AvailabilitySlot) => row.timeSlots.length,
+    },
+    {
+      key: 'actions',
+      label: 'Action',
+      render: (_: any, row: AvailabilitySlot) => (
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setViewingDate(row)}
+          >
+            View Slots
+          </Button>
+      ),
+    },
+    {
+      key: 'actions',
+      label: 'Delete',
+      render: (_: any, row: AvailabilitySlot) => (
+          <Button
+            className="btn btn-danger"
+            onClick={() => deleteSlot(row._id)}
+            disabled={row.timeSlots.some((timeSlot: any) => timeSlot.status === 'Booked')}
+          >
+            <FaTrash />
+          </Button>    
+      ),
+    }
+  ];
+
+
+  const TimeSlotsColumns: Column<{
+    time: string;  
+    status: 'Available' | 'Booked' ;
+    _id: Types.ObjectId; 
+  }>[] = [
+    {
+      key: 'time',
+      label: 'Time',
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (value: string) =>
+        value === 'Booked' ? (
+          <Button variant="danger" size="sm">
+            Booked
+          </Button>
+        ) : (
+          <Button variant="success" size="sm">
+            Available
+          </Button>
+        ),
+    },
+    {
+      key: 'actions',
+      label: 'Delete',
+      render: (_: any, row: ITimeSlot) => (
+        <Button
+          variant="danger"
+          size="sm"
+          onClick={() => deleteTimeSlot(viewingDate?._id!, row._id)}
+          disabled={row.status === 'Booked'}
+        >
+          <FaTrash />
+        </Button>
+      ),
+    },
+  ];
+
+
   const renderContent = () => {
     if (isLoading) return <Spinner animation="border" />;
     if (error) return <Alert variant="danger">Failed to load profile.</Alert>;
@@ -392,97 +463,38 @@ const ProfileScreen: React.FC = () => {
           </div>
         );
 
-      case 'availabilities':
-        return (
-          <div>
-            <div className="d-flex justify-content-between align-items-center">
-              <h3>Manage availabilities</h3>
-              <Button 
-                className="btn btn-success"
-                onClick={handleClick} 
-              >
-                Set New Slots
-              </Button>
-            </div>
-            {viewingDate === null ? ( 
-            <Table striped bordered hover responsive className="mt-3">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Total Slots</th>
-                  <th>Actions</th>
-                  <th>Delete</th>
-                </tr>
-              </thead>
-              <tbody>
-                {availabilityData.availability.map((slot:AvailabilitySlot, index:number) => {
-                  const date = new Date(slot.date);
-                  return (
-                  <tr key={index}>
-                    <td>{date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</td>
-                    <td>{slot.timeSlots.length}</td>
-                    <td>
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => setViewingDate(slot)}
-                        >
-                          View Slots
-                        </Button>
-                      </td>
-                    <td><Button 
-                          className="btn btn-danger" 
-                          onClick={()=>deleteSlot(slot._id)}
-                          disabled={slot.timeSlots.some((timeSlot: any) => timeSlot.status === 'Booked')}
-                        >
-                          <FaTrash />
-                        </Button>
-                    </td>
-                  </tr>
-                  );
-                })}
-              </tbody>
-            </Table>
-            ) : (
-              <>
-                <Table striped bordered hover responsive className="mt-3">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {viewingDate.timeSlots.map((timeSlot, index) => (
-                        <tr key={index}>
-                          <td>{new Date(viewingDate.date).toLocaleDateString('en-GB')}</td>
-                          <td>{timeSlot.time}</td>
-                          <td>{timeSlot.status==='Booked' ? <Button variant='danger' size='sm'>Booked</Button> : 
-                                                   <Button variant='success' size='sm'>Available</Button>}
-                          </td>
-                          <td>
-                            <Button
-                              variant="danger"
-                              size="sm"
-                              disabled={timeSlot.status==='Booked'}
-                              onClick={() => deleteTimeSlot(viewingDate._id!, timeSlot._id)}
-                            >
-                              <FaTrash />
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                  <Button variant="secondary" size="sm" onClick={()=>setViewingDate(null)} className="mb-3">
+        case 'availabilities':
+          return (
+            <div>
+              <div className="d-flex justify-content-between align-items-center">
+                <h3>Manage availabilities</h3>
+                <Button 
+                  className="btn btn-success"
+                  onClick={handleClick} 
+                >
+                  Set New Slots
+                </Button>
+              </div>
+              {viewingDate === null ? ( 
+                  <TableWithPagination
+                  data={availabilityData.availability} // Main availability table showing available dates
+                  columns={AvailabilitiesColumns}
+                  rowsPerPage={5}
+                />
+              ) : (
+                <>
+                  <TableWithPagination
+                    data={viewingDate.timeSlots} // Only show the time slots for the selected date
+                    columns={TimeSlotsColumns}
+                    rowsPerPage={5}
+                  />
+                  <Button variant="secondary" size="sm" onClick={() => setViewingDate(null)} className="mb-3">
                     Back
                   </Button>
-                </tbody>
-               </Table>
-              </>
-            )}
-          </div>
-        );
+                </>
+              )}
+            </div>
+          );
 
       case 'appointments':
       return (

@@ -45,7 +45,10 @@ class AdminRepository {
     }
     findAdminByPwResetToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Admin.findOne({ pwResetToken: token, pwTokenExpiresAt: { $gt: new Date() } });
+            return yield Admin.findOne({
+                pwResetToken: token,
+                pwTokenExpiresAt: { $gt: new Date() },
+            });
         });
     }
     updateResettoken(email, token, expiry) {
@@ -55,10 +58,7 @@ class AdminRepository {
     }
     updatePassword(token, newPassword) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Admin.updateOne({ pwResetToken: token }, { password: newPassword,
-                pwResetToken: null,
-                pwTokenExpiresAt: null,
-            });
+            yield Admin.updateOne({ pwResetToken: token }, { password: newPassword, pwResetToken: null, pwTokenExpiresAt: null });
         });
     }
     approveDoc(email) {
@@ -93,7 +93,10 @@ class AdminRepository {
     }
     getAllAppointments() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Appointment.find().populate('doctor', 'name').populate('user', 'name').exec();
+            return yield Appointment.find()
+                .populate("doctor", "name")
+                .populate("user", "name")
+                .exec();
         });
     }
     getAllUsersCount() {
@@ -108,22 +111,22 @@ class AdminRepository {
     }
     getActiveAppointmentsCount() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Appointment.countDocuments({ status: 'Booked' });
+            return yield Appointment.countDocuments({ status: "Booked" });
         });
     }
     getCompletedAppointmentsCount() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Appointment.countDocuments({ status: 'Completed' });
+            return yield Appointment.countDocuments({ status: "Completed" });
         });
     }
     getCancelledAppointmentsCount() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Appointment.countDocuments({ status: 'Cancelled' });
+            return yield Appointment.countDocuments({ status: "Cancelled" });
         });
     }
     getRefundTransactionsCount() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Payment.countDocuments({ transactionType: 'Refund' });
+            return yield Payment.countDocuments({ transactionType: "Refund" });
         });
     }
     getTotalRevenue() {
@@ -140,18 +143,18 @@ class AdminRepository {
             const appointmentTrend = yield Appointment.aggregate([
                 {
                     $match: {
-                        status: { $in: ["Booked", "Completed"] }
-                    }
+                        status: { $in: ["Booked", "Completed"] },
+                    },
                 },
                 {
                     $group: {
                         _id: { month: { $month: "$date" }, year: { $year: "$date" } },
-                        count: { $sum: 1 }
-                    }
+                        count: { $sum: 1 },
+                    },
                 },
                 {
-                    $sort: { "_id.year": 1, "_id.month": 1 }
-                }
+                    $sort: { "_id.year": 1, "_id.month": 1 },
+                },
             ]);
             return appointmentTrend;
         });
@@ -161,18 +164,21 @@ class AdminRepository {
             const RevenueTrend = yield Payment.aggregate([
                 {
                     $match: {
-                        transactionType: 'Booking'
-                    }
+                        transactionType: "Booking",
+                    },
                 },
                 {
                     $group: {
-                        _id: { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
-                        total: { $sum: "$amount" }
-                    }
+                        _id: {
+                            month: { $month: "$createdAt" },
+                            year: { $year: "$createdAt" },
+                        },
+                        total: { $sum: "$amount" },
+                    },
                 },
                 {
-                    $sort: { "_id.year": 1, "_id.month": 1 }
-                }
+                    $sort: { "_id.year": 1, "_id.month": 1 },
+                },
             ]);
             return RevenueTrend;
         });
@@ -181,8 +187,8 @@ class AdminRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const { startDate, endDate, doctorId, patientId } = req.query;
             // Build the filter object
-            const start = startDate && typeof startDate === 'string' ? new Date(startDate) : null;
-            const end = endDate && typeof endDate === 'string' ? new Date(endDate) : null;
+            const start = startDate && typeof startDate === "string" ? new Date(startDate) : null;
+            const end = endDate && typeof endDate === "string" ? new Date(endDate) : null;
             let filter = {};
             if (start && end) {
                 filter.date = { $gte: start, $lte: end };
@@ -200,8 +206,8 @@ class AdminRepository {
                 filter.user = patientId;
             }
             const appointmentReports = yield Appointment.find(filter)
-                .populate('doctor', 'name')
-                .populate('user', 'name')
+                .populate("doctor", "name")
+                .populate("user", "name")
                 .exec();
             return appointmentReports;
         });
@@ -210,8 +216,8 @@ class AdminRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const { startDate, endDate } = req.query;
             // Build the filter object
-            const start = startDate && typeof startDate === 'string' ? new Date(startDate) : null;
-            const end = endDate && typeof endDate === 'string' ? new Date(endDate) : null;
+            const start = startDate && typeof startDate === "string" ? new Date(startDate) : null;
+            const end = endDate && typeof endDate === "string" ? new Date(endDate) : null;
             let filter = {
                 transactionType: "Booking",
                 status: "Completed",
@@ -225,7 +231,7 @@ class AdminRepository {
             else if (end) {
                 filter.createdAt = { $lte: end };
             }
-            const revenueReports = yield Payment.find(filter).populate('doctor', 'consultationFee');
+            const revenueReports = yield Payment.find(filter).populate("doctor", "consultationFee");
             return revenueReports;
         });
     }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Form, Button, Row, Col, Container } from 'react-bootstrap';
+import { Card, Form, Button, Row, Col, Container, Pagination } from 'react-bootstrap';
 import { FaArrowRight } from 'react-icons/fa';
 import { IDoc } from '../../types/doctorInterface';
 import { useUserListDoctorsQuery,
@@ -15,10 +15,15 @@ const DoctorListing = () => {
   const [filteredDoctors, setFilteredDoctors] = useState<IDoc[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSpecialization, setSelectedSpecialization] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [minFee, setMinFee] = useState(0);
+  const [maxFee, setMaxFee] = useState(1000);
+  const doctorsPerPage = 3;
+
   const navigate = useNavigate();
 
-  const {data:list,error:listingError,isLoading:listLoading} = useUserListDoctorsQuery({});
-  const {data:specs,error:specsError,isLoading:specsLoading} = useUserGetDocSpecializationsQuery({});
+  const {data:list} = useUserListDoctorsQuery({});
+  const {data:specs} = useUserGetDocSpecializationsQuery({});
 
   
   useEffect(() => {
@@ -36,28 +41,43 @@ const DoctorListing = () => {
     e.preventDefault();
     const filtered = doctors.filter(doctor => 
       doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doctor.specialization.toLowerCase().includes(searchQuery.toLowerCase())
+      doctor.specialization.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doctor.address?.city.toLowerCase().includes(searchQuery.toLowerCase()) 
+
     ); 
     setFilteredDoctors(filtered);
   };
 
   const handleFilterApply = () => {
     const filtered = doctors.filter(doctor => 
-      selectedSpecialization ? doctor.specialization === selectedSpecialization : true
+      selectedSpecialization ? doctor.specialization === selectedSpecialization : true &&
+      doctor.consultationFee! >= minFee &&
+      doctor.consultationFee! <= maxFee
     );
     setFilteredDoctors(filtered);
+    setCurrentPage(1);
   };
-  
+
+  const indexOfLastDoctor = currentPage * doctorsPerPage;
+  const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
+  const currentDoctors = filteredDoctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
+
+  const totalPages = Math.ceil(filteredDoctors.length / doctorsPerPage);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
-    <Container>
-      
+    <Container>    
       <div className="search-section">
         <h1>Find a Doctor</h1>
         <Form onSubmit={handleSearch} className="mt-3 d-inline-flex flex-column align-items-center">
           <Form.Group controlId="search" className="w-100">
+            <h6 className='text-muted'>Search by Name, Specialization or location</h6>
             <Form.Control
               type="text"
-              placeholder="Name or specialization"
+              placeholder="Type here"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -66,9 +86,7 @@ const DoctorListing = () => {
         </Form>
       </div>
 
-
-      <Row className="mt-4">
-        
+      <Row className="mt-4">       
         <Col md={3} >
           <h5>Filter by Specialization</h5>
           <Form>
@@ -91,12 +109,48 @@ const DoctorListing = () => {
             />
             <Button variant="primary" onClick={handleFilterApply} className="mt-3">Apply</Button>
           </Form>
+
+          <h5 className="mt-4">Filter by Consultation Fee</h5>
+          <Form>
+            <Form.Group controlId="minFee">
+              <Form.Label>Min Fee</Form.Label>
+              <Form.Control
+                type="number"
+                value={minFee}
+                onChange={(e) => setMinFee(Number(e.target.value))}
+                min={0}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="maxFee" className="mt-3">
+              <Form.Label>Max Fee</Form.Label>
+              <Form.Control
+                type="number"
+                value={maxFee}
+                onChange={(e) => setMaxFee(Number(e.target.value))}
+                min={0}
+              />
+            </Form.Group>
+
+            <Button variant="primary" onClick={handleFilterApply} className="mt-3">Apply Filters</Button>
+          </Form>
         </Col>
 
        
         <Col md={9}>
           <Row>
-            {filteredDoctors.map((doctor) => (
+            {currentDoctors.length === 0 ? (
+              <Col md={12} className="text-center mt-5">
+                <Card className="p-4">
+                  <Card.Body>
+                    <h3>No Doctors Found</h3>
+                    <p>Sorry, no doctors match your search or filters. Please try again with different criteria.</p>
+                  </Card.Body>
+                </Card>
+              </Col>
+            )
+            :
+            (currentDoctors.map((doctor) => (
               <Col md={4} key={doctor.email} className="mb-4">
                 <Card className="text-center">
                   <Card.Img
@@ -117,7 +171,8 @@ const DoctorListing = () => {
                                   ))}
                       </span><br />
                       <strong>Specialization:</strong> {doctor.specialization} <br />
-                      <strong>Consultation Fee:</strong> ${doctor.consultationFee}
+                      <strong>Consultation Fee:</strong> ${doctor.consultationFee} <br />
+                      <strong>Location:</strong> {doctor.address?.city}
                     </Card.Text>
                     <Button 
                       variant="info" 
@@ -129,8 +184,21 @@ const DoctorListing = () => {
                   </Card.Body>
                 </Card>
               </Col>
-            ))}
+            ))
+            )}
           </Row>
+
+          <Pagination className="justify-content-center mt-4">
+            {[...Array(totalPages)].map((_, index) => (
+              <Pagination.Item
+                key={index}
+                active={index + 1 === currentPage}
+                onClick={() => handlePageChange(index + 1)}
+              >
+                {index + 1}
+              </Pagination.Item>
+            ))}
+          </Pagination>
         </Col>
       </Row>
     </Container>
