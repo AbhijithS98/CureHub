@@ -117,8 +117,10 @@ const Chat = () => {
     <div className="chat-container">
       <div className="chat-header">
              <img
-                src={`${backendURL}/${
-                  isDoctor? user?.data.profilePicture : doctor?.data.profilePicture}`}
+                src={isDoctor? user?.data.profilePicture?
+                              `${backendURL}/${user.data.profilePicture}` : '/assets/dummy-profile.png'
+                            :
+                              `${backendURL}/${doctor?.data.profilePicture}`}
                 alt={user?.data.name}
                 className="chat-header-profile-pic"
                 
