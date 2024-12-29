@@ -33,106 +33,108 @@ const PaymentScreen: React.FC = () => {
 
   // Payment handler (Razorpay integration)
   const handlePayment = async () => {
-    const response = await checkSlot({slotId: selectedDate._id, timeSlotId: selectedSlot._id,}).unwrap();
 
-    if(response.status === 200){
-      if(response.slotStatus !== 'Available'){
-        toast.error("Slot has been booked by another user.") 
-        return
-      }
+    try{
+          const result = await checkSlot({slotId: selectedDate._id, timeSlotId: selectedSlot._id,}).unwrap()
+          console.log("check res:",result);
 
-      //Proceeding booking
-      if (paymentMethod === 'Wallet') {
-        // Wallet payment
-        if (!wallet || wallet.balance < finalAmount) {
-          toast.error('Insufficient wallet balance!');
-          return;
-        }
-  
-        try {
-          const result = await Swal.fire({
-            title: 'Confirmation on booking!',
-            text: `You are about to pay ₹${finalAmount} from your wallet.`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, I confirm!',
-            cancelButtonText: 'Cancel',
-          });
-  
-          if (result.isConfirmed) {
-            const bookingDetails = {
-              userEmail: userInfo?.email,
-              slotId: selectedDate._id,
-              timeSlotId: selectedSlot._id,
-              doctorId: doctor._id,
-              paymentMethod,
-              amount: finalAmount,
-            };
-  
-            await bookSlot({ bookingDetails }).unwrap();
-            toast.success('Payment successful via wallet!');
-            navigate('/user/thank-you');
+          if(result.slotStatus !== 'Available'){
+            toast.error("Slot has been booked by another user.") 
+            return;
           }
-        } catch (error: any) {
-          toast.error(error.data.message || 'Failed to complete payment!');
-        }
-      } else {
-        // Razorpay payment
-        const response = await fetch(`${backendURL}/api/payment/create-order`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ amount: finalAmount, currency: 'INR' }),
-        });
-  
-        const data = await response.json();
-        if (data.success) {
-          const options = {
-            key: 'rzp_test_SLWTHwkkbKB9bv',
-            amount: finalAmount * 100,
-            currency: 'INR',
-            name: 'CURE HUB',
-            description: `Payment for appointment with Dr. ${doctor.name}`,
-            order_id: data.order.id,
-            handler: async function (response: any) {
-              const bookingDetails = {
-                userEmail: userInfo?.email,
-                slotId: selectedDate._id,
-                timeSlotId: selectedSlot._id,
-                doctorId: doctor._id,
-                paymentMethod,
-                amount: finalAmount,
+
+          //Proceeding booking
+          else if (paymentMethod === 'Wallet') {
+                // Wallet payment
+                if (!wallet || wallet.balance < finalAmount) {
+                  toast.error('Insufficient wallet balance!');
+                  return;
+                }
+      
+            try {
+              const result = await Swal.fire({
+                title: 'Confirmation on booking!',
+                text: `You are about to pay ₹${finalAmount} from your wallet.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, I confirm!',
+                cancelButtonText: 'Cancel',
+              });
+      
+              if (result.isConfirmed) {
+                const bookingDetails = {
+                  userEmail: userInfo?.email,
+                  slotId: selectedDate._id,
+                  timeSlotId: selectedSlot._id,
+                  doctorId: doctor._id,
+                  paymentMethod,
+                  amount: finalAmount,
+                };
+      
+                await bookSlot({ bookingDetails }).unwrap();
+                toast.success('Payment successful via wallet!');
+                navigate('/user/thank-you');
+              }
+            } catch (error: any) {
+              toast.error(error.data.message || 'Failed to complete payment!');
+            }
+
+          } else {
+
+            // Razorpay payment
+            const response = await fetch(`${backendURL}/api/payment/create-order`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ amount: finalAmount, currency: 'INR' }),
+            });
+      
+            const data = await response.json();
+            if (data.success) {
+              const options = {
+                key: 'rzp_test_SLWTHwkkbKB9bv',
+                amount: finalAmount * 100,
+                currency: 'INR',
+                name: 'CURE HUB',
+                description: `Payment for appointment with Dr. ${doctor.name}`,
+                order_id: data.order.id,
+                handler: async function (response: any) {
+                  const bookingDetails = {
+                    userEmail: userInfo?.email,
+                    slotId: selectedDate._id,
+                    timeSlotId: selectedSlot._id,
+                    doctorId: doctor._id,
+                    paymentMethod,
+                    amount: finalAmount,
+                  };
+                  await bookSlot({ bookingDetails }).unwrap();
+                  toast.success('Payment successful!');
+                  navigate('/user/thank-you');
+                },
+                prefill: {
+                  name: userInfo?.name,
+                  email: userInfo?.email,
+                  contact: userInfo?.phone,
+                },
+                theme: {
+                  color: '#0d6efd',
+                },
               };
-              await bookSlot({ bookingDetails }).unwrap();
-              toast.success('Payment successful!');
-              navigate('/user/thank-you');
-            },
-            prefill: {
-              name: userInfo?.name,
-              email: userInfo?.email,
-              contact: userInfo?.phone,
-            },
-            theme: {
-              color: '#0d6efd',
-            },
-          };
-  
-          const paymentObject = new window.Razorpay(options);
-          paymentObject.open();
-        } else {
-          toast.error('Failed to create Razorpay order');
-        }
-      }
-
-    } else{
-
-      toast.error(response.error?.message || "An error occurred. Please try again.");
+      
+              const paymentObject = new window.Razorpay(options);
+              paymentObject.open();
+            } else {
+              toast.error('Failed to create Razorpay order');
+            }
+          }    
+    } catch (error:any){
+      console.log("the error:",error);
+      
+      toast.error(error?.data.message || "An error occurred. Please try again.");
     }
-    
-
     
   };
 
