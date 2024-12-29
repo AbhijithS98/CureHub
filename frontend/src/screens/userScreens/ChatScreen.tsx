@@ -38,23 +38,43 @@ const Chat = () => {
     }
   };
 
+  const markMessagesAsRead = async () => {
+    try {
+      await fetch(`${backendURL}/api/chat/mark-read`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          doctorId,
+          patientId: userId,
+          userRole: isDoctor ? 'doctor' : 'patient',
+        }),
+      });
+      
+    } catch (error) {
+      console.error('Error marking messages as read:', error);
+    }
+  };
+
 
 
   useEffect(() => {
     fetchChatHistory();
     socket.emit('join', { userId, doctorId});
 
-    socket.on("receiveMessage", (message: Message) => {
-      console.log("recieved cghvvvvvvvvvvvvvvvvvv",message);     
+    socket.on("receiveMessage", (message: Message) => {     
       setMessages((prevMessages) => [...prevMessages, message]);
-      setLastMessage(message.message)
+      // setLastMessage(message.message)
+      fetchChatHistory();
+      markMessagesAsRead();
     });
 
     return () => {
       socket.off("receiveMessage");
       socket.emit('leave', { userId, doctorId});
     };
-  }, [doctorId, userId, lastMessage]);
+  }, [doctorId, userId]);
 
   
 
@@ -71,39 +91,15 @@ const Chat = () => {
     };
     socket.emit("sendMessage", messageData);
     
-    setMessages((prevMessages) => [...prevMessages, messageData]);
-    setLastMessage(newMessage)
+    // setLastMessage(newMessage)
     setNewMessage(""); 
     fetchChatHistory(); 
   };
 
 
-
-
   useEffect(() => {
-    const markMessagesAsRead = async () => {
-      try {
-        await fetch(`${backendURL}/api/chat/mark-read`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            doctorId,
-            patientId: userId,
-            userRole: isDoctor ? 'doctor' : 'patient',
-          }),
-        });
-        
-      } catch (error) {
-        console.error('Error marking messages as read:', error);
-      }
-    };
-  
     markMessagesAsRead();
   }, [doctorId, userId, isDoctor]);
-
-
 
 
   // Scroll to the latest message whenever messages change
@@ -157,11 +153,15 @@ const Chat = () => {
                     minute: "2-digit",
                   })}
 
-                  {msg.isRead ? (
+                  {(msg.isDoctorSender && isDoctor) || (!msg.isDoctorSender && !isDoctor) ?
+                  msg.isRead ? (
                     <span className="read-indicator">&#10003;&#10003;</span>
                     ) : (
                       <span className="unread-indicator">&#10003;</span>
-                  )}
+                  )
+                  :
+                  ''
+                  }
                 </div>                
               </div>
             </div>

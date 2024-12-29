@@ -85,7 +85,7 @@ io.on('connection', (socket) => {
             // // Emit the message to the recipient
             // socket.to(recipientId).emit('receiveMessage', chat);
             const room = `${patientId}-${doctorId}`;
-            io.to(room).emit('receiveMessage', chat);
+            socket.to(room).emit('receiveMessage', chat);
         }
         catch (error) {
             console.error('Error saving message:', error);
