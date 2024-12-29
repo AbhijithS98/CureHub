@@ -284,7 +284,7 @@ class UserService {
     const status = await userRepository.checkAvailabilityStatus(slotId,timeSlotId);
 
     if(!status){
-      const error = Error('No such a time slot available.');
+      const error = Error('Time slot has been removed by doctor.');
       error.name = 'ValidationError';  
       throw error;
     }

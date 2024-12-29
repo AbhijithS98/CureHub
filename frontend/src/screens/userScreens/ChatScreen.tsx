@@ -37,6 +37,9 @@ const Chat = () => {
     }
   };
 
+
+
+
   useEffect(() => {
     fetchChatHistory();
     socket.on("receiveMessage", (message: Message) => {
@@ -47,7 +50,10 @@ const Chat = () => {
     };
   }, [doctorId, userId]);
 
-  
+  ``
+
+
+
   const sendMessage = () => {
     if (!newMessage.trim()) return;
 
@@ -61,6 +67,8 @@ const Chat = () => {
     setNewMessage(""); 
     fetchChatHistory(); 
   };
+
+
 
 
   useEffect(() => {
@@ -85,6 +93,9 @@ const Chat = () => {
   
     markMessagesAsRead();
   }, [doctorId, userId, isDoctor]);
+
+
+
 
   // Scroll to the latest message whenever messages change
   useEffect(() => {
