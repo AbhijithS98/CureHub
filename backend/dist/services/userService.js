@@ -229,7 +229,7 @@ class UserService {
             // check the availability
             const status = yield userRepository.checkAvailabilityStatus(slotId, timeSlotId);
             if (!status) {
-                const error = Error('No such a time slot available.');
+                const error = Error('Time slot has been removed by doctor.');
                 error.name = 'ValidationError';
                 throw error;
             }

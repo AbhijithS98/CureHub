@@ -60,7 +60,7 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
     // Listen for joining a specific room (doctor or patient)
-    socket.on('join', ({ userId }) => {
+    socket.on('join', ({ userId, }) => {
         console.log(`User with ID: ${userId} joined the room.`);
         socket.join(userId); // User joins their unique room
     });
