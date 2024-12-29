@@ -303,9 +303,16 @@ class UserService {
             yield userRepository.updateTimeSlot(appointment.timeSlotId, updatedStatus);
             //do the refund and add new payment document
             const paymentAmount = (_a = appointment.payment) === null || _a === void 0 ? void 0 : _a.amount;
-            const Wallet = yield userRepository.findUserWallet(UserId);
-            Wallet.balance += paymentAmount;
-            yield Wallet.save();
+            let UserWallet = yield userRepository.findUserWallet(UserId);
+            if (!UserWallet) {
+                const walletObject = {
+                    ownerId: UserId,
+                    ownerType: 'User',
+                };
+                UserWallet = yield userRepository.createUserWallet(walletObject);
+            }
+            UserWallet.balance += paymentAmount;
+            yield UserWallet.save();
             const paymentObject = {
                 user: UserId,
                 doctor: appointment.doctor,

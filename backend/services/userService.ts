@@ -370,9 +370,16 @@ class UserService {
     
     //do the refund and add new payment document
     const paymentAmount = (appointment.payment as IPayment)?.amount;
-    const Wallet = await userRepository.findUserWallet(UserId);
-    Wallet!.balance += paymentAmount;
-    await Wallet!.save();
+    let UserWallet = await userRepository.findUserWallet(UserId);
+    if(!UserWallet){
+      const walletObject: Partial<IWallet> = {
+        ownerId: UserId,
+        ownerType: 'User',
+      }
+      UserWallet = await userRepository.createUserWallet(walletObject)
+    }
+    UserWallet!.balance += paymentAmount;
+    await UserWallet!.save();
   
     const paymentObject: Partial<IPayment> = {
       user:UserId,
