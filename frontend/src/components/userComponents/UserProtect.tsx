@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store.js';
-import { setNotification } from '../../slices/globalSlices/notificationSlice.js';
+
 
 interface ProtectedRouteProps {
   children: JSX.Element;
@@ -10,11 +10,9 @@ interface ProtectedRouteProps {
 
 const UserProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { userInfo } = useSelector((state: RootState) => state.userAuth);
-  const dispatch = useDispatch();
-
+  const errMsg = 'You are not authorized. Please login'
   if (!userInfo) {
-    dispatch(setNotification('You are not authorized. Please Login!'));
-    return <Navigate to="/user/login" replace />;
+    return <Navigate to={`/user/login?message=${encodeURIComponent(errMsg)}`} />;
   }
 
   return children;

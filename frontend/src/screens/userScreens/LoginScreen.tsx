@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect,useRef } from 'react';
 import FormContainer from '../../components/FormContainer';
 import Loader from '../../components/userComponents/Loader';
 import { Form, Button, Col, Row } from 'react-bootstrap';
@@ -14,20 +14,28 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const BackendURL = import.meta.env.VITE_BACKEND_URL;
 
 const LoginScreen: React.FC = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const message = queryParams.get('message');
+  const hasShownToast = useRef(false);
+
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation();
-
   
   const { userInfo } = useSelector((state : RootState) => state.userAuth);
   const [login, {isLoading:loginLoading}] = useLoginMutation();
   const [resendOtp, {isLoading:resendLoading}] = useResendOtpMutation();
 
-
+  useEffect(()=>{
+    if (message && !hasShownToast.current) {
+      toast.error(decodeURIComponent(message));
+      hasShownToast.current = true;
+    }
+  },[message]);
   
   useEffect(() => {
     if (userInfo) {
@@ -35,13 +43,7 @@ const LoginScreen: React.FC = () => {
     }
   }, [navigate, userInfo]);
 
-  useEffect(()=>{
-    const queryParams = new URLSearchParams(location.search);
-    const message = queryParams.get('message');
-    if (message) {
-      toast.error(decodeURIComponent(message)); 
-    }
-  },[location]);
+  
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);

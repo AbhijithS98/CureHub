@@ -23,6 +23,7 @@ const Chat = () => {
   const isDoctor = location.pathname.includes("doctor");
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [lastMessage, setLastMessage] = useState<string | null>(null);
   const inputRef = useRef<HTMLDivElement | null>(null);
 
   const fetchChatHistory = async () => {
@@ -39,18 +40,23 @@ const Chat = () => {
 
 
 
-
   useEffect(() => {
     fetchChatHistory();
+    socket.emit('join', { userId, doctorId});
+
     socket.on("receiveMessage", (message: Message) => {
+      console.log("recieved cghvvvvvvvvvvvvvvvvvv",message);     
       setMessages((prevMessages) => [...prevMessages, message]);
+      setLastMessage(message.message)
     });
+
     return () => {
       socket.off("receiveMessage");
+      socket.emit('leave', { userId, doctorId});
     };
-  }, [doctorId, userId]);
+  }, [doctorId, userId, lastMessage]);
 
-  ``
+  
 
 
 
@@ -64,6 +70,9 @@ const Chat = () => {
       isDoctorSender: isDoctor, 
     };
     socket.emit("sendMessage", messageData);
+    
+    setMessages((prevMessages) => [...prevMessages, messageData]);
+    setLastMessage(newMessage)
     setNewMessage(""); 
     fetchChatHistory(); 
   };
