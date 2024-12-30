@@ -12,9 +12,10 @@ const UserProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { userInfo } = useSelector((state: RootState) => state.userAuth);
   const errMsg = 'You are not authorized. Please login'
   if (!userInfo) {
-    return <Navigate to={`/user/login?message=${encodeURIComponent(errMsg)}`} />;
+    return <Navigate to='/user/login'/>;
   }
 
+  
   return children;
 };
 
