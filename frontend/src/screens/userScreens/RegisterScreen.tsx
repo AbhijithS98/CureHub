@@ -48,7 +48,7 @@ const RegisterScreen: React.FC = () => {
       navigate("/user/otp", { state: { email } })
 
     } catch (err: any) {
-      console.error(err);
+      console.error("error is",err);
       toast.error(err?.data?.message || "Registration failed!");
     }
   };
