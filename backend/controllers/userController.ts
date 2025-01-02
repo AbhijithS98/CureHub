@@ -182,6 +182,7 @@ class UserController {
     }
   }
   
+  
   async getSingleDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
 
     try {     
