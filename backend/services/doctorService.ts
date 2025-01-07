@@ -26,15 +26,36 @@ class DoctorService {
         throw error;
     }
     
-    const idProofPath = req.files? req.files['idProof'][0].path.replace(/\\/g, '/').replace(/^public\//, '') : null;
-    const medicalDegreePath = req.files? req.files['medicalDegree'][0].path.replace(/\\/g, '/').replace(/^public\//, '') : null;
-    const profilePicturePath = req.files? req.files['profilePicture'][0].path.replace(/\\/g, '/').replace(/^public\//, '') : null;
+    console.log('File Paths:', req.files);
+
+    const idProofPath = req.files
+      ? req.files['idProof'][0].path
+          .replace(/\\/g, '/') // Normalize separators to forward slashes
+          .replace(/^public[\/\\]?/, '') // Remove `public/` or `public\` prefix
+      : null;
+
+    const medicalDegreePath = req.files
+      ? req.files['medicalDegree'][0].path
+          .replace(/\\/g, '/')
+          .replace(/^public[\/\\]?/, '')
+      : null;
+
+    const profilePicturePath = req.files
+      ? req.files['profilePicture'][0].path
+          .replace(/\\/g, '/')
+          .replace(/^public[\/\\]?/, '')
+      : null;
+
 
     if (!idProofPath || !medicalDegreePath || !profilePicturePath) {
         const error = Error('All files (ID proof, Medical Degree, profilePicture) are required');
         error.name = 'ValidationError';  
         throw error;
     }
+    
+    console.log('Normalized idProof Path:', idProofPath);
+    console.log('Normalized medicalDegree Path:', medicalDegreePath);
+    console.log('Normalized profilePicture Path:', profilePicturePath);
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
