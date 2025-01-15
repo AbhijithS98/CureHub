@@ -45,6 +45,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/chat', chatRoutes);
 app.use(express.static(path.join(__dirname, '../public')));
+console.log("dir-name:", __dirname);
 app.use(errorHandler);
 app.get('/', (req, res) => {
     res.send('Server Ready');

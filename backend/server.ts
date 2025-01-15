@@ -45,6 +45,8 @@ app.use('/api/chat', chatRoutes);
 
 
 app.use(express.static(path.join(__dirname,'../public')));
+console.log("dir-name:",__dirname);
+
 
 app.use(errorHandler);
 
