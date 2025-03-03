@@ -25,10 +25,11 @@ class ReviewController {
     }
     getReviews(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("came in rc.................");
             try {
-                const doctorId = req.query.doctorId;
-                const reviews = yield this.reviewService.getReviews(doctorId);
-                res.status(200).json({ reviews });
+                const docId = req.query.docId;
+                const result = yield this.reviewService.getReviews(docId);
+                res.status(200).json({ result });
             }
             catch (error) {
                 console.error('fetching doctor reviews: ', error);

@@ -16,7 +16,7 @@ import { IDoctorService } from "./interfaces/IDoctorService.js";
 
 
 
-export class DoctorService implements IDoctorService{
+class DoctorService implements IDoctorService{
   constructor(
     private doctorRepository: IDoctorRepository,
     private paymentRepository: IPaymentRepository,
@@ -476,3 +476,4 @@ async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
   }
 }
 
+export default DoctorService;

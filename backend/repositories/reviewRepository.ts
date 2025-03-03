@@ -12,6 +12,9 @@ class ReviewRepository extends BaseRepository<IReview> implements IReviewReposit
   }
 
   async getReviews(doctorId: string): Promise<IReview[] | null> {
+    console.log("came in rr............");
+    console.log("doctorId type: ", typeof doctorId, "value:", doctorId);
+    
     return this.findAll(
       { doctorId },
       { populate: { path: "patientId", select: "name profilePicture" } } 

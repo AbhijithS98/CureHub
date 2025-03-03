@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { IReviewService } from "../services/interfaces/IReviewService.js";
 
+
 class ReviewController {
   private reviewService: IReviewService;
 
@@ -19,10 +20,12 @@ class ReviewController {
   }
 
   async getReviews(req: Request, res: Response, next: NextFunction): Promise<void> {
+    console.log("came in rc.................");
+    
     try {
-      const doctorId = req.query.doctorId as string;
-      const reviews = await this.reviewService.getReviews(doctorId);
-      res.status(200).json({reviews});
+      const docId = req.query.docId as string;
+      const result = await this.reviewService.getReviews(docId);
+      res.status(200).json({result});
     } catch (error: any) {
       console.error('fetching doctor reviews: ', error);
       next(error);

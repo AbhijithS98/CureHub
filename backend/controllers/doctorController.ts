@@ -29,7 +29,7 @@ class DoctorController {
   }
 
 
-  async verifyOtp(req: Request, res: Response): Promise<void> {
+  async verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { email,otp } = req.body;
       const isValid = await this.doctorService.verifyOtp(email, otp );
@@ -42,7 +42,8 @@ class DoctorController {
       }
     }
     catch (error: any){
-      res.status(500).json({ message: error.message });
+      console.error('verify OTP error:', error);
+      next(error)
     }
   }
 
@@ -92,19 +93,25 @@ class DoctorController {
   }
 
 
-  async refreshToken(req: Request, res: Response): Promise<void>{
-    const refreshToken = req.cookies.doctorRefreshJwt;
+  async refreshToken(req: Request, res: Response, next: NextFunction): Promise<void>{
+    try{
+      const refreshToken = req.cookies.doctorRefreshJwt;
   
-    if (!refreshToken) {
-      res.status(401).json({ message: 'No doctorRefresh token provided, authorization denied' });
-      return;
-    } 
-  
-      const newAccessToken = verifyRefreshToken(refreshToken,'doctor',res)
-      console.log("doctor token has refreshed");
+      if (!refreshToken) {
+        res.status(401).json({ message: 'No doctorRefresh token provided, authorization denied' });
+        return;
+      } 
+    
+        const newAccessToken = verifyRefreshToken(refreshToken,'doctor',res)
+        console.log("doctor token has refreshed");
+        
+      if(newAccessToken) {  
+        res.status(200).json({ token: newAccessToken });
+      }
       
-    if(newAccessToken) {  
-      res.status(200).json({ token: newAccessToken });
+    }catch(error: any){
+      console.error('refreshToken error:',error.message);
+      next(error)
     }
   };
 

@@ -20,6 +20,8 @@ class ReviewRepository extends BaseRepository {
     }
     getReviews(doctorId) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("came in rr............");
+            console.log("doctorId type: ", typeof doctorId, "value:", doctorId);
             return this.findAll({ doctorId }, { populate: { path: "patientId", select: "name profilePicture" } });
         });
     }

@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import sendEmail from "../utils/emailSender.js";
 import bcrypt from "bcryptjs";
 import crypto from 'crypto';
-export class DoctorService {
+class DoctorService {
     constructor(doctorRepository, paymentRepository, prescriptionRepository) {
         this.doctorRepository = doctorRepository;
         this.paymentRepository = paymentRepository;
@@ -383,3 +383,4 @@ export class DoctorService {
         });
     }
 }
+export default DoctorService;

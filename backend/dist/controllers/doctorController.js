@@ -28,7 +28,7 @@ class DoctorController {
             }
         });
     }
-    verifyOtp(req, res) {
+    verifyOtp(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { email, otp } = req.body;
@@ -42,7 +42,8 @@ class DoctorController {
                 }
             }
             catch (error) {
-                res.status(500).json({ message: error.message });
+                console.error('verify OTP error:', error);
+                next(error);
             }
         });
     }
@@ -85,17 +86,23 @@ class DoctorController {
             }
         });
     }
-    refreshToken(req, res) {
+    refreshToken(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const refreshToken = req.cookies.doctorRefreshJwt;
-            if (!refreshToken) {
-                res.status(401).json({ message: 'No doctorRefresh token provided, authorization denied' });
-                return;
+            try {
+                const refreshToken = req.cookies.doctorRefreshJwt;
+                if (!refreshToken) {
+                    res.status(401).json({ message: 'No doctorRefresh token provided, authorization denied' });
+                    return;
+                }
+                const newAccessToken = verifyRefreshToken(refreshToken, 'doctor', res);
+                console.log("doctor token has refreshed");
+                if (newAccessToken) {
+                    res.status(200).json({ token: newAccessToken });
+                }
             }
-            const newAccessToken = verifyRefreshToken(refreshToken, 'doctor', res);
-            console.log("doctor token has refreshed");
-            if (newAccessToken) {
-                res.status(200).json({ token: newAccessToken });
+            catch (error) {
+                console.error('refreshToken error:', error.message);
+                next(error);
             }
         });
     }

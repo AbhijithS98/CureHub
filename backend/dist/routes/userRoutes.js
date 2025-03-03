@@ -34,7 +34,7 @@ router.put('/cancel-booking', verifyUserToken, userController.cancelBooking);
 router.get('/get-prescription', verifyUserToken, userController.viewPrescription);
 router.get('/get-doctor', userController.getDoctor);
 //Review Based
-router.post('/add-review', verifyUserToken, reviewController.createReview);
-router.get('/get-doctor-reviews', reviewController.getReviews);
+router.post('/add-review', verifyUserToken, (req, res, next) => reviewController.createReview(req, res, next));
+router.get('/get-doctor-reviews', (req, res, next) => reviewController.getReviews(req, res, next));
 router.post('/google-login', userController.googleLogin);
 export default router;
