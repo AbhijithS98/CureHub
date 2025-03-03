@@ -1,10 +1,10 @@
-import Doctor, { IDoctor } from "../models/doctor.js";
-import User, { IUser} from "../models/user.js";
-import Availability, { IAvailability } from "../models/availability.js";
-import Appointment, { IAppointment } from "../models/appointment.js";
-import Wallet, { IWallet } from "../models/walletSchema.js";
-import Payment, { IPayment} from "../models/paymentSchema.js";
-import Prescription, { IPrescription } from "../models/prescriptionSchema.js";
+import Doctor, { IDoctor } from "../models/doctorModel.js";
+import User, { IUser} from "../models/userModel.js";
+import Availability, { IAvailability } from "../models/availabilityModel.js";
+import Appointment, { IAppointment } from "../models/appointmentModel.js";
+import Wallet, { IWallet } from "../models/walletModel.js";
+import Payment, { IPayment} from "../models/paymentModel.js";
+import Prescription, { IPrescription } from "../models/prescriptionModel.js";
 
 class DoctorRepository { 
 

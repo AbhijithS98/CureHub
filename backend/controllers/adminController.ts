@@ -1,7 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import adminService from "../services/adminService.js";
+import {AdminService} from "../services/adminService.js";
 import generateAdminTokens from "../utils/generateAdminJwt.js";
 import verifyRefreshToken from "../utils/refreshToken.js";
+import paymentRepository from "../repositories/paymentRepository.js";
+
+
+const adminService = new AdminService(paymentRepository);
 
 class AdminController{
   

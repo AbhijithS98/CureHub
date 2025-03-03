@@ -1,18 +1,21 @@
-import { IDoctor } from "../models/doctor.js";
-import { IAvailability } from "../models/availability.js";
+import { IDoctor } from "../models/doctorModel.js";
+import { IAvailability } from "../models/availabilityModel.js";
 import doctorRepository from "../repositories/doctorRepository.js";
 import sendEmail from "../utils/emailSender.js";
 import bcrypt from "bcryptjs";
 import crypto from 'crypto';
 import { Request, Response } from "express";
-import { IPayment } from "../models/paymentSchema.js";
-import { IAppointment } from "../models/appointment.js";
-import { IPrescription } from "../models/prescriptionSchema.js";
-import { IUser } from "../models/user.js";
+import { IPayment } from "../models/paymentModel.js";
+import { IAppointment } from "../models/appointmentModel.js";
+import { IPrescription } from "../models/prescriptionModel.js";
+import { IUser } from "../models/userModel.js";
+import { IPaymentRepository } from "../interfaces/IPaymentRepository.js";
 
 
 
-class DoctorService {
+export class DoctorService {
+  constructor(private paymentRepository: IPaymentRepository) {}
+
 
   async registerDoctor(req: any): Promise<IDoctor> {
       
@@ -358,7 +361,7 @@ async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
       transactionType:'Refund',
       status:'Completed'
     }
-    const payment = await doctorRepository.createPayment(paymentObject);
+    const payment = await this.paymentRepository.createPayment(paymentObject);
 
     //update appointment document and save
     appointment.status = 'Cancelled'
@@ -463,4 +466,3 @@ async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
   }
 }
 
-export default new DoctorService();

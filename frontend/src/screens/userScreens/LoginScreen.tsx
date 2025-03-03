@@ -70,7 +70,7 @@ const LoginScreen: React.FC = () => {
         }
       }
       else{
-        toast.error('Something went wrong')
+        toast.error('Server error !')
       }
     }
   };

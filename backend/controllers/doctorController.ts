@@ -1,8 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import doctorService from "../services/doctorService.js";
+import { DoctorService } from "../services/doctorService.js";
 import generateDoctorTokens from "../utils/generateDoctorJwt.js";
 import verifyRefreshToken from "../utils/refreshToken.js";
+import paymentRepository from "../repositories/paymentRepository.js";
 
+
+const doctorService = new DoctorService(paymentRepository);
 
 class DoctorController {
    

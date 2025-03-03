@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import userService from "../services/userService.js";
 import generateUserTokens from "../utils/generateUserJwt.js";
 import verifyRefreshToken from "../utils/refreshToken.js";
+import paymentRepository from "../repositories/paymentRepository.js";
+import { UserService } from "../services/userService.js";
+
+const userService = new UserService(paymentRepository);
 
 class UserController {
 
@@ -380,6 +383,7 @@ class UserController {
   }
 
 
+  
   async googleLogin(req:Request, res:Response, next:NextFunction): Promise<void> {
 console.log("hit controller google");
 

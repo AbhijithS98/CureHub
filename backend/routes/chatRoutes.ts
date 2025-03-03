@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
-import Chat from '../models/chatSchema.js'
-import User from '../models/user.js'
-import Doctor from '../models/doctor.js';
+import Chat from '../models/chatModel.js'
+import User from '../models/userModel.js'
+import Doctor from '../models/doctorModel.js';
 
 const router = express.Router();
 

@@ -1,16 +1,17 @@
 import { Request, Response } from "express";
-import { IAdmin } from "../models/admin.js";
-import { IDoctor } from "../models/doctor.js";
-import { IUser } from "../models/user.js";
+import { IAdmin } from "../models/adminModel.js";
+import { IDoctor } from "../models/doctorModel.js";
+import { IUser } from "../models/userModel.js";
 import adminRepository from "../repositories/adminRepository.js";
 import sendEmail from "../utils/emailSender.js";
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto';
-import { IAppointment } from "../models/appointment.js";
-import { IPayment } from "../models/paymentSchema.js";
+import { IAppointment } from "../models/appointmentModel.js";
+import { IPayment } from "../models/paymentModel.js";
+import { IPaymentRepository } from "../interfaces/IPaymentRepository.js";
 
-
-class AdminService{
+export class AdminService{
+  constructor(private paymentRepository: IPaymentRepository) {}
   
   async authenticateAdmin(email: string, password: string, res: Response): Promise<IAdmin> {
     
@@ -241,13 +242,13 @@ class AdminService{
 
   async getAllRefundTransactionsCount(): Promise<number | null> {
    
-    const RefundTransactionsCount = await adminRepository.getRefundTransactionsCount();
+    const RefundTransactionsCount = await this.paymentRepository.getRefundTransactionsCount();
     return RefundTransactionsCount;
   }
 
   async getTotalRevenue(): Promise<{ _id: null, total: number }[] | []> {
    
-    const TotalRevenue = await adminRepository.getTotalRevenue();
+    const TotalRevenue = await this.paymentRepository.getTotalRevenue();
     return TotalRevenue;
   }
 
@@ -261,7 +262,7 @@ class AdminService{
 
   async getRevenueTrends(): Promise<any[] | []> {
    
-    const RevenueTrends = await adminRepository.getRevenueChartData();
+    const RevenueTrends = await this.paymentRepository.getRevenueChartData();
     return RevenueTrends;
   }
 
@@ -274,12 +275,15 @@ class AdminService{
   }
 
   async getRevenueReportData(req: Request): Promise<IPayment[] | []> {
+    const startDate = typeof req.query.startDate === "string" ? req.query.startDate : undefined;
+    const endDate = typeof req.query.endDate === "string" ? req.query.endDate : undefined;
+
    
-    const RevenueReports = await adminRepository.getRevenueReports(req);
+    const RevenueReports = await this.paymentRepository.getRevenueReports(startDate,endDate);
     return RevenueReports;
   }
 }
 
 
 
-export default new AdminService();
+// export default new AdminService();

@@ -2,21 +2,23 @@ import userRepository from "../repositories/userRepository.js";
 import bcrypt from "bcryptjs";
 import crypto from 'crypto';
 import dotenv from 'dotenv';
-import User, { IUser } from "../models/user.js";
-import Doctor,{ IDoctor } from "../models/doctor.js";
-import { IWallet } from "../models/walletSchema.js";
-import { IAppointment} from "../models/appointment.js";
-import { IReview } from "../models/reviewSchema.js";
+import User, { IUser } from "../models/userModel.js";
+import Doctor,{ IDoctor } from "../models/doctorModel.js";
+import { IWallet } from "../models/walletModel.js";
+import { IAppointment} from "../models/appointmentModel.js";
+import { IReview } from "../models/reviewModel.js";
 import sendEmail from "../utils/emailSender.js";
 import { Request, Response } from "express";
-import { IPayment } from "../models/paymentSchema.js";
-import { IPrescription } from "../models/prescriptionSchema.js";
+import { IPayment } from "../models/paymentModel.js";
+import { IPrescription } from "../models/prescriptionModel.js";
 import { TokenPayload } from "google-auth-library";
 import { GoogleTokenVerify } from "../utils/googleTokenVerify.js";
+import { IPaymentRepository } from "../interfaces/IPaymentRepository.js";
 
 dotenv.config(); 
 
-class UserService {
+export class UserService {
+  constructor(private paymentRepository: IPaymentRepository) {}
   
   async registerUser(req:Request): Promise<IUser> {
 
@@ -335,7 +337,7 @@ class UserService {
       transactionType:'Booking',
       status:'Completed'
     }
-    const payment = await userRepository.createPayment(paymentObject);
+    const payment = await this.paymentRepository.createPayment(paymentObject);
     
 
     //create appointment
@@ -408,7 +410,7 @@ class UserService {
       transactionType:'Refund',
       status:'Completed'
     }
-    const payment = await userRepository.createPayment(paymentObject);
+    const payment = await this.paymentRepository.createPayment(paymentObject);
 
     //update appointment document and save
     appointment.status = 'Cancelled'
@@ -459,7 +461,7 @@ class UserService {
       status:'Completed'
     }
 
-    await userRepository.createPayment(paymentObject);
+    await this.paymentRepository.createPayment(paymentObject);
   }
 
 
@@ -481,7 +483,7 @@ class UserService {
   async getWalletTransactions(req:any): Promise<IPayment[] | null> {
     
     const UserId = req.user.Id;
-    const transactions = await userRepository.getUserWalletPayments(UserId);
+    const transactions = await this.paymentRepository.getUserWalletPayments(UserId);
   
     return transactions
   }
@@ -607,4 +609,4 @@ class UserService {
   }
 }
 
-export default new UserService();
+// export default UserService;

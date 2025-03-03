@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
-import { IPayment } from './paymentSchema';
+import { IPayment } from './paymentModel';
 
 
 export enum CancellationReason {

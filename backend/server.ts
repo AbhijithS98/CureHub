@@ -15,7 +15,7 @@ import chatRoutes from './routes/chatRoutes.js'
 import errorHandler from './middleware/errorHandler.js';
 import { Server } from 'socket.io';
 import http from 'http';
-import Chat from './models/chatSchema.js';
+import Chat from './models/chatModel.js';
 
 dotenv.config();
 

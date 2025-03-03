@@ -1,11 +1,11 @@
-import User,{ IUser} from "../models/user.js";
-import Doctor,{ IDoctor } from "../models/doctor.js";
-import Payment,{ IPayment } from "../models/paymentSchema.js";
-import Availability,{ IAvailability } from "../models/availability.js";
-import Appointment,{ IAppointment} from "../models/appointment.js";
-import Wallet,{ IWallet } from "../models/walletSchema.js";
-import Review,{ IReview} from "../models/reviewSchema.js";
-import Prescription,{ IPrescription } from "../models/prescriptionSchema.js";
+import User,{ IUser} from "../models/userModel.js";
+import Doctor,{ IDoctor } from "../models/doctorModel.js";
+// import Payment,{ IPayment } from "../models/paymentModel.js";
+import Availability,{ IAvailability } from "../models/availabilityModel.js";
+import Appointment,{ IAppointment} from "../models/appointmentModel.js";
+import Wallet,{ IWallet } from "../models/walletModel.js";
+import Review,{ IReview} from "../models/reviewModel.js";
+import Prescription,{ IPrescription } from "../models/prescriptionModel.js";
 import { Types } from "mongoose";
 
 
@@ -93,11 +93,11 @@ class UserRepository {
     )
   }
 
-  async createPayment(paymentData: any): Promise<IPayment> {
-    const payment = new Payment(paymentData);
-    await payment.save();
-    return payment;
-  }
+  // async createPayment(paymentData: any): Promise<IPayment> {
+  //   const payment = new Payment(paymentData);
+  //   await payment.save();
+  //   return payment;
+  // }
 
 
   async createAppointment(appointmentDetails: Partial<IAppointment>): Promise<IAppointment> {
@@ -159,15 +159,15 @@ class UserRepository {
   }
 
 
-  async getUserWalletPayments(id: string): Promise<IPayment[] | null> {
-    return await Payment.find({
-      user: id,
-      $or: [
-        { transactionType: "Recharge" },
-        { method: "Wallet" }
-      ]
-    }).sort({ createdAt: -1 });
-  }
+  // async getUserWalletPayments(id: string): Promise<IPayment[] | null> {
+  //   return await Payment.find({
+  //     user: id,
+  //     $or: [
+  //       { transactionType: "Recharge" },
+  //       { method: "Wallet" }
+  //     ]
+  //   }).sort({ createdAt: -1 });
+  // }
 
   async createReview(newReview: Partial<IReview>): Promise<void> {
     const review = new Review(newReview);
