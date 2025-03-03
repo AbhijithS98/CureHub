@@ -7,13 +7,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import Doctor from "../models/doctor.js";
-import User from "../models/user.js";
-import Availability from "../models/availability.js";
-import Appointment from "../models/appointment.js";
-import Wallet from "../models/walletSchema.js";
-import Payment from "../models/paymentSchema.js";
-import Prescription from "../models/prescriptionSchema.js";
+import Doctor from "../models/doctorModel.js";
+import User from "../models/userModel.js";
+import Availability from "../models/availabilityModel.js";
+import Appointment from "../models/appointmentModel.js";
+import Wallet from "../models/walletModel.js";
+import Payment from "../models/paymentModel.js";
+import Prescription from "../models/prescriptionModel.js";
 class DoctorRepository {
     findDoctorByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {

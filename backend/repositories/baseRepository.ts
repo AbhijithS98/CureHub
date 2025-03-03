@@ -1,6 +1,6 @@
 // baseRepository.ts
 import { Model, Document } from "mongoose";
-import { IBaseRepository } from "../interfaces/IBaseRepository";
+import { IBaseRepository } from "../interfaces/IBaseRepository.js";
 
 export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     constructor(protected model: Model<T>) {}

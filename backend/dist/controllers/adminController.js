@@ -7,9 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import adminService from "../services/adminService.js";
+import { AdminService } from "../services/adminService.js";
 import generateAdminTokens from "../utils/generateAdminJwt.js";
 import verifyRefreshToken from "../utils/refreshToken.js";
+import paymentRepository from "../repositories/paymentRepository.js";
+const adminService = new AdminService(paymentRepository);
 class AdminController {
     login(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {

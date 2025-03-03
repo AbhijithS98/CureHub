@@ -1,6 +1,6 @@
-import { IPaymentRepository } from "../interfaces/IPaymentRepository";
-import { IPaymentService } from "../interfaces/IPaymentService";
-import { IPayment } from "../models/paymentModel";
+import { IPaymentRepository } from "../interfaces/IPaymentRepository.js";
+import { IPaymentService } from "../interfaces/IPaymentService.js";
+import { IPayment } from "../models/paymentModel.js";
 
 class PaymentService implements IPaymentService {
   constructor(private paymentRepository: IPaymentRepository) {}

@@ -7,9 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import userService from "../services/userService.js";
 import generateUserTokens from "../utils/generateUserJwt.js";
 import verifyRefreshToken from "../utils/refreshToken.js";
+import paymentRepository from "../repositories/paymentRepository.js";
+import { UserService } from "../services/userService.js";
+const userService = new UserService(paymentRepository);
 class UserController {
     register(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {

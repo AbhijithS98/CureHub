@@ -1,6 +1,6 @@
-import { BaseRepository } from "./baseRepository";
-import Payment,{IPayment} from "../models/paymentModel";
-import { IPaymentRepository } from "../interfaces/IPaymentRepository";
+import { BaseRepository } from "./baseRepository.js";
+import Payment,{IPayment} from "../models/paymentModel.js";
+import { IPaymentRepository } from "../interfaces/IPaymentRepository.js";
 
 
 class PaymentRepository extends BaseRepository<IPayment> implements IPaymentRepository{

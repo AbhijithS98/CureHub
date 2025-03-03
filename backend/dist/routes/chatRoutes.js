@@ -8,9 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import express from 'express';
-import Chat from '../models/chatSchema.js';
-import User from '../models/user.js';
-import Doctor from '../models/doctor.js';
+import Chat from '../models/chatModel.js';
+import User from '../models/userModel.js';
+import Doctor from '../models/doctorModel.js';
 const router = express.Router();
 // Route to fetch chat history between a doctor and patient
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

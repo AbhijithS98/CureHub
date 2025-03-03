@@ -11,11 +11,14 @@ import userRepository from "../repositories/userRepository.js";
 import bcrypt from "bcryptjs";
 import crypto from 'crypto';
 import dotenv from 'dotenv';
-import Doctor from "../models/doctor.js";
+import Doctor from "../models/doctorModel.js";
 import sendEmail from "../utils/emailSender.js";
 import { GoogleTokenVerify } from "../utils/googleTokenVerify.js";
 dotenv.config();
-class UserService {
+export class UserService {
+    constructor(paymentRepository) {
+        this.paymentRepository = paymentRepository;
+    }
     registerUser(req) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
@@ -271,7 +274,7 @@ class UserService {
                 transactionType: 'Booking',
                 status: 'Completed'
             };
-            const payment = yield userRepository.createPayment(paymentObject);
+            const payment = yield this.paymentRepository.createPayment(paymentObject);
             //create appointment
             const appointmentObject = {
                 user: UserId,
@@ -334,7 +337,7 @@ class UserService {
                 transactionType: 'Refund',
                 status: 'Completed'
             };
-            const payment = yield userRepository.createPayment(paymentObject);
+            const payment = yield this.paymentRepository.createPayment(paymentObject);
             //update appointment document and save
             appointment.status = 'Cancelled';
             appointment.payment = payment._id;
@@ -373,7 +376,7 @@ class UserService {
                 transactionType: 'Recharge',
                 status: 'Completed'
             };
-            yield userRepository.createPayment(paymentObject);
+            yield this.paymentRepository.createPayment(paymentObject);
         });
     }
     getWallet(req) {
@@ -391,7 +394,7 @@ class UserService {
     getWalletTransactions(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const UserId = req.user.Id;
-            const transactions = yield userRepository.getUserWalletPayments(UserId);
+            const transactions = yield this.paymentRepository.getUserWalletPayments(UserId);
             return transactions;
         });
     }
@@ -489,4 +492,4 @@ class UserService {
         });
     }
 }
-export default new UserService();
+// export default UserService;

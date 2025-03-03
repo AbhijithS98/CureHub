@@ -7,14 +7,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import User from "../models/user.js";
-import Doctor from "../models/doctor.js";
-import Payment from "../models/paymentSchema.js";
-import Availability from "../models/availability.js";
-import Appointment from "../models/appointment.js";
-import Wallet from "../models/walletSchema.js";
-import Review from "../models/reviewSchema.js";
-import Prescription from "../models/prescriptionSchema.js";
+import User from "../models/userModel.js";
+import Doctor from "../models/doctorModel.js";
+// import Payment,{ IPayment } from "../models/paymentModel.js";
+import Availability from "../models/availabilityModel.js";
+import Appointment from "../models/appointmentModel.js";
+import Wallet from "../models/walletModel.js";
+import Review from "../models/reviewModel.js";
+import Prescription from "../models/prescriptionModel.js";
 class UserRepository {
     findUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -98,13 +98,11 @@ class UserRepository {
             yield User.updateOne({ email }, { $set: updatedData });
         });
     }
-    createPayment(paymentData) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const payment = new Payment(paymentData);
-            yield payment.save();
-            return payment;
-        });
-    }
+    // async createPayment(paymentData: any): Promise<IPayment> {
+    //   const payment = new Payment(paymentData);
+    //   await payment.save();
+    //   return payment;
+    // }
     createAppointment(appointmentDetails) {
         return __awaiter(this, void 0, void 0, function* () {
             const appointment = new Appointment(appointmentDetails);
@@ -159,17 +157,15 @@ class UserRepository {
             yield Availability.updateOne({ "timeSlots._id": timeslotId }, { $set: { "timeSlots.$.status": updatedStatus } });
         });
     }
-    getUserWalletPayments(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield Payment.find({
-                user: id,
-                $or: [
-                    { transactionType: "Recharge" },
-                    { method: "Wallet" }
-                ]
-            }).sort({ createdAt: -1 });
-        });
-    }
+    // async getUserWalletPayments(id: string): Promise<IPayment[] | null> {
+    //   return await Payment.find({
+    //     user: id,
+    //     $or: [
+    //       { transactionType: "Recharge" },
+    //       { method: "Wallet" }
+    //     ]
+    //   }).sort({ createdAt: -1 });
+    // }
     createReview(newReview) {
         return __awaiter(this, void 0, void 0, function* () {
             const review = new Review(newReview);

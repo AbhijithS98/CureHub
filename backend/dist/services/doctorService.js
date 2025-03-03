@@ -11,7 +11,10 @@ import doctorRepository from "../repositories/doctorRepository.js";
 import sendEmail from "../utils/emailSender.js";
 import bcrypt from "bcryptjs";
 import crypto from 'crypto';
-class DoctorService {
+export class DoctorService {
+    constructor(paymentRepository) {
+        this.paymentRepository = paymentRepository;
+    }
     registerDoctor(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const formData = req.body;
@@ -287,7 +290,7 @@ class DoctorService {
                 transactionType: 'Refund',
                 status: 'Completed'
             };
-            const payment = yield doctorRepository.createPayment(paymentObject);
+            const payment = yield this.paymentRepository.createPayment(paymentObject);
             //update appointment document and save
             appointment.status = 'Cancelled';
             appointment.payment = payment._id;
@@ -376,4 +379,3 @@ class DoctorService {
         });
     }
 }
-export default new DoctorService();
