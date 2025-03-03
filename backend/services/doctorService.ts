@@ -10,11 +10,18 @@ import { IAppointment } from "../models/appointmentModel.js";
 import { IPrescription } from "../models/prescriptionModel.js";
 import { IUser } from "../models/userModel.js";
 import { IPaymentRepository } from "../interfaces/IPaymentRepository.js";
+import { IPrescriptionRepository } from "../interfaces/IPrescriptionRepository.js";
+import { IDoctorRepository } from "../repositories/interfaces/IDoctorRepository.js";
+import { IDoctorService } from "./interfaces/IDoctorService.js";
 
 
 
-export class DoctorService {
-  constructor(private paymentRepository: IPaymentRepository) {}
+export class DoctorService implements IDoctorService{
+  constructor(
+    private doctorRepository: IDoctorRepository,
+    private paymentRepository: IPaymentRepository,
+    private prescriptionRepository: IPrescriptionRepository
+  ) {}
 
 
   async registerDoctor(req: any): Promise<IDoctor> {
@@ -22,7 +29,7 @@ export class DoctorService {
     const formData = req.body;
     const { email, password } = formData;
     
-    const existingDoctor = await doctorRepository.findDoctorByEmail(email);
+    const existingDoctor = await this.doctorRepository.findDoctorByEmail(email);
     if (existingDoctor) {
         const error = Error("Doctor already exists");
         error.name = 'ValidationError';  
@@ -81,7 +88,7 @@ export class DoctorService {
       isVerified: false,
     };
 
-    const doctor = await doctorRepository.createDoctor(newDoctorData);
+    const doctor = await this.doctorRepository.createDoctor(newDoctorData);
     await sendEmail({
       to: doctor.email,
       subject: "OTP Verification",
@@ -94,9 +101,9 @@ export class DoctorService {
 
 
   async verifyOtp(email: string, otp: string): Promise<boolean> {
-    const doctor = await doctorRepository.findDoctorByEmailAndOtp(email, Number(otp));
+    const doctor = await this.doctorRepository.findDoctorByEmailAndOtp(email, Number(otp));
 
-    if (!doctor || !doctor.otp || doctor.otp.expiresAt < new Date()) {
+    if (!doctor || !doctor.otp || doctor.otp.expiresAt! < new Date()) {
       return false;
     }
     return true;
@@ -104,7 +111,7 @@ export class DoctorService {
 
 
   async markVerifiedDoctor(email: string): Promise<void> {
-    await doctorRepository.markVerifiedDoctor(email)
+    await this.doctorRepository.markVerifiedDoctor(email)
   }
 
 
@@ -114,7 +121,7 @@ export class DoctorService {
       const otpCode = Math.floor(100000 + Math.random() * 900000);
       const otpExpiresAt = new Date(Date.now() + 3 * 60 * 1000);
 
-      await doctorRepository.updateOtp(email,{code:otpCode,expiresAt:otpExpiresAt});
+      await this.doctorRepository.updateOtp(email,{code:otpCode,expiresAt:otpExpiresAt});
       await sendEmail({
         to: email,
         subject: "OTP Verification",
@@ -130,7 +137,7 @@ export class DoctorService {
 
   async authenticateDoctor(email: string, password: string, res: Response): Promise<IDoctor> {
 
-    const doctor = await doctorRepository.findDoctorByEmail(email);
+    const doctor = await this.doctorRepository.findDoctorByEmail(email);
     if (!doctor) {
       const error = Error('Doctor not found');
       error.name = 'ValidationError'
@@ -185,7 +192,7 @@ export class DoctorService {
 
   async sendResetLink(email: string): Promise<void> {
 
-    const doctor = await doctorRepository.findDoctorByEmail(email)
+    const doctor = await this.doctorRepository.findDoctorByEmail(email)
     if (!doctor) {
       const error =  Error('doctor not found');
       error.name = 'ValidationError'
@@ -195,7 +202,7 @@ export class DoctorService {
     const resetToken = crypto.randomBytes(32).toString('hex');
     const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000)
     
-    await doctorRepository.updateResettoken(doctor.email, resetToken, tokenExpiry)
+    await this.doctorRepository.updateResettoken(doctor.email, resetToken, tokenExpiry)
     const resetLink = `${process.env.FRONTEND_URL}/doctor/reset-password?token=${resetToken}`;
 
     await sendEmail({
@@ -209,7 +216,7 @@ export class DoctorService {
 
 async resetPass(token:string, password:string): Promise<void> {
    
-  const doctor = await doctorRepository.findDoctorByPwResetToken(token);
+  const doctor = await this.doctorRepository.findDoctorByPwResetToken(token);
 
   if(!doctor){
     const error = Error('Invalid or expired token');
@@ -220,12 +227,12 @@ async resetPass(token:string, password:string): Promise<void> {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  await doctorRepository.updatePassword(token,hashedPassword);
+  await this.doctorRepository.updatePassword(token,hashedPassword);
 }
 
 async getDoctor(email:string): Promise<IDoctor | null> {
  
-  const Doctor = await doctorRepository.findDoctorByEmail(email);
+  const Doctor = await this.doctorRepository.findDoctorByEmail(email);
 
   if(!Doctor){
     const error = Error('No doctor with this email.');
@@ -239,7 +246,7 @@ async getDoctor(email:string): Promise<IDoctor | null> {
 
 async getAvailability(_id:string): Promise<IAvailability[] | null> {
  
-  const availabilities = await doctorRepository.getAvailabilities(_id);
+  const availabilities = await this.doctorRepository.getAvailabilities(_id);
 
   if(!availabilities){
     const error = Error('No availabilities for this doctor.');
@@ -255,7 +262,7 @@ async updateDoctor(req: any): Promise<void> {
   
     const { email } = req.body;
 
-    const Doctor = await doctorRepository.findDoctorByEmail(email);
+    const Doctor = await this.doctorRepository.findDoctorByEmail(email);
 
     if(!Doctor){
       const error = Error('No doctor with this email.');
@@ -263,7 +270,7 @@ async updateDoctor(req: any): Promise<void> {
       throw error;
     }
   
-    await doctorRepository.updateDoctorDetails(req);
+    await this.doctorRepository.updateDoctorDetails(req);
 
 }
 
@@ -274,7 +281,7 @@ async updateSlots(req: any): Promise<void> {
   console.log("slots are: ",newSlots);
   
 
-  const Doctor = await doctorRepository.findDoctorByEmail(email);
+  const Doctor = await this.doctorRepository.findDoctorByEmail(email);
 
   if(!Doctor){
     const error = Error('No doctor with this email.');
@@ -282,7 +289,7 @@ async updateSlots(req: any): Promise<void> {
     throw error;
   }
 
-  await doctorRepository.addSlots(email,newSlots);
+  await this.doctorRepository.addSlots(email,newSlots);
 }
 
 
@@ -296,7 +303,7 @@ async updateSlots(req: any): Promise<void> {
       throw error;
     }
 
-    await doctorRepository.deleteSlot(slotId);
+    await this.doctorRepository.deleteSlot(slotId);
   }
 
 
@@ -310,7 +317,7 @@ async updateSlots(req: any): Promise<void> {
       throw error;
     }
 
-    await doctorRepository.deleteTimeSlot(slotId,timeSlotId);
+    await this.doctorRepository.deleteTimeSlot(slotId,timeSlotId);
   }
 
 
@@ -318,7 +325,7 @@ async updateSlots(req: any): Promise<void> {
   
 async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
  
-  const appointments = await doctorRepository.getAppointments(_id);
+  const appointments = await this.doctorRepository.getAppointments(_id);
 
   if(!appointments){
     const error = Error('No appointments for this doctor.');
@@ -335,7 +342,7 @@ async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
     const { appointmentId, reason } = req.body;
     console.log("apnt id :",appointmentId,"rs: ", reason);
 
-    const appointment = await doctorRepository.findAppointment(appointmentId);
+    const appointment = await this.doctorRepository.findAppointment(appointmentId);
     if(!appointment){
       const error = Error('No appointment with the provided bookingId');
       error.name = 'ValidationError';  
@@ -345,11 +352,13 @@ async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
     //delete the time slot from availability
     const slotId = appointment.slotId.toString();
     const timeSlotId = appointment.timeSlotId.toString();
-    await doctorRepository.deleteTimeSlot(slotId,timeSlotId);
+    await this.doctorRepository.deleteTimeSlot(slotId,timeSlotId);
     
     //do the refund and add new payment document
     const paymentAmount = (appointment.payment as IPayment)?.amount;
-    const Wallet = await doctorRepository.findUserWallet(appointment.user);
+    const userId = appointment.user.toString();
+    const docId = appointment.doctor.toString();
+    const Wallet = await this.doctorRepository.findUserWallet(userId);
     Wallet!.balance += paymentAmount;
     await Wallet!.save();
 
@@ -370,8 +379,8 @@ async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
     await appointment.save()
 
     //Send notification mail
-    const user = await doctorRepository.findUserById(appointment.user)
-    const Doctor = await doctorRepository.findDoctorById(appointment.doctor)
+    const user = await this.doctorRepository.findUserById(userId)
+    const Doctor = await this.doctorRepository.findDoctorById(docId)
     await sendEmail({
       to: user!.email,
       subject: 'Appointment Cancellation Notification',
@@ -398,12 +407,12 @@ async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
     console.log("prescription is: ", prescriptionData);
     
     prescriptionData.doctor = doc_id;
-    const response = await doctorRepository.createPrescription(prescriptionData);
+    const response = await this.prescriptionRepository.createPrescription(prescriptionData);
     if(response){
       console.log("prescription created: ", response);    
     }
     
-    const Appointment = await doctorRepository.findAppointment(prescriptionData.appointment);
+    const Appointment = await this.doctorRepository.findAppointment(prescriptionData.appointment);
     if(Appointment){
       Appointment.prescription = response._id;
       Appointment.status = 'Completed'
@@ -416,7 +425,8 @@ async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
   async getPrescription(req: Request): Promise<IPrescription | null> {  
 
     const { Pr_Id } = req.query;
-    const prescription = await doctorRepository.findPrescription(Pr_Id);
+    const PrescriptionId = Pr_Id!.toString();
+    const prescription = await this.prescriptionRepository.findPrescription(PrescriptionId);
   
     if(!prescription){
       const error = Error('No prescription found with this id');
@@ -433,7 +443,7 @@ async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
     const { id } = req.params;
     const updateFields = req.body;
 
-    const Prescription = await doctorRepository.findPrescription(id);
+    const Prescription = await this.prescriptionRepository.findPrescription(id);
 
     if(!Prescription){
       const error = Error('No Prescription with this id');
@@ -441,21 +451,21 @@ async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
       throw error;
     }
   
-    await doctorRepository.updateUserPrescription(id,updateFields);
+    await this.prescriptionRepository.updateUserPrescription(id,updateFields);
   }
 
 
 
   async fetchUser(req: Request): Promise<IUser | null> {  
 
-    const { userId } = req.query;
+    const  userId  = req.query.userId as string;
     if(!userId){
       const error = Error('No user id provided');
       error.name = 'ValidationError';  
       throw error;
     }
 
-    const User = await doctorRepository.findUserById(userId);  
+    const User = await this.doctorRepository.findUserById(userId);  
     if(!User){
       const error = Error('No User found with this id');
       error.name = 'ValidationError';  

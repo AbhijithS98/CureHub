@@ -1,19 +1,23 @@
 import { NextFunction, Request, Response } from "express";
-import { DoctorService } from "../services/doctorService.js";
+import { IDoctorService } from "../services/interfaces/IDoctorService.js";
 import generateDoctorTokens from "../utils/generateDoctorJwt.js";
 import verifyRefreshToken from "../utils/refreshToken.js";
-import paymentRepository from "../repositories/paymentRepository.js";
 
 
-const doctorService = new DoctorService(paymentRepository);
+
 
 class DoctorController {
+  private doctorService: IDoctorService;
+
+  constructor(doctorService: IDoctorService) {
+    this.doctorService = doctorService;
+  }
    
   async register(req:any, res: Response, next: NextFunction): Promise<void> {
    console.log('entered doctor register');
    
     try {
-      const doctor = await doctorService.registerDoctor(req);
+      const doctor = await this.doctorService.registerDoctor(req);
       res.status(201).json({ message: 'Doctor registered successfully. Please verify your email',
         doctorId: doctor._id,
        });
@@ -28,10 +32,10 @@ class DoctorController {
   async verifyOtp(req: Request, res: Response): Promise<void> {
     try {
       const { email,otp } = req.body;
-      const isValid = await doctorService.verifyOtp(email, otp );
+      const isValid = await this.doctorService.verifyOtp(email, otp );
 
       if (isValid) {
-        await doctorService.markVerifiedDoctor(email);
+        await this.doctorService.markVerifiedDoctor(email);
         res.status(200).json({ message: "OTP verified successfully." });
       } else {
         res.status(400).json({ message: "Invalid or expired OTP." });
@@ -47,7 +51,7 @@ class DoctorController {
    
     try {
       const {email} = req.body;
-      await doctorService.updateOtp(email);
+      await this.doctorService.updateOtp(email);
       res.status(200).json({ message: 'OTP resend successful' });
       
     } catch (error: any) {
@@ -63,7 +67,7 @@ class DoctorController {
     const { email, password } = req.body;
     try {
 
-      const result = await doctorService.authenticateDoctor(email,password,res)
+      const result = await this.doctorService.authenticateDoctor(email,password,res)
       const token = generateDoctorTokens(res,result._id as string)
 
       res.status(200).json({ 
@@ -110,7 +114,7 @@ class DoctorController {
   async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
    
     try {
-      await doctorService.clearCookie(req,res);
+      await this.doctorService.clearCookie(req,res);
       res.status(200).json({ message: 'Logout successful' });
 
     } catch (error: any) {
@@ -125,7 +129,7 @@ class DoctorController {
    
     try {
       const {email} = req.body;
-      await doctorService.sendResetLink(email);
+      await this.doctorService.sendResetLink(email);
       res.status(200).json({ message: 'Reset link send successful' });
 
     } catch (error: any) {
@@ -139,7 +143,7 @@ class DoctorController {
   
     try {
       const {token,newPassword} = req.body;
-      await doctorService.resetPass(token,newPassword)
+      await this.doctorService.resetPass(token,newPassword)
       res.status(200).json({ message: "Password reset successful, please Login!" });
 
     } catch (error: any) {
@@ -159,7 +163,7 @@ class DoctorController {
       }  
       
       console.log("doctor's email is: ",email);
-      const doctor = await doctorService.getDoctor(email)
+      const doctor = await this.doctorService.getDoctor(email)
       res.status(200).json({doctor});
 
     } catch (error: any) {
@@ -179,7 +183,7 @@ class DoctorController {
         return;
       }  
       
-      const availability = await doctorService.getAvailability(_id)
+      const availability = await this.doctorService.getAvailability(_id)
       res.status(200).json({availability});
 
     } catch (error: any) {
@@ -193,7 +197,7 @@ class DoctorController {
     console.log('entered doctor updation');
     
      try {
-       await doctorService.updateDoctor(req);
+       await this.doctorService.updateDoctor(req);
        res.status(200).json({ message: 'Doctor details updated successfully.'});
  
      } catch (error: any) {
@@ -208,7 +212,7 @@ class DoctorController {
      
      try {
 
-       await doctorService.updateSlots(req);
+       await this.doctorService.updateSlots(req);
        res.status(200).json({ message: 'Slots added successfully.'});
  
      } catch (error: any) {
@@ -221,7 +225,7 @@ class DoctorController {
      
      try {
 
-       await doctorService.removeSlot(req);
+       await this.doctorService.removeSlot(req);
        res.status(200).json({ message: 'Slot deleted successfully.'});
  
      } catch (error: any) {
@@ -235,7 +239,7 @@ class DoctorController {
      
      try {
 
-       await doctorService.removeTimeSlot(req);
+       await this.doctorService.removeTimeSlot(req);
        res.status(200).json({ message: 'Time Slot deleted successfully.'});
  
      } catch (error: any) {
@@ -251,7 +255,7 @@ class DoctorController {
   
     try {
       const doc_id = req.doctor?.Id as string;   
-      const appointments = await doctorService.fetchAppointments(doc_id)
+      const appointments = await this.doctorService.fetchAppointments(doc_id)
       res.status(200).json({appointments});
 
     } catch (error: any) {
@@ -266,7 +270,7 @@ class DoctorController {
     try {
       console.log("at doc controller");
       
-      await doctorService.cancelBooking(req);
+      await this.doctorService.cancelBooking(req);
       res.status(200).json({ message: "booking cancelled successfully."});
 
     } catch (error: any) {
@@ -280,7 +284,7 @@ class DoctorController {
   
     try {
          
-      await doctorService.addPatientPrescription(req)
+      await this.doctorService.addPatientPrescription(req)
       res.status(200).json({ message: "prescription added successfully."});
 
     } catch (error: any) {
@@ -294,7 +298,7 @@ class DoctorController {
   
     try {
         
-      const result = await doctorService.getPrescription(req)
+      const result = await this.doctorService.getPrescription(req)
       res.status(200).json({result});
 
     } catch (error: any) {
@@ -307,7 +311,7 @@ class DoctorController {
   async updatePrescription(req:Request, res: Response, next: NextFunction): Promise<void> {
   
      try {
-       await doctorService.updatePrescription(req);
+       await this.doctorService.updatePrescription(req);
        res.status(200).json({ message: 'Prescription updated successfully.'});
  
      } catch (error: any) {
@@ -323,7 +327,7 @@ class DoctorController {
   
     try {
        
-      const data = await doctorService.fetchUser(req);
+      const data = await this.doctorService.fetchUser(req);
       res.status(200).json({data});
 
     } catch (error: any) {
@@ -334,5 +338,5 @@ class DoctorController {
 
 }
 
-export default new DoctorController();
+export default DoctorController;
 

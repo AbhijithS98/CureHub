@@ -14,11 +14,15 @@ import { IPrescription } from "../models/prescriptionModel.js";
 import { TokenPayload } from "google-auth-library";
 import { GoogleTokenVerify } from "../utils/googleTokenVerify.js";
 import { IPaymentRepository } from "../interfaces/IPaymentRepository.js";
+import { IPrescriptionRepository } from "../interfaces/IPrescriptionRepository.js";
 
 dotenv.config(); 
 
 export class UserService {
-  constructor(private paymentRepository: IPaymentRepository) {}
+  constructor(
+    private paymentRepository: IPaymentRepository,
+    private prescriptionRepository: IPrescriptionRepository,
+  ) {}
   
   async registerUser(req:Request): Promise<IUser> {
 
@@ -547,7 +551,8 @@ export class UserService {
   async getPrescription(req: Request): Promise<IPrescription | null> {  
 
     const { Pr_Id } = req.query;
-    const prescription = await userRepository.findPrescription(Pr_Id);
+    const PrescriptionId = Pr_Id!.toString();
+    const prescription = await this.prescriptionRepository.findPrescription(PrescriptionId);
   
     if(!prescription){
       const error = Error('No prescription found with this id');

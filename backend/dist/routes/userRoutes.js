@@ -2,7 +2,13 @@ import express from 'express';
 import { uploadUserProfilePicture } from '../config/multerConfig.js';
 import userController from '../controllers/userController.js';
 import verifyUserToken from '../middleware/userAuthMiddleware.js';
+import ReviewController from '../controllers/reviewController.js';
+import ReviewService from '../services/reviewService.js';
+import ReviewRepository from '../repositories/reviewRepository.js';
+import DoctorRepository from '../repositories/doctorRepository.js';
 const router = express.Router();
+const reviewService = new ReviewService(ReviewRepository, DoctorRepository);
+const reviewController = new ReviewController(reviewService);
 //Authorization
 router.post('/register', uploadUserProfilePicture, userController.register);
 router.post('/verify-otp', userController.verifyOtp);
@@ -25,9 +31,10 @@ router.post('/wallet-recharge', verifyUserToken, userController.walletRecharge);
 router.get('/get-wallet', verifyUserToken, userController.getUserWallet);
 router.get('/get-wallet-payments', verifyUserToken, userController.getUserWalletTransactions);
 router.put('/cancel-booking', verifyUserToken, userController.cancelBooking);
-router.post('/add-review', verifyUserToken, userController.addReview);
-router.get('/get-doctor-reviews', userController.getReviews);
 router.get('/get-prescription', verifyUserToken, userController.viewPrescription);
 router.get('/get-doctor', userController.getDoctor);
+//Review Based
+router.post('/add-review', verifyUserToken, reviewController.createReview);
+router.get('/get-doctor-reviews', reviewController.getReviews);
 router.post('/google-login', userController.googleLogin);
 export default router;

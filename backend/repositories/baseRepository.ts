@@ -9,12 +9,16 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
         return this.model.findOne(filter);
     }
 
-    async findAll(filter: any = {}, options: { sort?: any; limit?: number; skip?: number; projection?: any } = {}): Promise<T[]> {
+    async findAll(
+        filter: any = {},
+        options: { sort?: any; limit?: number; skip?: number; projection?: any; populate?: { path: string; select?: string } } = {}
+    ): Promise<T[]> {
         let query = this.model.find(filter, options.projection || {});
       
         if (options.sort) query = query.sort(options.sort);
         if (options.limit) query = query.limit(options.limit);
         if (options.skip) query = query.skip(options.skip);
+        if (options.populate) query = query.populate(options.populate);
       
         return query;
     }

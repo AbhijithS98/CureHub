@@ -14,7 +14,6 @@ import Availability from "../models/availabilityModel.js";
 import Appointment from "../models/appointmentModel.js";
 import Wallet from "../models/walletModel.js";
 import Review from "../models/reviewModel.js";
-import Prescription from "../models/prescriptionModel.js";
 class UserRepository {
     findUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -177,14 +176,12 @@ class UserRepository {
             return yield Review.find({ doctorId }).populate('patientId', 'name profilePicture');
         });
     }
-    findPrescription(prescriptionId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield Prescription.findOne({ _id: prescriptionId })
-                .populate('appointment', 'date time')
-                .populate('doctor', 'name specialization address')
-                .populate('patient', 'name phone');
-        });
-    }
+    // async findPrescription(prescriptionId: any): Promise<IPrescription | null> {
+    //   return await Prescription.findOne({ _id: prescriptionId })
+    //   .populate('appointment', 'date time')
+    //   .populate('doctor', 'name specialization address')
+    //   .populate('patient', 'name phone') 
+    // }
     createGoogleUser(email, name) {
         return __awaiter(this, void 0, void 0, function* () {
             const newUser = new User({

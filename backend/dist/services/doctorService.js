@@ -7,19 +7,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import doctorRepository from "../repositories/doctorRepository.js";
 import sendEmail from "../utils/emailSender.js";
 import bcrypt from "bcryptjs";
 import crypto from 'crypto';
 export class DoctorService {
-    constructor(paymentRepository) {
+    constructor(doctorRepository, paymentRepository, prescriptionRepository) {
+        this.doctorRepository = doctorRepository;
         this.paymentRepository = paymentRepository;
+        this.prescriptionRepository = prescriptionRepository;
     }
     registerDoctor(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const formData = req.body;
             const { email, password } = formData;
-            const existingDoctor = yield doctorRepository.findDoctorByEmail(email);
+            const existingDoctor = yield this.doctorRepository.findDoctorByEmail(email);
             if (existingDoctor) {
                 const error = Error("Doctor already exists");
                 error.name = 'ValidationError';
@@ -60,7 +61,7 @@ export class DoctorService {
                     idProof: idProofPath,
                     medicalDegree: medicalDegreePath,
                 }, isVerified: false });
-            const doctor = yield doctorRepository.createDoctor(newDoctorData);
+            const doctor = yield this.doctorRepository.createDoctor(newDoctorData);
             yield sendEmail({
                 to: doctor.email,
                 subject: "OTP Verification",
@@ -71,7 +72,7 @@ export class DoctorService {
     }
     verifyOtp(email, otp) {
         return __awaiter(this, void 0, void 0, function* () {
-            const doctor = yield doctorRepository.findDoctorByEmailAndOtp(email, Number(otp));
+            const doctor = yield this.doctorRepository.findDoctorByEmailAndOtp(email, Number(otp));
             if (!doctor || !doctor.otp || doctor.otp.expiresAt < new Date()) {
                 return false;
             }
@@ -80,7 +81,7 @@ export class DoctorService {
     }
     markVerifiedDoctor(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield doctorRepository.markVerifiedDoctor(email);
+            yield this.doctorRepository.markVerifiedDoctor(email);
         });
     }
     updateOtp(email) {
@@ -88,7 +89,7 @@ export class DoctorService {
             try {
                 const otpCode = Math.floor(100000 + Math.random() * 900000);
                 const otpExpiresAt = new Date(Date.now() + 3 * 60 * 1000);
-                yield doctorRepository.updateOtp(email, { code: otpCode, expiresAt: otpExpiresAt });
+                yield this.doctorRepository.updateOtp(email, { code: otpCode, expiresAt: otpExpiresAt });
                 yield sendEmail({
                     to: email,
                     subject: "OTP Verification",
@@ -103,7 +104,7 @@ export class DoctorService {
     }
     authenticateDoctor(email, password, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const doctor = yield doctorRepository.findDoctorByEmail(email);
+            const doctor = yield this.doctorRepository.findDoctorByEmail(email);
             if (!doctor) {
                 const error = Error('Doctor not found');
                 error.name = 'ValidationError';
@@ -150,7 +151,7 @@ export class DoctorService {
     }
     sendResetLink(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            const doctor = yield doctorRepository.findDoctorByEmail(email);
+            const doctor = yield this.doctorRepository.findDoctorByEmail(email);
             if (!doctor) {
                 const error = Error('doctor not found');
                 error.name = 'ValidationError';
@@ -158,7 +159,7 @@ export class DoctorService {
             }
             const resetToken = crypto.randomBytes(32).toString('hex');
             const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000);
-            yield doctorRepository.updateResettoken(doctor.email, resetToken, tokenExpiry);
+            yield this.doctorRepository.updateResettoken(doctor.email, resetToken, tokenExpiry);
             const resetLink = `${process.env.FRONTEND_URL}/doctor/reset-password?token=${resetToken}`;
             yield sendEmail({
                 to: doctor.email,
@@ -170,7 +171,7 @@ export class DoctorService {
     }
     resetPass(token, password) {
         return __awaiter(this, void 0, void 0, function* () {
-            const doctor = yield doctorRepository.findDoctorByPwResetToken(token);
+            const doctor = yield this.doctorRepository.findDoctorByPwResetToken(token);
             if (!doctor) {
                 const error = Error('Invalid or expired token');
                 error.name = 'ValidationError';
@@ -178,12 +179,12 @@ export class DoctorService {
             }
             const salt = yield bcrypt.genSalt(10);
             const hashedPassword = yield bcrypt.hash(password, salt);
-            yield doctorRepository.updatePassword(token, hashedPassword);
+            yield this.doctorRepository.updatePassword(token, hashedPassword);
         });
     }
     getDoctor(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            const Doctor = yield doctorRepository.findDoctorByEmail(email);
+            const Doctor = yield this.doctorRepository.findDoctorByEmail(email);
             if (!Doctor) {
                 const error = Error('No doctor with this email.');
                 error.name = 'ValidationError';
@@ -194,7 +195,7 @@ export class DoctorService {
     }
     getAvailability(_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const availabilities = yield doctorRepository.getAvailabilities(_id);
+            const availabilities = yield this.doctorRepository.getAvailabilities(_id);
             if (!availabilities) {
                 const error = Error('No availabilities for this doctor.');
                 error.name = 'ValidationError';
@@ -206,13 +207,13 @@ export class DoctorService {
     updateDoctor(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const { email } = req.body;
-            const Doctor = yield doctorRepository.findDoctorByEmail(email);
+            const Doctor = yield this.doctorRepository.findDoctorByEmail(email);
             if (!Doctor) {
                 const error = Error('No doctor with this email.');
                 error.name = 'ValidationError';
                 throw error;
             }
-            yield doctorRepository.updateDoctorDetails(req);
+            yield this.doctorRepository.updateDoctorDetails(req);
         });
     }
     updateSlots(req) {
@@ -220,13 +221,13 @@ export class DoctorService {
             const { email } = req.query;
             const { newSlots } = req.body;
             console.log("slots are: ", newSlots);
-            const Doctor = yield doctorRepository.findDoctorByEmail(email);
+            const Doctor = yield this.doctorRepository.findDoctorByEmail(email);
             if (!Doctor) {
                 const error = Error('No doctor with this email.');
                 error.name = 'ValidationError';
                 throw error;
             }
-            yield doctorRepository.addSlots(email, newSlots);
+            yield this.doctorRepository.addSlots(email, newSlots);
         });
     }
     removeSlot(req) {
@@ -237,7 +238,7 @@ export class DoctorService {
                 error.name = 'ValidationError';
                 throw error;
             }
-            yield doctorRepository.deleteSlot(slotId);
+            yield this.doctorRepository.deleteSlot(slotId);
         });
     }
     removeTimeSlot(req) {
@@ -248,12 +249,12 @@ export class DoctorService {
                 error.name = 'ValidationError';
                 throw error;
             }
-            yield doctorRepository.deleteTimeSlot(slotId, timeSlotId);
+            yield this.doctorRepository.deleteTimeSlot(slotId, timeSlotId);
         });
     }
     fetchAppointments(_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const appointments = yield doctorRepository.getAppointments(_id);
+            const appointments = yield this.doctorRepository.getAppointments(_id);
             if (!appointments) {
                 const error = Error('No appointments for this doctor.');
                 error.name = 'ValidationError';
@@ -267,7 +268,7 @@ export class DoctorService {
             var _a;
             const { appointmentId, reason } = req.body;
             console.log("apnt id :", appointmentId, "rs: ", reason);
-            const appointment = yield doctorRepository.findAppointment(appointmentId);
+            const appointment = yield this.doctorRepository.findAppointment(appointmentId);
             if (!appointment) {
                 const error = Error('No appointment with the provided bookingId');
                 error.name = 'ValidationError';
@@ -276,10 +277,12 @@ export class DoctorService {
             //delete the time slot from availability
             const slotId = appointment.slotId.toString();
             const timeSlotId = appointment.timeSlotId.toString();
-            yield doctorRepository.deleteTimeSlot(slotId, timeSlotId);
+            yield this.doctorRepository.deleteTimeSlot(slotId, timeSlotId);
             //do the refund and add new payment document
             const paymentAmount = (_a = appointment.payment) === null || _a === void 0 ? void 0 : _a.amount;
-            const Wallet = yield doctorRepository.findUserWallet(appointment.user);
+            const userId = appointment.user.toString();
+            const docId = appointment.doctor.toString();
+            const Wallet = yield this.doctorRepository.findUserWallet(userId);
             Wallet.balance += paymentAmount;
             yield Wallet.save();
             const paymentObject = {
@@ -297,8 +300,8 @@ export class DoctorService {
             appointment.cancellationReason = reason;
             yield appointment.save();
             //Send notification mail
-            const user = yield doctorRepository.findUserById(appointment.user);
-            const Doctor = yield doctorRepository.findDoctorById(appointment.doctor);
+            const user = yield this.doctorRepository.findUserById(userId);
+            const Doctor = yield this.doctorRepository.findDoctorById(docId);
             yield sendEmail({
                 to: user.email,
                 subject: 'Appointment Cancellation Notification',
@@ -324,11 +327,11 @@ export class DoctorService {
             const { prescriptionData } = req.body;
             console.log("prescription is: ", prescriptionData);
             prescriptionData.doctor = doc_id;
-            const response = yield doctorRepository.createPrescription(prescriptionData);
+            const response = yield this.prescriptionRepository.createPrescription(prescriptionData);
             if (response) {
                 console.log("prescription created: ", response);
             }
-            const Appointment = yield doctorRepository.findAppointment(prescriptionData.appointment);
+            const Appointment = yield this.doctorRepository.findAppointment(prescriptionData.appointment);
             if (Appointment) {
                 Appointment.prescription = response._id;
                 Appointment.status = 'Completed';
@@ -339,7 +342,8 @@ export class DoctorService {
     getPrescription(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const { Pr_Id } = req.query;
-            const prescription = yield doctorRepository.findPrescription(Pr_Id);
+            const PrescriptionId = Pr_Id.toString();
+            const prescription = yield this.prescriptionRepository.findPrescription(PrescriptionId);
             if (!prescription) {
                 const error = Error('No prescription found with this id');
                 error.name = 'ValidationError';
@@ -352,24 +356,24 @@ export class DoctorService {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
             const updateFields = req.body;
-            const Prescription = yield doctorRepository.findPrescription(id);
+            const Prescription = yield this.prescriptionRepository.findPrescription(id);
             if (!Prescription) {
                 const error = Error('No Prescription with this id');
                 error.name = 'ValidationError';
                 throw error;
             }
-            yield doctorRepository.updateUserPrescription(id, updateFields);
+            yield this.prescriptionRepository.updateUserPrescription(id, updateFields);
         });
     }
     fetchUser(req) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { userId } = req.query;
+            const userId = req.query.userId;
             if (!userId) {
                 const error = Error('No user id provided');
                 error.name = 'ValidationError';
                 throw error;
             }
-            const User = yield doctorRepository.findUserById(userId);
+            const User = yield this.doctorRepository.findUserById(userId);
             if (!User) {
                 const error = Error('No User found with this id');
                 error.name = 'ValidationError';

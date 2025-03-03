@@ -25,6 +25,8 @@ export class BaseRepository {
                 query = query.limit(options.limit);
             if (options.skip)
                 query = query.skip(options.skip);
+            if (options.populate)
+                query = query.populate(options.populate);
             return query;
         });
     }

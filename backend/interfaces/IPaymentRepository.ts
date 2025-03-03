@@ -1,5 +1,5 @@
-import { IPayment } from "../models/paymentModel";
-import { IBaseRepository } from "./IBaseRepository";
+import { IPayment } from "../models/paymentModel.js";
+import { IBaseRepository } from "./IBaseRepository.js";
 
 
 export interface IPaymentRepository extends IBaseRepository<IPayment>{

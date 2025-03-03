@@ -7,17 +7,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { DoctorService } from "../services/doctorService.js";
 import generateDoctorTokens from "../utils/generateDoctorJwt.js";
 import verifyRefreshToken from "../utils/refreshToken.js";
-import paymentRepository from "../repositories/paymentRepository.js";
-const doctorService = new DoctorService(paymentRepository);
 class DoctorController {
+    constructor(doctorService) {
+        this.doctorService = doctorService;
+    }
     register(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('entered doctor register');
             try {
-                const doctor = yield doctorService.registerDoctor(req);
+                const doctor = yield this.doctorService.registerDoctor(req);
                 res.status(201).json({ message: 'Doctor registered successfully. Please verify your email',
                     doctorId: doctor._id,
                 });
@@ -32,9 +32,9 @@ class DoctorController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { email, otp } = req.body;
-                const isValid = yield doctorService.verifyOtp(email, otp);
+                const isValid = yield this.doctorService.verifyOtp(email, otp);
                 if (isValid) {
-                    yield doctorService.markVerifiedDoctor(email);
+                    yield this.doctorService.markVerifiedDoctor(email);
                     res.status(200).json({ message: "OTP verified successfully." });
                 }
                 else {
@@ -50,7 +50,7 @@ class DoctorController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { email } = req.body;
-                yield doctorService.updateOtp(email);
+                yield this.doctorService.updateOtp(email);
                 res.status(200).json({ message: 'OTP resend successful' });
             }
             catch (error) {
@@ -63,7 +63,7 @@ class DoctorController {
         return __awaiter(this, void 0, void 0, function* () {
             const { email, password } = req.body;
             try {
-                const result = yield doctorService.authenticateDoctor(email, password, res);
+                const result = yield this.doctorService.authenticateDoctor(email, password, res);
                 const token = generateDoctorTokens(res, result._id);
                 res.status(200).json({
                     _id: result._id,
@@ -103,7 +103,7 @@ class DoctorController {
     logout(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield doctorService.clearCookie(req, res);
+                yield this.doctorService.clearCookie(req, res);
                 res.status(200).json({ message: 'Logout successful' });
             }
             catch (error) {
@@ -116,7 +116,7 @@ class DoctorController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { email } = req.body;
-                yield doctorService.sendResetLink(email);
+                yield this.doctorService.sendResetLink(email);
                 res.status(200).json({ message: 'Reset link send successful' });
             }
             catch (error) {
@@ -129,7 +129,7 @@ class DoctorController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { token, newPassword } = req.body;
-                yield doctorService.resetPass(token, newPassword);
+                yield this.doctorService.resetPass(token, newPassword);
                 res.status(200).json({ message: "Password reset successful, please Login!" });
             }
             catch (error) {
@@ -147,7 +147,7 @@ class DoctorController {
                     return;
                 }
                 console.log("doctor's email is: ", email);
-                const doctor = yield doctorService.getDoctor(email);
+                const doctor = yield this.doctorService.getDoctor(email);
                 res.status(200).json({ doctor });
             }
             catch (error) {
@@ -164,7 +164,7 @@ class DoctorController {
                     res.status(400).json({ message: "Doctor id is required" });
                     return;
                 }
-                const availability = yield doctorService.getAvailability(_id);
+                const availability = yield this.doctorService.getAvailability(_id);
                 res.status(200).json({ availability });
             }
             catch (error) {
@@ -177,7 +177,7 @@ class DoctorController {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('entered doctor updation');
             try {
-                yield doctorService.updateDoctor(req);
+                yield this.doctorService.updateDoctor(req);
                 res.status(200).json({ message: 'Doctor details updated successfully.' });
             }
             catch (error) {
@@ -190,7 +190,7 @@ class DoctorController {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('entered slot updation');
             try {
-                yield doctorService.updateSlots(req);
+                yield this.doctorService.updateSlots(req);
                 res.status(200).json({ message: 'Slots added successfully.' });
             }
             catch (error) {
@@ -202,7 +202,7 @@ class DoctorController {
     deleteSlot(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield doctorService.removeSlot(req);
+                yield this.doctorService.removeSlot(req);
                 res.status(200).json({ message: 'Slot deleted successfully.' });
             }
             catch (error) {
@@ -214,7 +214,7 @@ class DoctorController {
     deleteTimeSlot(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield doctorService.removeTimeSlot(req);
+                yield this.doctorService.removeTimeSlot(req);
                 res.status(200).json({ message: 'Time Slot deleted successfully.' });
             }
             catch (error) {
@@ -228,7 +228,7 @@ class DoctorController {
             var _a;
             try {
                 const doc_id = (_a = req.doctor) === null || _a === void 0 ? void 0 : _a.Id;
-                const appointments = yield doctorService.fetchAppointments(doc_id);
+                const appointments = yield this.doctorService.fetchAppointments(doc_id);
                 res.status(200).json({ appointments });
             }
             catch (error) {
@@ -241,7 +241,7 @@ class DoctorController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 console.log("at doc controller");
-                yield doctorService.cancelBooking(req);
+                yield this.doctorService.cancelBooking(req);
                 res.status(200).json({ message: "booking cancelled successfully." });
             }
             catch (error) {
@@ -253,7 +253,7 @@ class DoctorController {
     addPrescription(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield doctorService.addPatientPrescription(req);
+                yield this.doctorService.addPatientPrescription(req);
                 res.status(200).json({ message: "prescription added successfully." });
             }
             catch (error) {
@@ -265,7 +265,7 @@ class DoctorController {
     viewPrescription(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield doctorService.getPrescription(req);
+                const result = yield this.doctorService.getPrescription(req);
                 res.status(200).json({ result });
             }
             catch (error) {
@@ -277,7 +277,7 @@ class DoctorController {
     updatePrescription(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield doctorService.updatePrescription(req);
+                yield this.doctorService.updatePrescription(req);
                 res.status(200).json({ message: 'Prescription updated successfully.' });
             }
             catch (error) {
@@ -289,7 +289,7 @@ class DoctorController {
     getSingleUser(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const data = yield doctorService.fetchUser(req);
+                const data = yield this.doctorService.fetchUser(req);
                 res.status(200).json({ data });
             }
             catch (error) {
@@ -299,4 +299,4 @@ class DoctorController {
         });
     }
 }
-export default new DoctorController();
+export default DoctorController;

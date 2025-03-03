@@ -2,9 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import generateUserTokens from "../utils/generateUserJwt.js";
 import verifyRefreshToken from "../utils/refreshToken.js";
 import paymentRepository from "../repositories/paymentRepository.js";
+import prescriptionRepository from "../repositories/prescriptionRepository.js";
 import { UserService } from "../services/userService.js";
 
-const userService = new UserService(paymentRepository);
+const userService = new UserService(paymentRepository,prescriptionRepository);
 
 class UserController {
 

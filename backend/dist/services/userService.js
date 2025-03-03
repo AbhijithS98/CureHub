@@ -16,8 +16,9 @@ import sendEmail from "../utils/emailSender.js";
 import { GoogleTokenVerify } from "../utils/googleTokenVerify.js";
 dotenv.config();
 export class UserService {
-    constructor(paymentRepository) {
+    constructor(paymentRepository, prescriptionRepository) {
         this.paymentRepository = paymentRepository;
+        this.prescriptionRepository = prescriptionRepository;
     }
     registerUser(req) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -442,7 +443,8 @@ export class UserService {
     getPrescription(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const { Pr_Id } = req.query;
-            const prescription = yield userRepository.findPrescription(Pr_Id);
+            const PrescriptionId = Pr_Id.toString();
+            const prescription = yield this.prescriptionRepository.findPrescription(PrescriptionId);
             if (!prescription) {
                 const error = Error('No prescription found with this id');
                 error.name = 'ValidationError';

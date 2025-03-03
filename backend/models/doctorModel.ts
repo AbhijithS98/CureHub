@@ -23,16 +23,16 @@ export interface IDoctor extends Document {
     city: string;
   };
   otp?: {
-    code: number;
-    expiresAt: Date;
+    code: number|null;
+    expiresAt: Date|null;
   };
   ratingInfo: {
     average: number; 
     count: number;  
   };
   password: string;
-  pwResetToken?: string;
-  pwTokenExpiresAt?: Date;
+  pwResetToken?: string|null;
+  pwTokenExpiresAt?: Date|null;
   isVerified: boolean;
   isApproved: boolean;
   isBlocked: boolean;

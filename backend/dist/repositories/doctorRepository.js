@@ -12,17 +12,21 @@ import User from "../models/userModel.js";
 import Availability from "../models/availabilityModel.js";
 import Appointment from "../models/appointmentModel.js";
 import Wallet from "../models/walletModel.js";
-import Payment from "../models/paymentModel.js";
-import Prescription from "../models/prescriptionModel.js";
-class DoctorRepository {
+import { BaseRepository } from "./baseRepository.js";
+// import Payment, { IPayment} from "../models/paymentModel.js";
+// import Prescription, { IPrescription } from "../models/prescriptionModel.js";
+class DoctorRepository extends BaseRepository {
+    constructor() {
+        super(Doctor);
+    }
     findDoctorByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Doctor.findOne({ email });
+            return yield this.model.findOne({ email });
         });
     }
     findDoctorById(_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Doctor.findOne({ _id });
+            return yield this.model.findOne({ _id });
         });
     }
     findUserById(_id) {
@@ -37,53 +41,49 @@ class DoctorRepository {
     }
     getAppointments(_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Appointment.find({ doctor: _id }).populate('user', 'name');
-            ;
+            return yield Appointment.find({ doctor: _id }).populate("user", "name");
         });
     }
     findDoctorByEmailAndOtp(email, otp) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Doctor.findOne({ email, 'otp.code': otp });
+            return yield this.model.findOne({ email, "otp.code": otp });
         });
     }
     findDoctorByPwResetToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Doctor.findOne({ pwResetToken: token, pwTokenExpiresAt: { $gt: new Date() } });
+            return yield this.model.findOne({ pwResetToken: token, pwTokenExpiresAt: { $gt: new Date() } });
         });
     }
     createDoctor(doctorData) {
         return __awaiter(this, void 0, void 0, function* () {
-            const doctor = new Doctor(doctorData);
-            return yield doctor.save();
+            return yield this.create(doctorData);
         });
     }
     markVerifiedDoctor(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Doctor.updateOne({ email }, { isVerified: true, 'otp.code': null, 'otp.expiresAt': null });
+            yield this.update({ email }, { isVerified: true, otp: { code: null, expiresAt: null } });
         });
     }
     updateOtp(email, newOtp) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Doctor.updateOne({ email }, { otp: newOtp });
+            yield this.update({ email }, { otp: newOtp });
         });
     }
     updateResettoken(email, token, expiry) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Doctor.updateOne({ email }, { pwResetToken: token, pwTokenExpiresAt: expiry });
+            yield this.update({ email }, { pwResetToken: token, pwTokenExpiresAt: expiry });
         });
     }
     updatePassword(token, newPassword) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Doctor.updateOne({ pwResetToken: token }, { password: newPassword,
-                pwResetToken: null,
-                pwTokenExpiresAt: null,
-            });
+            yield this.update({ pwResetToken: token }, { password: newPassword, pwResetToken: null, pwTokenExpiresAt: null });
         });
     }
     updateDoctorDetails(req) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { name, email, phone, specialization, medicalLicenseNumber, gender, dob, experience, consultationFee, clinicName, district, city, bio, } = req.body;
-            yield Doctor.updateOne({ email }, { name,
+            const { name, email, phone, specialization, medicalLicenseNumber, gender, dob, experience, consultationFee, clinicName, district, city, bio } = req.body;
+            yield this.update({ email }, {
+                name,
                 email,
                 phone,
                 specialization,
@@ -92,10 +92,12 @@ class DoctorRepository {
                 dob,
                 experience,
                 consultationFee,
-                'address.clinicName': clinicName,
-                'address.district': district,
-                'address.city': city,
-                bio
+                address: {
+                    clinicName,
+                    district,
+                    city,
+                },
+                bio,
             });
         });
     }
@@ -116,39 +118,12 @@ class DoctorRepository {
     }
     findAppointment(appointmentId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Appointment.findOne({ _id: appointmentId }).populate('payment');
+            return yield Appointment.findOne({ _id: appointmentId }).populate("payment");
         });
     }
     findUserWallet(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield Wallet.findOne({ ownerId: userId });
-        });
-    }
-    createPayment(paymentData) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const payment = new Payment(paymentData);
-            yield payment.save();
-            return payment;
-        });
-    }
-    createPrescription(prescriptionData) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const prescription = new Prescription(prescriptionData);
-            yield prescription.save();
-            return prescription;
-        });
-    }
-    findPrescription(prescriptionId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield Prescription.findOne({ _id: prescriptionId })
-                .populate('appointment', 'date time')
-                .populate('doctor', 'name specialization address')
-                .populate('patient', 'name phone');
-        });
-    }
-    updateUserPrescription(_id, updateFields) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield Prescription.findByIdAndUpdate(_id, { $set: updateFields });
         });
     }
 }

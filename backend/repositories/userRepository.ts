@@ -179,13 +179,12 @@ class UserRepository {
     return await Review.find({ doctorId }).populate('patientId', 'name profilePicture')
   }
 
-  async findPrescription(prescriptionId: any): Promise<IPrescription | null> {
-    return await Prescription.findOne({ _id: prescriptionId })
-    .populate('appointment', 'date time')
-    .populate('doctor', 'name specialization address')
-    .populate('patient', 'name phone')
-    
-  }
+  // async findPrescription(prescriptionId: any): Promise<IPrescription | null> {
+  //   return await Prescription.findOne({ _id: prescriptionId })
+  //   .populate('appointment', 'date time')
+  //   .populate('doctor', 'name specialization address')
+  //   .populate('patient', 'name phone') 
+  // }
 
 
   async createGoogleUser(email:string,name:string): Promise<IUser> {

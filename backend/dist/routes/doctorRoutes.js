@@ -1,8 +1,14 @@
 import express from 'express';
-import doctorController from '../controllers/doctorController.js';
+import DoctorController from '../controllers/doctorController.js';
 import { uploadDoctorDocuments } from '../config/multerConfig.js';
 import verifyDoctorToken from '../middleware/doctorAuthMiddleware.js';
+import paymentRepository from "../repositories/paymentRepository.js";
+import doctorRepository from "../repositories/doctorRepository.js";
+import prescriptionRepository from "../repositories/prescriptionRepository.js";
+import { DoctorService } from "../services/doctorService.js";
 const router = express.Router();
+const doctorService = new DoctorService(doctorRepository, paymentRepository, prescriptionRepository);
+const doctorController = new DoctorController(doctorService);
 //Authorization
 router.post('/register', uploadDoctorDocuments, doctorController.register);
 router.post('/verify-otp', doctorController.verifyOtp);
