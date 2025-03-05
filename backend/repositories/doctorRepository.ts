@@ -14,11 +14,11 @@ class DoctorRepository extends BaseRepository<IDoctor> implements IDoctorReposit
   }
 
   async findDoctorByEmail(email: string): Promise<IDoctor | null> {
-    return await this.model.findOne({ email });
+    return await this.findOne({ email });
   }
 
   async findDoctorById(_id: string): Promise<IDoctor | null> {
-    return await this.model.findOne({ _id });
+    return await this.findOne({ _id });
   }
 
   async findUserById(_id: string): Promise<IUser | null> {
@@ -34,37 +34,37 @@ class DoctorRepository extends BaseRepository<IDoctor> implements IDoctorReposit
   }
 
   async findDoctorByEmailAndOtp(email: string, otp: number): Promise<IDoctor | null> {
-    return await this.model.findOne({ email, "otp.code": otp });
+    return await this.findOne({ email, "otp.code": otp });
   }
 
   async findDoctorByPwResetToken(token: string): Promise<IDoctor | null> {
-    return await this.model.findOne({ pwResetToken: token, pwTokenExpiresAt: { $gt: new Date() } });
+    return await this.findOne({ pwResetToken: token, pwTokenExpiresAt: { $gt: new Date() } });
   }
 
   async createDoctor(doctorData: Partial<IDoctor>): Promise<IDoctor> {
     return await this.create(doctorData);
   }
 
-  async markVerifiedDoctor(email: string): Promise<void> {
-    await this.update({ email },  { isVerified: true, otp: { code: null, expiresAt: null } } );
+  async markVerifiedDoctor(email: string): Promise<number> {
+    return await this.update({ email }, { isVerified: true, otp: { code: null, expiresAt: null } });
   }
 
-  async updateOtp(email: string, newOtp: { code: number; expiresAt: Date }): Promise<void> {
-    await this.update({ email },  { otp: newOtp } );
+  async updateOtp(email: string, newOtp: { code: number; expiresAt: Date }): Promise<number> {
+    return await this.update({ email }, { otp: newOtp });
   }
 
-  async updateResettoken(email: string, token: string, expiry: Date): Promise<void> {
-    await this.update({ email },  { pwResetToken: token, pwTokenExpiresAt: expiry } );
+  async updateResettoken(email: string, token: string, expiry: Date): Promise<number> {
+    return await this.update({ email }, { pwResetToken: token, pwTokenExpiresAt: expiry });
   }
 
-  async updatePassword(token: string, newPassword: string): Promise<void> {
-    await this.update({ pwResetToken: token },  { password: newPassword, pwResetToken: null, pwTokenExpiresAt: null } );
+  async updatePassword(token: string, newPassword: string): Promise<number> {
+    return await this.update({ pwResetToken: token }, { password: newPassword, pwResetToken: null, pwTokenExpiresAt: null });
   }
 
-  async updateDoctorDetails(req: any): Promise<void> {
+  async updateDoctorDetails(req: any): Promise<number> {
     const { name, email, phone, specialization, medicalLicenseNumber, gender, dob, experience, consultationFee, clinicName, district, city, bio } = req.body;
 
-    await this.update(
+    return await this.update(
       { email },
       {
           name,

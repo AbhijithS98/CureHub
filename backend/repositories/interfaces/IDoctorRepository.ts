@@ -14,11 +14,11 @@ export interface IDoctorRepository {
   findDoctorByEmailAndOtp(email: string, otp: number): Promise<IDoctor | null>;
   findDoctorByPwResetToken(token: string): Promise<IDoctor | null>;
   createDoctor(doctorData: Partial<IDoctor>): Promise<IDoctor>;
-  markVerifiedDoctor(email: string): Promise<void>;
-  updateOtp(email: string, newOtp: { code: number; expiresAt: Date }): Promise<void>;
-  updateResettoken(email: string, token: string, expiry: Date): Promise<void>;
-  updatePassword(token: string, newPassword: string): Promise<void>;
-  updateDoctorDetails(req: any): Promise<void>;
+  markVerifiedDoctor(email: string): Promise<number>;
+  updateOtp(email: string, newOtp: { code: number; expiresAt: Date }): Promise<number>;
+  updateResettoken(email: string, token: string, expiry: Date): Promise<number>;
+  updatePassword(token: string, newPassword: string): Promise<number>;
+  updateDoctorDetails(req: any): Promise<number>;
   addSlots(email: string, newSlots: any): Promise<void>;
   deleteSlot(slotId: string): Promise<void>;
   deleteTimeSlot(slotId: string, timeSlotId: string): Promise<void>;

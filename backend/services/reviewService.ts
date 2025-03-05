@@ -58,16 +58,14 @@ class ReviewService implements IReviewService {
   }
 
   async getReviews(doctorId: string): Promise<IReview[] | null> {
-    console.log("came in rs............");
+   
     const reviews = await this.reviewRepository.getReviews(doctorId);
     if(!reviews){
-      console.log("no reviews............");
-      
+     
       const error = Error('No reviews for this doctor');
       error.name = 'ValidationError';  
       throw error;
     }
-    console.log("reviews: ",reviews);
     
     return reviews
   }

@@ -42,7 +42,7 @@ class PaymentRepository extends BaseRepository<IPayment> implements IPaymentRepo
   }
 
   async getRevenueReports(startDate?: string, endDate?: string): Promise<IPayment[]> {
-    console.log("hittedddddddddddd");
+    
     
     const filter: any = { transactionType: "Booking", status: "Completed" };
 
