@@ -6,6 +6,9 @@ class PaymentController {
   private paymentService: IPaymentService;
 
   constructor(paymentService: IPaymentService) {
+    if (!paymentService) {
+      throw new Error("PaymentService is required");
+    }
     this.paymentService = paymentService;
   }
 

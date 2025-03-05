@@ -4,7 +4,11 @@ import { IPayment } from "../models/paymentModel.js";
 import { Request } from "express";
 
 class PaymentService implements IPaymentService {
-  constructor(private paymentRepository: IPaymentRepository) {}
+  constructor(private paymentRepository: IPaymentRepository) {
+    if (!paymentRepository) {
+      throw new Error("PaymentRepository is required");
+    }
+  }
 
   async createPayment(paymentData: Partial<IPayment>): Promise<IPayment> {
     return this.paymentRepository.create(paymentData); // Uses BaseRepository method

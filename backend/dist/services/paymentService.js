@@ -10,6 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 class PaymentService {
     constructor(paymentRepository) {
         this.paymentRepository = paymentRepository;
+        if (!paymentRepository) {
+            throw new Error("PaymentRepository is required");
+        }
     }
     createPayment(paymentData) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -21,19 +24,31 @@ class PaymentService {
             return this.paymentRepository.getUserWalletPayments(userId);
         });
     }
-    getRefundTransactionsCount() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.paymentRepository.getRefundTransactionsCount();
-        });
-    }
     getRevenueChartData() {
         return __awaiter(this, void 0, void 0, function* () {
             return this.paymentRepository.getRevenueChartData();
         });
     }
-    getRevenueReports(startDate, endDate) {
+    getAllRefundTransactionsCount() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.paymentRepository.getRevenueReports(startDate, endDate);
+            return yield this.paymentRepository.getRefundTransactionsCount();
+        });
+    }
+    getTotalRevenue() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.paymentRepository.getTotalRevenue();
+        });
+    }
+    getRevenueTrends() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.paymentRepository.getRevenueChartData();
+        });
+    }
+    getRevenueReportData(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const startDate = typeof req.query.startDate === "string" ? req.query.startDate : undefined;
+            const endDate = typeof req.query.endDate === "string" ? req.query.endDate : undefined;
+            return yield this.paymentRepository.getRevenueReports(startDate, endDate);
         });
     }
 }

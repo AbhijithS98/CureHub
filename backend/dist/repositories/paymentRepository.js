@@ -49,7 +49,6 @@ class PaymentRepository extends BaseRepository {
     }
     getRevenueReports(startDate, endDate) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("hittedddddddddddd");
             const filter = { transactionType: "Booking", status: "Completed" };
             if (startDate)
                 filter.createdAt = { $gte: new Date(startDate) };

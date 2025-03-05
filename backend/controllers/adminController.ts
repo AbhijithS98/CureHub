@@ -2,10 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import {AdminService} from "../services/adminService.js";
 import generateAdminTokens from "../utils/generateAdminJwt.js";
 import verifyRefreshToken from "../utils/refreshToken.js";
-import paymentRepository from "../repositories/paymentRepository.js";
 
 
-const adminService = new AdminService(paymentRepository);
+const adminService = new AdminService();
 
 class AdminController{
   
@@ -262,31 +261,6 @@ class AdminController{
   }
 
 
-  async fetchRevenueStats(req: Request, res: Response, next: NextFunction): Promise<void> {
-
-    try {     
-      const Result = await adminService.getTotalRevenue();
-      res.status(200).json({ Result })
-
-    } catch (error: any) {
-      console.error('admin fetching revenue stats error:', error);
-      next(error)
-    }
-  }
-
-
-  async fetchRefundStats(req: Request, res: Response, next: NextFunction): Promise<void> {
-
-    try {     
-      const RefundStats = await adminService.getAllRefundTransactionsCount();
-      res.status(200).json({ RefundStats });
-
-    } catch (error: any) {
-      console.error('admin fetching refund stats error:', error);
-      next(error)
-    }
-  }
-
   async fetchAppointmentsChartData(req: Request, res: Response, next: NextFunction): Promise<void> {
 
     try {     
@@ -299,18 +273,6 @@ class AdminController{
     }
   }
 
-
-  async fetchRevenueChartData(req: Request, res: Response, next: NextFunction): Promise<void> {
-
-    try {     
-      const Result = await adminService.getRevenueTrends();
-      res.status(200).json({ Result });
-
-    } catch (error: any) {
-      console.error('admin fetching revenue chart data error:', error);
-      next(error)
-    }
-  }
 
 
   async fetchAppointmentReportData(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -325,18 +287,6 @@ class AdminController{
     }
   }
 
-  async fetchRevenueReportData(req: Request, res: Response, next: NextFunction): Promise<void> {
-
-    try {     
-      const RevenueReports = await adminService.getRevenueReportData(req);
-      const TotalRevenue = RevenueReports.reduce((acc, curr) => acc + curr.amount, 0);
-      res.status(200).json({ TotalRevenue, RevenueReports });
-
-    } catch (error: any) {
-      console.error('admin fetching revenue report data error:', error);
-      next(error)
-    }
-  }
 }
 
 export default new AdminController();

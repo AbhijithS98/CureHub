@@ -8,7 +8,7 @@ import PaymentController from '../controllers/paymentController.js';
 const router = express.Router();
 
 const paymentService = new PaymentService(PaymentRepository);
-const paymentController = new PaymentController(paymentService)
+const paymentController = new PaymentController(paymentService);
 
 //Authorization
 router.post('/login',adminController.login)
@@ -34,9 +34,9 @@ router.get('/appointments-chart-data',verifyAdminToken,adminController.fetchAppo
 router.get('/appointment-report-data',verifyAdminToken,adminController.fetchAppointmentReportData)
 
 //Payment based
-router.get('/stats-revenue',verifyAdminToken,paymentController.fetchRevenueStats)
-router.get('/stats-refund',verifyAdminToken,paymentController.fetchRefundStats)
-router.get('/revenue-chart-data',verifyAdminToken,paymentController.fetchRevenueChartData)
-router.get('/revenue-report-data',verifyAdminToken,paymentController.fetchRevenueReportData)
+router.get('/stats-revenue',verifyAdminToken,(req, res, next) => paymentController.fetchRevenueStats(req, res, next));
+router.get('/stats-refund',verifyAdminToken,(req, res, next) => paymentController.fetchRefundStats(req, res, next));
+router.get('/revenue-chart-data',verifyAdminToken,(req, res, next) => paymentController.fetchRevenueChartData(req, res, next));
+router.get('/revenue-report-data',verifyAdminToken,(req, res, next) => paymentController.fetchRevenueReportData(req, res, next));
 
 export default router;

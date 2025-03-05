@@ -21,12 +21,12 @@ class DoctorRepository extends BaseRepository {
     }
     findDoctorByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.model.findOne({ email });
+            return yield this.findOne({ email });
         });
     }
     findDoctorById(_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.model.findOne({ _id });
+            return yield this.findOne({ _id });
         });
     }
     findUserById(_id) {
@@ -46,12 +46,12 @@ class DoctorRepository extends BaseRepository {
     }
     findDoctorByEmailAndOtp(email, otp) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.model.findOne({ email, "otp.code": otp });
+            return yield this.findOne({ email, "otp.code": otp });
         });
     }
     findDoctorByPwResetToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.model.findOne({ pwResetToken: token, pwTokenExpiresAt: { $gt: new Date() } });
+            return yield this.findOne({ pwResetToken: token, pwTokenExpiresAt: { $gt: new Date() } });
         });
     }
     createDoctor(doctorData) {
@@ -61,28 +61,28 @@ class DoctorRepository extends BaseRepository {
     }
     markVerifiedDoctor(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.update({ email }, { isVerified: true, otp: { code: null, expiresAt: null } });
+            return yield this.update({ email }, { isVerified: true, otp: { code: null, expiresAt: null } });
         });
     }
     updateOtp(email, newOtp) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.update({ email }, { otp: newOtp });
+            return yield this.update({ email }, { otp: newOtp });
         });
     }
     updateResettoken(email, token, expiry) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.update({ email }, { pwResetToken: token, pwTokenExpiresAt: expiry });
+            return yield this.update({ email }, { pwResetToken: token, pwTokenExpiresAt: expiry });
         });
     }
     updatePassword(token, newPassword) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.update({ pwResetToken: token }, { password: newPassword, pwResetToken: null, pwTokenExpiresAt: null });
+            return yield this.update({ pwResetToken: token }, { password: newPassword, pwResetToken: null, pwTokenExpiresAt: null });
         });
     }
     updateDoctorDetails(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const { name, email, phone, specialization, medicalLicenseNumber, gender, dob, experience, consultationFee, clinicName, district, city, bio } = req.body;
-            yield this.update({ email }, {
+            return yield this.update({ email }, {
                 name,
                 email,
                 phone,
