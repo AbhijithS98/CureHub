@@ -93,12 +93,6 @@ class UserRepository {
     )
   }
 
-  // async createPayment(paymentData: any): Promise<IPayment> {
-  //   const payment = new Payment(paymentData);
-  //   await payment.save();
-  //   return payment;
-  // }
-
 
   async createAppointment(appointmentDetails: Partial<IAppointment>): Promise<IAppointment> {
     const appointment = new Appointment(appointmentDetails);
@@ -159,16 +153,6 @@ class UserRepository {
   }
 
 
-  // async getUserWalletPayments(id: string): Promise<IPayment[] | null> {
-  //   return await Payment.find({
-  //     user: id,
-  //     $or: [
-  //       { transactionType: "Recharge" },
-  //       { method: "Wallet" }
-  //     ]
-  //   }).sort({ createdAt: -1 });
-  // }
-
   async createReview(newReview: Partial<IReview>): Promise<void> {
     const review = new Review(newReview);
     await review.save();
@@ -179,14 +163,7 @@ class UserRepository {
     return await Review.find({ doctorId }).populate('patientId', 'name profilePicture')
   }
 
-  // async findPrescription(prescriptionId: any): Promise<IPrescription | null> {
-  //   return await Prescription.findOne({ _id: prescriptionId })
-  //   .populate('appointment', 'date time')
-  //   .populate('doctor', 'name specialization address')
-  //   .populate('patient', 'name phone') 
-  // }
-
-
+  
   async createGoogleUser(email:string,name:string): Promise<IUser> {
     const newUser = new User({
       email,

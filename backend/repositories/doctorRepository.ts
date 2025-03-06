@@ -5,8 +5,8 @@ import Appointment, { IAppointment } from "../models/appointmentModel.js";
 import Wallet, { IWallet } from "../models/walletModel.js";
 import { IDoctorRepository } from "./interfaces/IDoctorRepository.js";
 import { BaseRepository } from "./baseRepository.js";
-// import Payment, { IPayment} from "../models/paymentModel.js";
-// import Prescription, { IPrescription } from "../models/prescriptionModel.js";
+
+
 
 class DoctorRepository extends BaseRepository<IDoctor> implements IDoctorRepository {
   constructor() {

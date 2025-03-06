@@ -1,21 +1,31 @@
 import express from 'express';
-import DoctorController from '../controllers/doctorController.js';
 import { uploadDoctorDocuments } from '../config/multerConfig.js';
 import verifyDoctorToken from '../middleware/doctorAuthMiddleware.js';
-import paymentRepository from "../repositories/paymentRepository.js";
-import doctorRepository from "../repositories/doctorRepository.js";
-import prescriptionRepository from "../repositories/prescriptionRepository.js";
+
+import DoctorRepository from "../repositories/doctorRepository.js";
+import DoctorController from '../controllers/doctorController.js';
 import DoctorService from "../services/doctorService.js";
+
+import PrescriptionRepository from "../repositories/prescriptionRepository.js";
+import PrescriptionService from '../services/prescriptionService.js';
+import PrescriptionController from '../controllers/prescriptionController.js';
+
+import PaymentRepository from "../repositories/paymentRepository.js";
+
 
 const router = express.Router();
 
+//Initializing Doctor service and Doctor controller
 const doctorService = new DoctorService(
-  doctorRepository,
-  paymentRepository,
-  prescriptionRepository
+  DoctorRepository,
+  PaymentRepository,
+  PrescriptionRepository
 );
-
 const doctorController = new DoctorController(doctorService);
+
+//Initializing Prescription service and Prescription controller
+const prescriptionService = new PrescriptionService(PrescriptionRepository);
+const prescriptionController = new PrescriptionController(prescriptionService);
 
 // Authorization
 router.post('/register', uploadDoctorDocuments, (req, res, next) => doctorController.register(req, res, next));
@@ -36,8 +46,10 @@ router.delete('/delete-timeSlot', verifyDoctorToken, (req, res, next) => doctorC
 router.get('/get-appointments', verifyDoctorToken, (req, res, next) => doctorController.getAppointments(req, res, next));
 router.put('/cancel-appointment', verifyDoctorToken, (req, res, next) => doctorController.cancelAppointment(req, res, next));
 router.post('/add-prescription', verifyDoctorToken, (req, res, next) => doctorController.addPrescription(req, res, next));
-router.get('/get-prescription', verifyDoctorToken, (req, res, next) => doctorController.viewPrescription(req, res, next));
-router.put('/update-prescription:id', verifyDoctorToken, (req, res, next) => doctorController.updatePrescription(req, res, next));
 router.get('/get-user', (req, res, next) => doctorController.getSingleUser(req, res, next));
+
+
+router.get('/get-prescription', verifyDoctorToken, (req, res, next) => prescriptionController.viewPrescription(req, res, next));
+router.put('/update-prescription:id', verifyDoctorToken, (req, res, next) => prescriptionController.updatePrescription(req, res, next));
 
 export default router;

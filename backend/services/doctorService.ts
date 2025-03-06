@@ -421,41 +421,6 @@ async fetchAppointments(_id:string): Promise<IAppointment[] | null> {
     
   }
 
-
-  async getPrescription(req: Request): Promise<IPrescription | null> {  
-
-    const { Pr_Id } = req.query;
-    const PrescriptionId = Pr_Id!.toString();
-    const prescription = await this.prescriptionRepository.findPrescription(PrescriptionId);
-  
-    if(!prescription){
-      const error = Error('No prescription found with this id');
-      error.name = 'ValidationError';  
-      throw error;
-    }
-    
-    return prescription
-  }
-
-
-  async updatePrescription(req: Request): Promise<void> {
-    
-    const { id } = req.params;
-    const updateFields = req.body;
-
-    const Prescription = await this.prescriptionRepository.findPrescription(id);
-
-    if(!Prescription){
-      const error = Error('No Prescription with this id');
-      error.name = 'ValidationError';  
-      throw error;
-    }
-  
-    await this.prescriptionRepository.updateUserPrescription(id,updateFields);
-  }
-
-
-
   async fetchUser(req: Request): Promise<IUser | null> {  
 
     const  userId  = req.query.userId as string;

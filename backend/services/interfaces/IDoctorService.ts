@@ -23,7 +23,5 @@ export interface IDoctorService {
   fetchAppointments(_id: string): Promise<IAppointment[] | null>;
   cancelBooking(req: Request): Promise<void>;
   addPatientPrescription(req: Request): Promise<void>;
-  getPrescription(req: Request): Promise<IPrescription | null>;
-  updatePrescription(req: Request): Promise<void>;
   fetchUser(req: Request): Promise<IUser | null>;
 }

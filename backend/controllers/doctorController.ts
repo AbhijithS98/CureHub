@@ -301,34 +301,6 @@ class DoctorController {
   }
 
 
-  async viewPrescription(req: Request, res: Response, next: NextFunction): Promise<void> {
-  
-    try {
-        
-      const result = await this.doctorService.getPrescription(req)
-      res.status(200).json({result});
-
-    } catch (error: any) {
-      console.error("Getting single prescription error: ", error.message);
-      next(error)
-    }
-  }
-
-
-  async updatePrescription(req:Request, res: Response, next: NextFunction): Promise<void> {
-  
-     try {
-       await this.doctorService.updatePrescription(req);
-       res.status(200).json({ message: 'Prescription updated successfully.'});
- 
-     } catch (error: any) {
-       console.error("Updating prescription error: ", error.message);
-       next(error)
-     }
-   }
-
-
-
    
    async getSingleUser(req: Request, res: Response, next: NextFunction): Promise<void> {
   
