@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import Admin from "../models/adminModel.js";
 import Appointment from "../models/appointmentModel.js";
 import Doctor from "../models/doctorModel.js";
-// import Payment, { IPayment } from "../models/paymentModel.js";
 import User from "../models/userModel.js";
 class AdminRepository {
     findAdminByEmail(email) {
@@ -124,16 +123,6 @@ class AdminRepository {
             return yield Appointment.countDocuments({ status: "Cancelled" });
         });
     }
-    // async getRefundTransactionsCount(): Promise<number | null> {
-    //   return await Payment.countDocuments({ transactionType: "Refund" });
-    // }
-    // async getTotalRevenue(): Promise<{ _id: null; total: number }[] | []> {
-    //   const totalRevenue = await Payment.aggregate([
-    //     { $match: { transactionType: "Booking" } },
-    //     { $group: { _id: null, total: { $sum: "$amount" } } },
-    //   ]);
-    //   return totalRevenue;
-    // }
     getAppointmentsChartData() {
         return __awaiter(this, void 0, void 0, function* () {
             const appointmentTrend = yield Appointment.aggregate([
@@ -155,28 +144,6 @@ class AdminRepository {
             return appointmentTrend;
         });
     }
-    // async getRevenueChartData(): Promise<any[] | []> {
-    //   const RevenueTrend = await Payment.aggregate([
-    //     {
-    //       $match: {
-    //         transactionType: "Booking",
-    //       },
-    //     },
-    //     {
-    //       $group: {
-    //         _id: {
-    //           month: { $month: "$createdAt" },
-    //           year: { $year: "$createdAt" },
-    //         },
-    //         total: { $sum: "$amount" },
-    //       },
-    //     },
-    //     {
-    //       $sort: { "_id.year": 1, "_id.month": 1 },
-    //     },
-    //   ]);
-    //   return RevenueTrend;
-    // }
     getAppointmentReports(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const { startDate, endDate, doctorId, patientId } = req.query;

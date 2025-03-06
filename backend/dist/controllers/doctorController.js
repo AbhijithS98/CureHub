@@ -269,30 +269,6 @@ class DoctorController {
             }
         });
     }
-    viewPrescription(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const result = yield this.doctorService.getPrescription(req);
-                res.status(200).json({ result });
-            }
-            catch (error) {
-                console.error("Getting single prescription error: ", error.message);
-                next(error);
-            }
-        });
-    }
-    updatePrescription(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                yield this.doctorService.updatePrescription(req);
-                res.status(200).json({ message: 'Prescription updated successfully.' });
-            }
-            catch (error) {
-                console.error("Updating prescription error: ", error.message);
-                next(error);
-            }
-        });
-    }
     getSingleUser(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

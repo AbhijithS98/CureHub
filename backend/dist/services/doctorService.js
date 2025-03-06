@@ -339,32 +339,6 @@ class DoctorService {
             }
         });
     }
-    getPrescription(req) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { Pr_Id } = req.query;
-            const PrescriptionId = Pr_Id.toString();
-            const prescription = yield this.prescriptionRepository.findPrescription(PrescriptionId);
-            if (!prescription) {
-                const error = Error('No prescription found with this id');
-                error.name = 'ValidationError';
-                throw error;
-            }
-            return prescription;
-        });
-    }
-    updatePrescription(req) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id } = req.params;
-            const updateFields = req.body;
-            const Prescription = yield this.prescriptionRepository.findPrescription(id);
-            if (!Prescription) {
-                const error = Error('No Prescription with this id');
-                error.name = 'ValidationError';
-                throw error;
-            }
-            yield this.prescriptionRepository.updateUserPrescription(id, updateFields);
-        });
-    }
     fetchUser(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = req.query.userId;

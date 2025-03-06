@@ -13,8 +13,6 @@ import Availability from "../models/availabilityModel.js";
 import Appointment from "../models/appointmentModel.js";
 import Wallet from "../models/walletModel.js";
 import { BaseRepository } from "./baseRepository.js";
-// import Payment, { IPayment} from "../models/paymentModel.js";
-// import Prescription, { IPrescription } from "../models/prescriptionModel.js";
 class DoctorRepository extends BaseRepository {
     constructor() {
         super(Doctor);

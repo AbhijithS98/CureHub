@@ -10,8 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { AdminService } from "../services/adminService.js";
 import generateAdminTokens from "../utils/generateAdminJwt.js";
 import verifyRefreshToken from "../utils/refreshToken.js";
-import paymentRepository from "../repositories/paymentRepository.js";
-const adminService = new AdminService(paymentRepository);
+const adminService = new AdminService();
 class AdminController {
     login(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -249,30 +248,6 @@ class AdminController {
             }
         });
     }
-    fetchRevenueStats(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const Result = yield adminService.getTotalRevenue();
-                res.status(200).json({ Result });
-            }
-            catch (error) {
-                console.error('admin fetching revenue stats error:', error);
-                next(error);
-            }
-        });
-    }
-    fetchRefundStats(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const RefundStats = yield adminService.getAllRefundTransactionsCount();
-                res.status(200).json({ RefundStats });
-            }
-            catch (error) {
-                console.error('admin fetching refund stats error:', error);
-                next(error);
-            }
-        });
-    }
     fetchAppointmentsChartData(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -285,18 +260,6 @@ class AdminController {
             }
         });
     }
-    fetchRevenueChartData(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const Result = yield adminService.getRevenueTrends();
-                res.status(200).json({ Result });
-            }
-            catch (error) {
-                console.error('admin fetching revenue chart data error:', error);
-                next(error);
-            }
-        });
-    }
     fetchAppointmentReportData(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -305,19 +268,6 @@ class AdminController {
             }
             catch (error) {
                 console.error('admin fetching appointment report data error:', error);
-                next(error);
-            }
-        });
-    }
-    fetchRevenueReportData(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const RevenueReports = yield adminService.getRevenueReportData(req);
-                const TotalRevenue = RevenueReports.reduce((acc, curr) => acc + curr.amount, 0);
-                res.status(200).json({ TotalRevenue, RevenueReports });
-            }
-            catch (error) {
-                console.error('admin fetching revenue report data error:', error);
                 next(error);
             }
         });

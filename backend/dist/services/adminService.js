@@ -12,9 +12,6 @@ import sendEmail from "../utils/emailSender.js";
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 export class AdminService {
-    constructor(paymentRepository) {
-        this.paymentRepository = paymentRepository;
-    }
     authenticateAdmin(email, password, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const admin = yield adminRepository.findAdminByEmail(email);
@@ -209,42 +206,16 @@ export class AdminService {
             };
         });
     }
-    getAllRefundTransactionsCount() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const RefundTransactionsCount = yield this.paymentRepository.getRefundTransactionsCount();
-            return RefundTransactionsCount;
-        });
-    }
-    getTotalRevenue() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const TotalRevenue = yield this.paymentRepository.getTotalRevenue();
-            return TotalRevenue;
-        });
-    }
     getAppointmentTrends() {
         return __awaiter(this, void 0, void 0, function* () {
             const AppointmentTrends = yield adminRepository.getAppointmentsChartData();
             return AppointmentTrends;
         });
     }
-    getRevenueTrends() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const RevenueTrends = yield this.paymentRepository.getRevenueChartData();
-            return RevenueTrends;
-        });
-    }
     getAppointmentReportData(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const AppointmentReports = yield adminRepository.getAppointmentReports(req);
             return AppointmentReports;
-        });
-    }
-    getRevenueReportData(req) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const startDate = typeof req.query.startDate === "string" ? req.query.startDate : undefined;
-            const endDate = typeof req.query.endDate === "string" ? req.query.endDate : undefined;
-            const RevenueReports = yield this.paymentRepository.getRevenueReports(startDate, endDate);
-            return RevenueReports;
         });
     }
 }

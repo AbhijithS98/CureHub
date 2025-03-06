@@ -97,11 +97,6 @@ class UserRepository {
             yield User.updateOne({ email }, { $set: updatedData });
         });
     }
-    // async createPayment(paymentData: any): Promise<IPayment> {
-    //   const payment = new Payment(paymentData);
-    //   await payment.save();
-    //   return payment;
-    // }
     createAppointment(appointmentDetails) {
         return __awaiter(this, void 0, void 0, function* () {
             const appointment = new Appointment(appointmentDetails);
@@ -156,15 +151,6 @@ class UserRepository {
             yield Availability.updateOne({ "timeSlots._id": timeslotId }, { $set: { "timeSlots.$.status": updatedStatus } });
         });
     }
-    // async getUserWalletPayments(id: string): Promise<IPayment[] | null> {
-    //   return await Payment.find({
-    //     user: id,
-    //     $or: [
-    //       { transactionType: "Recharge" },
-    //       { method: "Wallet" }
-    //     ]
-    //   }).sort({ createdAt: -1 });
-    // }
     createReview(newReview) {
         return __awaiter(this, void 0, void 0, function* () {
             const review = new Review(newReview);
@@ -176,12 +162,6 @@ class UserRepository {
             return yield Review.find({ doctorId }).populate('patientId', 'name profilePicture');
         });
     }
-    // async findPrescription(prescriptionId: any): Promise<IPrescription | null> {
-    //   return await Prescription.findOne({ _id: prescriptionId })
-    //   .populate('appointment', 'date time')
-    //   .populate('doctor', 'name specialization address')
-    //   .populate('patient', 'name phone') 
-    // }
     createGoogleUser(email, name) {
         return __awaiter(this, void 0, void 0, function* () {
             const newUser = new User({
