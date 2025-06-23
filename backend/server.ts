@@ -17,6 +17,10 @@ import { Server } from 'socket.io';
 import http from 'http';
 import Chat from './models/chatModel.js';
 
+const os = require("os");
+const serverName = os.hostname();
+console.log("servername:", serverName);
+
 dotenv.config();
 
 const PORT: number = Number(process.env.PORT) || 5000;
