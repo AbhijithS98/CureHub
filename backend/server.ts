@@ -17,7 +17,7 @@ import { Server } from 'socket.io';
 import http from 'http';
 import Chat from './models/chatModel.js';
 
-const os = require("os");
+import os from 'os';
 const serverName = os.hostname();
 console.log("servername:", serverName);
 
